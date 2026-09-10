@@ -330,7 +330,41 @@
       height:20px;
       background:rgba(83,74,67,.38);
     }
+    
+    /* FLOATING UTILITY NAV */
 
+.utility-nav{
+  position:fixed;
+  left:30px;
+  bottom:22px;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  font-family:"Avenir Next","Helvetica Neue",Arial,sans-serif;
+  font-size:10px;
+  line-height:1;
+  font-weight:500;
+  letter-spacing:.04em;
+  color:#655d56;
+}
+
+.utility-nav a{
+  color:inherit;
+  text-decoration:none;
+  transition:opacity .2s ease;
+}
+
+.utility-nav a:hover{
+  opacity:.62;
+}
+
+.utility-rule{
+  display:inline-block;
+  width:1px;
+  height:20px;
+  background:rgba(83,74,67,.38);
+}
     /* MUSIC */
 
     .sound-toggle{
