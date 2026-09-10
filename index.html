@@ -27,14 +27,12 @@
 
   <title>Dominic Ryan | Formulations</title>
 
-  <!-- WEBSITE FAVICON -->
   <link
     rel="icon"
     type="image/png"
     href="dr-reveals-removebg-preview.png"
   >
 
-  <!-- IOS HOME SCREEN ARTWORK -->
   <link
     rel="apple-touch-icon"
     href="media-artwork.png"
@@ -615,7 +613,6 @@
 
     /* =========================================================
        DESKTOP FLOATING NAV
-       LARGE DESKTOP = ONE LINE
        ========================================================= */
 
     .utility-nav{
@@ -664,71 +661,111 @@
     }
 
 
-    /* =========================================================
-       REGULAR DESKTOP / LAPTOP NAV
-       LINKEDIN DROPS BELOW BEFORE IT CAN HIT PHOTO
-       ========================================================= */
+    /* TWO-ROW DESKTOP STATE */
 
-    @media(
-      min-width:761px
-    ) and (
-      max-width:1599px
-    ){
+    .utility-nav.nav-stacked{
+      left:20px;
+      bottom:20px;
 
-      .utility-nav{
-        left:20px;
-        bottom:20px;
+      display:grid;
 
-        display:grid;
+      grid-template-columns:
+        auto
+        1px
+        auto;
 
-        grid-template-columns:
-          auto
-          1px
-          auto;
+      grid-template-rows:
+        auto
+        auto;
 
-        grid-template-rows:
-          auto
-          auto;
+      column-gap:11px;
+      row-gap:8px;
 
-        column-gap:11px;
-        row-gap:8px;
+      align-items:center;
 
-        align-items:center;
+      font-size:8.5px;
+      letter-spacing:.015em;
+    }
 
-        font-size:8.5px;
-        letter-spacing:.015em;
-      }
+    .utility-nav.nav-stacked .nav-home{
+      grid-column:1;
+      grid-row:1;
+    }
 
-      .utility-nav a:nth-of-type(1){
-        grid-column:1;
-        grid-row:1;
-      }
+    .utility-nav.nav-stacked .nav-rule-one{
+      grid-column:2;
+      grid-row:1;
+    }
 
-      .utility-nav .utility-rule:nth-of-type(1){
-        grid-column:2;
-        grid-row:1;
-      }
+    .utility-nav.nav-stacked .nav-instagram{
+      grid-column:3;
+      grid-row:1;
+    }
 
-      .utility-nav a:nth-of-type(2){
-        grid-column:3;
-        grid-row:1;
-      }
+    .utility-nav.nav-stacked .nav-rule-two{
+      display:none;
+    }
 
-      .utility-nav .utility-rule:nth-of-type(2){
-        display:none;
-      }
+    .utility-nav.nav-stacked .nav-linkedin{
+      grid-column:1 / -1;
+      grid-row:2;
+      justify-self:start;
+    }
 
-      .utility-nav a:nth-of-type(3){
-        grid-column:1 / -1;
-        grid-row:2;
+    .utility-nav.nav-stacked .utility-rule{
+      height:16px;
+    }
 
-        justify-self:start;
-      }
 
-      .utility-rule{
-        height:16px;
-      }
+    /* EXTRA-NARROW DESKTOP STATE */
 
+    .utility-nav.nav-vertical{
+      left:20px;
+      bottom:20px;
+
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+
+      gap:6px;
+
+      font-size:8px;
+      letter-spacing:.01em;
+    }
+
+    .utility-nav.nav-vertical .utility-rule{
+      display:none;
+    }
+
+
+    /* LAST RESORT */
+
+    .utility-nav.nav-footer-safe{
+      position:static;
+
+      width:100%;
+      margin:0;
+
+      padding:
+        28px
+        20px
+        34px;
+
+      display:flex;
+      flex-direction:row;
+
+      justify-content:flex-start;
+      align-items:center;
+
+      gap:10px;
+
+      font-size:8px;
+      letter-spacing:.02em;
+    }
+
+    .utility-nav.nav-footer-safe .utility-rule{
+      display:inline-block;
+      height:15px;
     }
 
 
@@ -1051,9 +1088,6 @@
         font-size:9px;
       }
 
-
-      /* COMPLETE LETTER FIRST */
-
       .letter-wrap{
         padding:
           38px
@@ -1071,9 +1105,6 @@
 
         transform:none;
       }
-
-
-      /* LETTER */
 
       .paper{
         order:1;
@@ -1117,9 +1148,6 @@
       .paper .signature{
         width:205px;
       }
-
-
-      /* PHOTO TUCKED UNDER LETTER */
 
       .photo-stage{
         order:2;
@@ -1173,9 +1201,6 @@
         object-position:center center;
       }
 
-
-      /* FORMULATIONS */
-
       .formulations-feed{
         width:min(92vw,680px);
 
@@ -1212,9 +1237,12 @@
       }
 
 
-      /* MOBILE NAV = NORMAL FOOTER */
+      /* MOBILE NAV REMAINS NORMAL FOOTER */
 
-      .utility-nav{
+      .utility-nav,
+      .utility-nav.nav-stacked,
+      .utility-nav.nav-vertical,
+      .utility-nav.nav-footer-safe{
         position:static;
 
         width:100%;
@@ -1229,6 +1257,7 @@
           );
 
         display:flex;
+        flex-direction:row;
 
         justify-content:center;
         align-items:center;
@@ -1239,16 +1268,13 @@
         letter-spacing:.025em;
       }
 
-      .utility-nav .utility-rule:nth-of-type(2){
+      .utility-nav .utility-rule,
+      .utility-nav.nav-stacked .utility-rule,
+      .utility-nav.nav-vertical .utility-rule,
+      .utility-nav.nav-footer-safe .utility-rule{
         display:inline-block;
-      }
-
-      .utility-rule{
         height:15px;
       }
-
-
-      /* MUSIC REMAINS FLOATING */
 
       .sound-toggle{
         right:14px;
@@ -1293,8 +1319,6 @@
 <body id="top">
 
 
-  <!-- BACKGROUND DR -->
-
   <div
     class="background-dr"
     aria-hidden="true"
@@ -1310,8 +1334,6 @@
 
   <div class="site-shell">
 
-
-    <!-- HEADER -->
 
     <header class="header">
 
@@ -1356,15 +1378,11 @@
     <main>
 
 
-      <!-- LETTER + EDITORIAL PHOTO -->
-
       <section class="letter-wrap">
 
 
         <div class="hero-composition">
 
-
-          <!-- PHOTO -->
 
           <div
             class="photo-stage"
@@ -1382,8 +1400,6 @@
 
           </div>
 
-
-          <!-- LETTER -->
 
           <article class="paper">
 
@@ -1475,8 +1491,6 @@
       </section>
 
 
-      <!-- FORMULATIONS / INSTAGRAM -->
-
       <section
         class="formulations-feed"
         aria-labelledby="formulations-feed-title"
@@ -1540,26 +1554,29 @@
     </main>
 
 
-    <!-- DESKTOP FLOATING / MOBILE FOOTER NAV -->
-
     <nav
       class="utility-nav"
+      id="utility-nav"
       aria-label="Site links"
     >
 
 
-      <a href="#top">
+      <a
+        class="nav-home"
+        href="#top"
+      >
         DOMINIC RYAN
       </a>
 
 
       <span
-        class="utility-rule"
+        class="utility-rule nav-rule-one"
         aria-hidden="true"
       ></span>
 
 
       <a
+        class="nav-instagram"
         href="https://www.instagram.com/formulations/"
         target="_blank"
         rel="noopener"
@@ -1569,12 +1586,13 @@
 
 
       <span
-        class="utility-rule"
+        class="utility-rule nav-rule-two"
         aria-hidden="true"
       ></span>
 
 
       <a
+        class="nav-linkedin"
         href="https://www.linkedin.com/in/itsdominicryan"
         target="_blank"
         rel="noopener"
@@ -1588,8 +1606,6 @@
 
   </div>
 
-
-  <!-- MUSIC -->
 
   <audio
     id="site-audio"
@@ -1633,10 +1649,6 @@
     audio.volume = 0.25;
     audio.muted = false;
 
-
-    /* =======================================================
-       IOS / SAFARI MEDIA SESSION
-       ======================================================= */
 
     if(
       'mediaSession'
@@ -1812,6 +1824,218 @@
 
 
     requestPhotoUpdate();
+
+
+    /* =======================================================
+       DESKTOP NAV / PHOTO COLLISION PROTECTION
+       ======================================================= */
+
+    const utilityNav =
+      document.getElementById(
+        "utility-nav"
+      );
+
+    const navDesktopQuery =
+      window.matchMedia(
+        "(min-width: 761px)"
+      );
+
+    const NAV_SAFE_GAP =
+      24;
+
+    let navCollisionTicking =
+      false;
+
+
+    function clearNavStates(){
+
+      if(!utilityNav){
+        return;
+      }
+
+      utilityNav.classList.remove(
+        "nav-stacked",
+        "nav-vertical",
+        "nav-footer-safe"
+      );
+
+    }
+
+
+    function navFitsBeforePhoto(){
+
+      if(
+        !utilityNav ||
+        !photoStage
+      ){
+        return true;
+      }
+
+      const navRect =
+        utilityNav.getBoundingClientRect();
+
+      const photoRect =
+        photoStage.getBoundingClientRect();
+
+      return(
+        navRect.right +
+        NAV_SAFE_GAP
+        <=
+        photoRect.left
+      );
+
+    }
+
+
+    function updateNavCollision(){
+
+      navCollisionTicking =
+        false;
+
+
+      if(
+        !utilityNav ||
+        !photoStage
+      ){
+        return;
+      }
+
+
+      if(
+        !navDesktopQuery.matches
+      ){
+
+        clearNavStates();
+
+        return;
+      }
+
+
+      /* TRY ORIGINAL ONE-LINE NAV */
+
+      clearNavStates();
+
+
+      if(
+        navFitsBeforePhoto()
+      ){
+        return;
+      }
+
+
+      /* TRY TWO ROWS */
+
+      utilityNav
+        .classList
+        .add(
+          "nav-stacked"
+        );
+
+
+      if(
+        navFitsBeforePhoto()
+      ){
+        return;
+      }
+
+
+      /* TRY VERTICAL */
+
+      utilityNav
+        .classList
+        .remove(
+          "nav-stacked"
+        );
+
+      utilityNav
+        .classList
+        .add(
+          "nav-vertical"
+        );
+
+
+      if(
+        navFitsBeforePhoto()
+      ){
+        return;
+      }
+
+
+      /* FINAL FALLBACK */
+
+      utilityNav
+        .classList
+        .remove(
+          "nav-vertical"
+        );
+
+      utilityNav
+        .classList
+        .add(
+          "nav-footer-safe"
+        );
+
+    }
+
+
+    function requestNavCollisionUpdate(){
+
+      if(
+        navCollisionTicking
+      ){
+        return;
+      }
+
+
+      navCollisionTicking =
+        true;
+
+
+      window
+        .requestAnimationFrame(
+          updateNavCollision
+        );
+
+    }
+
+
+    window.addEventListener(
+      "resize",
+      requestNavCollisionUpdate
+    );
+
+
+    window.addEventListener(
+      "load",
+      requestNavCollisionUpdate
+    );
+
+
+    window.addEventListener(
+      "scroll",
+      requestNavCollisionUpdate,
+      {
+        passive:true
+      }
+    );
+
+
+    if(
+      document.fonts &&
+      document.fonts.ready
+    ){
+
+      document
+        .fonts
+        .ready
+        .then(
+          requestNavCollisionUpdate
+        );
+
+    }
+
+
+    requestNavCollisionUpdate();
 
 
     /* =======================================================
