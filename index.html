@@ -615,6 +615,7 @@
 
     /* =========================================================
        DESKTOP FLOATING NAV
+       LARGE DESKTOP = ONE LINE
        ========================================================= */
 
     .utility-nav{
@@ -663,45 +664,69 @@
     }
 
 
-    /* REGULAR DESKTOP — KEEP ENTIRE NAV LINE CLEAR OF PHOTO */
+    /* =========================================================
+       REGULAR DESKTOP / LAPTOP NAV
+       LINKEDIN DROPS BELOW BEFORE IT CAN HIT PHOTO
+       ========================================================= */
 
     @media(
-      min-width:1051px
+      min-width:761px
     ) and (
       max-width:1599px
     ){
 
       .utility-nav{
-        left:18px;
-        gap:9px;
-        font-size:8px;
-        letter-spacing:.01em;
+        left:20px;
+        bottom:20px;
+
+        display:grid;
+
+        grid-template-columns:
+          auto
+          1px
+          auto;
+
+        grid-template-rows:
+          auto
+          auto;
+
+        column-gap:11px;
+        row-gap:8px;
+
+        align-items:center;
+
+        font-size:8.5px;
+        letter-spacing:.015em;
+      }
+
+      .utility-nav a:nth-of-type(1){
+        grid-column:1;
+        grid-row:1;
+      }
+
+      .utility-nav .utility-rule:nth-of-type(1){
+        grid-column:2;
+        grid-row:1;
+      }
+
+      .utility-nav a:nth-of-type(2){
+        grid-column:3;
+        grid-row:1;
+      }
+
+      .utility-nav .utility-rule:nth-of-type(2){
+        display:none;
+      }
+
+      .utility-nav a:nth-of-type(3){
+        grid-column:1 / -1;
+        grid-row:2;
+
+        justify-self:start;
       }
 
       .utility-rule{
         height:16px;
-      }
-
-    }
-
-
-    /* SMALL LAPTOP — EXTRA COMPACT */
-
-    @media(
-      min-width:761px
-    ) and (
-      max-width:1050px
-    ){
-
-      .utility-nav{
-        left:18px;
-        gap:9px;
-        font-size:8px;
-        letter-spacing:.015em;
-      }
-
-      .utility-rule{
-        height:15px;
       }
 
     }
@@ -1212,6 +1237,10 @@
 
         font-size:8px;
         letter-spacing:.025em;
+      }
+
+      .utility-nav .utility-rule:nth-of-type(2){
+        display:inline-block;
       }
 
       .utility-rule{
