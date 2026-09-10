@@ -6,7 +6,7 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
   >
 
   <!-- KEEP SITE OUT OF SEARCH ENGINES -->
@@ -32,14 +32,6 @@
     rel="icon"
     type="image/png"
     href="dr-reveals-removebg-preview.png"
-  >
-
-  <!-- LOCAL MUSIC -->
-  <link
-    rel="preload"
-    href="music.mp3"
-    as="audio"
-    type="audio/mpeg"
   >
 
   <style>
@@ -539,8 +531,15 @@
 
       .formulations-feed{
         width:min(92vw,680px);
-        margin:1vh auto 7vh;
+
+        /*
+          Extra bottom room prevents the final content
+          from feeling trapped behind the floating controls.
+        */
+        margin:1vh auto 0;
         padding-top:46px;
+        padding-bottom:
+          calc(115px + env(safe-area-inset-bottom));
       }
 
       .formulations-feed-head{
@@ -561,9 +560,20 @@
         min-height:280px;
       }
 
+
+      /*
+        MOBILE SAFE AREA
+
+        These controls are intentionally lifted above
+        the iPhone Home Indicator and in-app browser UI.
+      */
+
       .utility-nav{
         left:14px;
-        bottom:14px;
+
+        bottom:
+          calc(46px + env(safe-area-inset-bottom));
+
         gap:9px;
         font-size:8px;
         letter-spacing:.025em;
@@ -575,7 +585,10 @@
 
       .sound-toggle{
         right:14px;
-        bottom:13px;
+
+        bottom:
+          calc(45px + env(safe-area-inset-bottom));
+
         font-size:9px;
       }
     }
