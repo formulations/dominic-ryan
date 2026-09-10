@@ -72,25 +72,14 @@
 
     .background-dr{
       position:fixed;
-
-      right:
-        clamp(-92px,-4.6vw,-42px);
-
-      bottom:
-        clamp(-60px,-3vw,-42px);
-
-      width:
-        clamp(285px,25vw,520px);
-
+      right:clamp(-92px,-4.6vw,-42px);
+      bottom:clamp(-60px,-3vw,-42px);
+      width:clamp(285px,25vw,520px);
       height:auto;
-
       z-index:0;
-
       pointer-events:none;
       user-select:none;
-
       opacity:.075;
-
       overflow:visible;
     }
 
@@ -198,20 +187,11 @@
 
     .letter-wrap{
       width:100%;
-
-      padding:
-        clamp(46px,5vw,68px)
-        34px
-        52px;
+      padding:clamp(46px,5vw,68px) 34px 52px;
     }
 
     .hero-composition{
-      width:
-        min(
-          1220px,
-          calc(100vw - 110px)
-        );
-
+      width:min(1220px,calc(100vw - 110px));
       margin:0 auto;
 
       display:grid;
@@ -223,8 +203,7 @@
       justify-content:center;
       align-items:center;
 
-      gap:
-        clamp(32px,4vw,68px);
+      gap:clamp(32px,4vw,68px);
 
       transform:
         translateX(
@@ -240,10 +219,8 @@
     .photo-stage{
       position:relative;
       z-index:2;
-
       width:100%;
       max-width:425px;
-
       justify-self:end;
 
       transform:
@@ -256,15 +233,8 @@
 
     .photo-stage::before{
       content:"";
-
       position:absolute;
-
-      inset:
-        -18px
-        26px
-        10px
-        -20px;
-
+      inset:-18px 26px 10px -20px;
       z-index:-2;
 
       background:
@@ -286,15 +256,8 @@
 
     .photo-stage::after{
       content:"";
-
       position:absolute;
-
-      inset:
-        -9px
-        -7px
-        -13px
-        10px;
-
+      inset:-9px -7px -13px 10px;
       z-index:-1;
 
       background:
@@ -339,13 +302,9 @@
 
     .photo-frame img{
       display:block;
-
       width:100%;
-
       aspect-ratio:4 / 5;
-
       object-fit:cover;
-
       object-position:center center;
     }
 
@@ -416,14 +375,8 @@
     }
 
     @keyframes textGlowIn{
-
-      from{
-        opacity:0;
-      }
-
-      to{
-        opacity:1;
-      }
+      from{opacity:0;}
+      to{opacity:1;}
     }
 
     .message-label{
@@ -532,16 +485,8 @@
 
     .formulations-feed{
       width:min(1180px,92vw);
-
-      margin:
-        38px
-        auto
-        9vh;
-
-      padding:
-        72px
-        0
-        42px;
+      margin:38px auto 9vh;
+      padding:72px 0 42px;
 
       border-top:
         1px solid
@@ -804,18 +749,13 @@
     @media(min-width:1600px){
 
       .hero-composition{
-        width:
-          min(
-            1260px,
-            calc(100vw - 150px)
-          );
+        width:min(1260px,calc(100vw - 150px));
 
         grid-template-columns:
           clamp(360px,25vw,430px)
           clamp(620px,40vw,680px);
 
-        gap:
-          clamp(54px,4.2vw,76px);
+        gap:clamp(54px,4.2vw,76px);
 
         transform:
           translateX(-15px);
@@ -823,13 +763,7 @@
 
       .background-dr{
         right:-42px;
-
-        width:
-          clamp(
-            420px,
-            28vw,
-            540px
-          );
+        width:clamp(420px,28vw,540px);
       }
 
     }
@@ -850,31 +784,13 @@
       }
 
       .hero-composition{
-        width:
-          calc(
-            100vw -
-            76px
-          );
+        width:calc(100vw - 76px);
 
         grid-template-columns:
-          clamp(
-            285px,
-            25vw,
-            345px
-          )
+          clamp(285px,25vw,345px)
+          clamp(515px,43vw,600px);
 
-          clamp(
-            515px,
-            43vw,
-            600px
-          );
-
-        gap:
-          clamp(
-            28px,
-            3vw,
-            40px
-          );
+        gap:clamp(28px,3vw,40px);
 
         transform:
           translateX(-34px);
@@ -886,11 +802,7 @@
 
       .paper{
         max-width:600px;
-
-        padding:
-          49px
-          50px
-          45px;
+        padding:49px 50px 45px;
       }
 
       .paper p{
@@ -915,14 +827,7 @@
 
       .background-dr{
         right:-88px;
-
-        width:
-          clamp(
-            270px,
-            22vw,
-            320px
-          );
-
+        width:clamp(270px,22vw,320px);
         opacity:.065;
       }
 
@@ -940,10 +845,7 @@
     ){
 
       .header{
-        padding:
-          27px
-          30px
-          0;
+        padding:27px 30px 0;
       }
 
       .brand-mark{
@@ -951,29 +853,15 @@
       }
 
       .letter-wrap{
-        padding:
-          42px
-          22px
-          46px;
+        padding:42px 22px 46px;
       }
 
       .hero-composition{
-        width:
-          calc(
-            100vw -
-            48px
-          );
+        width:calc(100vw - 48px);
 
         grid-template-columns:
-          minmax(
-            245px,
-            30vw
-          )
-
-          minmax(
-            445px,
-            55vw
-          );
+          minmax(245px,30vw)
+          minmax(445px,55vw);
 
         gap:27px;
 
@@ -994,11 +882,7 @@
       }
 
       .photo-stage::before{
-        inset:
-          -14px
-          20px
-          8px
-          -15px;
+        inset:-14px 20px 8px -15px;
       }
 
       .photo-frame{
@@ -1007,11 +891,7 @@
 
       .paper{
         max-width:535px;
-
-        padding:
-          43px
-          43px
-          40px;
+        padding:43px 43px 40px;
       }
 
       .message-label{
@@ -1056,23 +936,12 @@
       .background-dr{
         right:-58px;
         bottom:-34px;
-
-        width:
-          clamp(
-            230px,
-            54vw,
-            340px
-          );
-
+        width:clamp(230px,54vw,340px);
         opacity:.06;
       }
 
       .header{
-        padding:
-          25px
-          22px
-          0;
-
+        padding:25px 22px 0;
         gap:18px;
       }
 
@@ -1089,29 +958,21 @@
       }
 
       .letter-wrap{
-        padding:
-          38px
-          0
-          0;
+        padding:38px 0 0;
       }
 
       .hero-composition{
         width:100%;
-
         display:flex;
         flex-direction:column;
-
         gap:0;
-
         transform:none;
       }
 
       .paper{
         order:1;
-
         width:94vw;
         max-width:none;
-
         height:auto;
 
         min-height:
@@ -1151,40 +1012,23 @@
 
       .photo-stage{
         order:2;
-
         width:82vw;
         max-width:390px;
-
         align-self:center;
-
         margin-top:-28px;
         margin-left:2vw;
-
         transform:none;
-
         z-index:4;
       }
 
       .photo-stage::before{
-        inset:
-          -13px
-          20px
-          8px
-          -14px;
-
-        transform:
-          rotate(-1.7deg);
+        inset:-13px 20px 8px -14px;
+        transform:rotate(-1.7deg);
       }
 
       .photo-stage::after{
-        inset:
-          -7px
-          -6px
-          -12px
-          8px;
-
-        transform:
-          rotate(.65deg);
+        inset:-7px -6px -12px 8px;
+        transform:rotate(.65deg);
       }
 
       .photo-frame{
@@ -1203,12 +1047,7 @@
 
       .formulations-feed{
         width:min(92vw,680px);
-
-        margin:
-          78px
-          auto
-          0;
-
+        margin:78px auto 0;
         padding-top:46px;
         padding-bottom:34px;
       }
@@ -1220,12 +1059,7 @@
       }
 
       .formulations-feed-kicker{
-        font-size:
-          clamp(
-            20px,
-            7vw,
-            28px
-          );
+        font-size:clamp(20px,7vw,28px);
       }
 
       .formulations-feed-link{
@@ -1389,7 +1223,10 @@
             id="photo-stage"
           >
 
-            <div class="photo-frame">
+            <div
+              class="photo-frame"
+              id="photo-frame"
+            >
 
               <img
                 src="image.jpeg"
@@ -1696,6 +1533,11 @@
         "photo-stage"
       );
 
+    const photoFrame =
+      document.getElementById(
+        "photo-frame"
+      );
+
     const desktopPhotoQuery =
       window.matchMedia(
         "(min-width: 761px)"
@@ -1827,7 +1669,7 @@
 
 
     /* =======================================================
-       DESKTOP NAV / PHOTO COLLISION PROTECTION
+       DESKTOP NAV / VISIBLE PHOTO COLLISION PROTECTION
        ======================================================= */
 
     const utilityNav =
@@ -1841,7 +1683,7 @@
       );
 
     const NAV_SAFE_GAP =
-      24;
+      20;
 
     let navCollisionTicking =
       false;
@@ -1866,7 +1708,7 @@
 
       if(
         !utilityNav ||
-        !photoStage
+        !photoFrame
       ){
         return true;
       }
@@ -1875,7 +1717,7 @@
         utilityNav.getBoundingClientRect();
 
       const photoRect =
-        photoStage.getBoundingClientRect();
+        photoFrame.getBoundingClientRect();
 
       return(
         navRect.right +
@@ -1895,7 +1737,7 @@
 
       if(
         !utilityNav ||
-        !photoStage
+        !photoFrame
       ){
         return;
       }
