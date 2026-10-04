@@ -1584,7 +1584,62 @@
       }
 
     }
+    /* =========================================================
+       PERSONAL MESSAGE EFFECTS
+       ========================================================= */
 
+    /* "I'm Dominic Ryan." typing cursor */
+
+    #intro-typewriter::after{
+      content:"";
+      display:inline-block;
+      width:1px;
+      height:.95em;
+      margin-left:3px;
+      vertical-align:-.08em;
+      background:currentColor;
+      opacity:0;
+    }
+
+    #intro-typewriter.is-typing::after{
+      opacity:.55;
+
+      animation:
+        introCursorBlink
+        .72s
+        step-end
+        infinite;
+    }
+
+    @keyframes introCursorBlink{
+
+      50%{
+        opacity:0;
+      }
+
+    }
+
+
+    /* "Everything here begins..." focus reveal */
+
+    .seeing-reveal{
+      opacity:0;
+      filter:blur(2px);
+
+      transition:
+        opacity
+        2.35s
+        cubic-bezier(.22,.61,.36,1),
+
+        filter
+        2.55s
+        cubic-bezier(.22,.61,.36,1);
+    }
+
+    .seeing-reveal.is-visible{
+      opacity:1;
+      filter:blur(0);
+    }
 
     /* =========================================================
        ACCESSIBILITY
