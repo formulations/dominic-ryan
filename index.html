@@ -2876,6 +2876,52 @@ transition:
 
 
     startAudio();
+
+
+
+
+/* =======================================================
+
+   PAUSE MUSIC WHEN SITE IS NOT ACTIVE
+
+   ======================================================= */
+
+let pausedByVisibility = false;
+
+document.addEventListener(
+
+  "visibilitychange",
+
+  () => {
+
+    if(document.hidden){
+
+      if(!audio.paused && !audio.muted){
+
+        audio.pause();
+
+        pausedByVisibility = true;
+
+      }
+
+    }
+
+    else if(pausedByVisibility){
+
+      audio
+
+        .play()
+
+        .catch(() => {});
+
+      pausedByVisibility = false;
+
+    }
+
+  }
+
+);
+    
 /* MOBILE LETTER FADE TRIGGER */
 
 if (window.matchMedia("(max-width: 760px)").matches) {
