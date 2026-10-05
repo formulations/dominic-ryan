@@ -1353,29 +1353,41 @@
 
       /* LETTER */
 
-      .paper{
-        order:1;
+.paper{
+  order:1;
+  width:94vw;
+  max-width:none;
+  height:auto;
+  min-height:
+    calc(
+      94vw *
+      11 /
+      8.5
+    );
+  aspect-ratio:auto;
+  padding:
+    42px
+    34px
+    50px;
 
-        width:94vw;
-
-        max-width:none;
-
-        height:auto;
-
-        min-height:
-          calc(
-            94vw *
-            11 /
-            8.5
-          );
-
-        aspect-ratio:auto;
-
-        padding:
-          42px
-          34px
-          50px;
-      }
+  /* SAME GRADUAL LETTER REVEAL AS DESKTOP */
+  opacity:0;
+  animation:
+    paperGlowIn
+    4.2s
+    cubic-bezier(.22,.61,.36,1)
+    .45s
+    forwards;
+}
+.paper-content{
+  opacity:0;
+  animation:
+    textGlowIn
+    1.75s
+    cubic-bezier(.22,.61,.36,1)
+    .95s
+    forwards;
+}
 
       .paper p{
         font-size:13px;
