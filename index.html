@@ -1654,11 +1654,54 @@
 
 @media(max-width:760px){
 
+  /* TYPEWRITER — MOBILE */
+
+  .intro-typewriter{
+    position:relative;
+  }
+
+  .intro-typewriter.is-typing::after{
+    content:"";
+    display:inline-block;
+
+    width:1px;
+    height:.95em;
+
+    margin-left:3px;
+
+    vertical-align:-.08em;
+
+    background:currentColor;
+
+    opacity:.55;
+
+    animation:
+      introCursorBlink
+      .72s
+      step-end
+      infinite;
+  }
+
+
+  /* "EVERYTHING HERE..." — MOBILE */
+
   .seeing-reveal{
+    opacity:.58;
+
+    filter:blur(1.15px);
+    -webkit-filter:blur(1.15px);
+
     transition:
       opacity .12s ease-out,
       filter .12s ease-out,
       -webkit-filter .12s ease-out;
+  }
+
+  .seeing-reveal.is-visible{
+    opacity:1;
+
+    filter:blur(0);
+    -webkit-filter:blur(0);
   }
 
 }
