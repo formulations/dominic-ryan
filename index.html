@@ -2765,46 +2765,46 @@ function runIntroTypewriter(){
     0;
 
 
-  function typeNext(){
+function typeNext(){
 
-    if(
-      index >=
-      characters.length
-    ){
+  if(
+    index >=
+    characters.length
+  ){
 
-      introTypewriter
-        .classList
-        .remove(
-          "is-typing"
-        );
+    /*
+       Typing is finished.
+       Leave "is-typing" attached permanently
+       so the cursor continues blinking after Ryan.
+    */
 
-      return;
-    }
-
-
-    const character =
-      characters[index];
-
-
-    introTypewriter.textContent +=
-      character;
-
-
-    index++;
-
-
-    const delay =
-      character === " "
-        ? 105
-        : 82;
-
-
-    window.setTimeout(
-      typeNext,
-      delay
-    );
-
+    return;
   }
+
+
+  const character =
+    characters[index];
+
+
+  introTypewriter.textContent +=
+    character;
+
+
+  index++;
+
+
+  const delay =
+    character === " "
+      ? 105
+      : 82;
+
+
+  window.setTimeout(
+    typeNext,
+    delay
+  );
+
+}
 
 
   /*
