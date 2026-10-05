@@ -1571,33 +1571,7 @@
   position:relative;
 }
 
-/* Cursor while the name is typing */
-
 .intro-typewriter.is-typing::after{
-  content:"";
-  display:inline-block;
-
-  width:1px;
-  height:.95em;
-
-  margin-left:3px;
-
-  vertical-align:-.08em;
-
-  background:currentColor;
-
-  opacity:.55;
-
-  animation:
-    introCursorBlink
-    .72s
-    step-end
-    infinite;
-}
-
-/* Cursor after "Ryan." finishes typing */
-
-.intro-typewriter.is-finished::after{
   content:"";
   display:inline-block;
 
