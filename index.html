@@ -2993,7 +2993,7 @@ if(finalTypewriter){
 
         setTimeout(
           typeNextCharacter,
-          38
+          50
         );
 
       }
@@ -3040,9 +3040,10 @@ if(finalTypewriter){
 
       },
 
-      {
-        threshold:.65
-      }
+{
+  threshold:.15,
+  rootMargin:"0px 0px -20% 0px"
+}
 
     );
 
