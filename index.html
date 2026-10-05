@@ -1571,7 +1571,33 @@
   position:relative;
 }
 
+/* Cursor while the name is typing */
+
 .intro-typewriter.is-typing::after{
+  content:"";
+  display:inline-block;
+
+  width:1px;
+  height:.95em;
+
+  margin-left:3px;
+
+  vertical-align:-.08em;
+
+  background:currentColor;
+
+  opacity:.55;
+
+  animation:
+    introCursorBlink
+    .72s
+    step-end
+    infinite;
+}
+
+/* Cursor after "Ryan." finishes typing */
+
+.intro-typewriter.is-finished::after{
   content:"";
   display:inline-block;
 
@@ -2765,46 +2791,46 @@ function runIntroTypewriter(){
     0;
 
 
-function typeNext(){
+  function typeNext(){
 
-  if(
-    index >=
-    characters.length
-  ){
+    if(
+      index >=
+      characters.length
+    ){
 
-    /*
-       Typing is finished.
-       Leave "is-typing" attached permanently
-       so the cursor continues blinking after Ryan.
-    */
+      introTypewriter
+        .classList
+        .remove(
+          "is-typing"
+        );
 
-    return;
+      return;
+    }
+
+
+    const character =
+      characters[index];
+
+
+    introTypewriter.textContent +=
+      character;
+
+
+    index++;
+
+
+    const delay =
+      character === " "
+        ? 105
+        : 82;
+
+
+    window.setTimeout(
+      typeNext,
+      delay
+    );
+
   }
-
-
-  const character =
-    characters[index];
-
-
-  introTypewriter.textContent +=
-    character;
-
-
-  index++;
-
-
-  const delay =
-    character === " "
-      ? 105
-      : 82;
-
-
-  window.setTimeout(
-    typeNext,
-    delay
-  );
-
-}
 
 
   /*
