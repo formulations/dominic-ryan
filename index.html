@@ -992,36 +992,28 @@
        MUSIC
        ========================================================= */
 
-    .sound-toggle{
-      position:fixed;
+.sound-toggle{
+  background:none;
+  border:0;
+  padding:0;
+  margin:0;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-      right:24px;
-      bottom:20px;
+.sound-toggle img{
+  width:20px;
+  height:auto;
+  display:block;
+  opacity:.82;
+  transition:opacity .2s ease;
+}
 
-      z-index:10;
-
-      border:0;
-
-      background:transparent;
-
-      padding:6px;
-
-      cursor:pointer;
-
-      font-family:
-        "Avenir Next",
-        "Helvetica Neue",
-        Arial,
-        sans-serif;
-
-      font-size:10px;
-
-      font-weight:500;
-
-      letter-spacing:.08em;
-
-      color:#655d56;
-    }
+.sound-toggle:hover img{
+  opacity:1;
+}
 
 
     /* =========================================================
@@ -1982,13 +1974,17 @@ transition:
 
 
   <button
-    class="sound-toggle"
-    id="sound-toggle"
-    type="button"
-    aria-label="Toggle music"
+  class="sound-toggle"
+  id="sound-toggle"
+  type="button"
+  aria-label="Mute music"
+>
+  <img
+    id="sound-icon"
+    src="soundon.png"
+    alt=""
   >
-    MUSIC ON
-  </button>
+</button>
 
 
   <script>
