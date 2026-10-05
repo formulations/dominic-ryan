@@ -992,11 +992,42 @@
        MUSIC
        ========================================================= */
 
+.sound-toggle{
+  position:fixed;
+  left:24px;
+  bottom:24px;
+  z-index:9999;
+
+  width:44px;
+  height:44px;
+
+  padding:0;
+  margin:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(251,248,242,.92);
+  border:1px solid rgba(81,70,62,.25);
+  border-radius:50%;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 3px 12px rgba(70,57,47,.08);
+
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+
 .sound-toggle img{
-  width:18px;
-  height:auto;
+  width:24px;
+  height:24px;
+  object-fit:contain;
   display:block;
-  opacity:.82;
+  opacity:.88;
+  pointer-events:none;
   transition:opacity .2s ease;
 }
 
@@ -1274,6 +1305,17 @@
 
     @media(max-width:760px){
 
+      .sound-toggle{
+  left:16px;
+  bottom:16px;
+  width:42px;
+  height:42px;
+}
+
+.sound-toggle img{
+  width:23px;
+  height:23px;
+}
       .background-dr{
         right:-58px;
         bottom:-34px;
@@ -1575,20 +1617,33 @@ transition:
       /* MUSIC REMAINS FLOATING */
 
       .sound-toggle{
-        right:14px;
+  position:fixed;
+  left:24px;
+  bottom:24px;
+  z-index:9999;
 
-        bottom:
-          calc(
-            18px +
-            env(
-              safe-area-inset-bottom
-            )
-          );
+  width:44px;
+  height:44px;
 
-        font-size:9px;
-      }
+  padding:0;
+  margin:0;
 
-    }
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(251,248,242,.92);
+  border:1px solid rgba(81,70,62,.25);
+  border-radius:50%;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 3px 12px rgba(70,57,47,.08);
+
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
 
 
     /* =========================================================
@@ -2816,7 +2871,21 @@ if (window.matchMedia("(max-width: 760px)").matches) {
 
   }
 }
+/* =======================================================
+   ALWAYS START PAGE AT TOP
+   ======================================================= */
 
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
+window.addEventListener("beforeunload", () => {
+  window.scrollTo(0, 0);
+});
+
+window.addEventListener("load", () => {
+  window.scrollTo(0, 0);
+});
   </script>
 
 
