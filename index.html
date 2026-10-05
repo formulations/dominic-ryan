@@ -2768,14 +2768,9 @@ function runIntroTypewriter(){
   function typeNext(){
 
     if(
-  index >=
-  characters.length
-){
-
-  /* Let the cursor blink after "Ryan." */
-
-  window.setTimeout(
-    () => {
+      index >=
+      characters.length
+    ){
 
       introTypewriter
         .classList
@@ -2783,12 +2778,8 @@ function runIntroTypewriter(){
           "is-typing"
         );
 
-    },
-    1400
-  );
-
-  return;
-}
+      return;
+    }
 
 
     const character =
