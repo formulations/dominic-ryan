@@ -690,7 +690,17 @@
 
 }
 
+.final-typewriter-text{
+  visibility:hidden;
+}
+
+.final-typewriter-text.typewriter-ready{
+  visibility:visible;
+}
+
 .final-typewriter-ornament{
+  opacity:0;
+
   transition:
     opacity
     .6s
@@ -2952,31 +2962,25 @@ if(finalTypewriter){
 
   let finalTypingStarted =
     false;
-
+finalText.textContent = "";
 
   function beginFinalTypewriter(){
 
-    if(finalTypingStarted){
-      return;
-    }
-
     finalTypingStarted =
-      true;
 
-    /*
-       Only remove the visible text once
-       the animation is actually starting.
-    */
+  true;
 
-    finalText.textContent =
-      "";
+finalText.classList.add(
 
-    finalOrnament.style.opacity =
-      "0";
+  "typewriter-ready"
 
-    finalText.classList.add(
-      "typing"
-    );
+);
+
+finalText.classList.add(
+
+  "typing"
+
+);
 
     let index =
       0;
