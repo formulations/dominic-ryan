@@ -1586,6 +1586,32 @@
     }
 
 
+
+    /* PERSONAL MESSAGE EFFECTS */
+    .intro-typewriter{position:relative;}
+    .intro-typewriter.is-typing::after{
+      content:"";display:inline-block;width:1px;height:.95em;margin-left:3px;
+      vertical-align:-.08em;background:currentColor;opacity:.55;
+      animation:introCursorBlink .72s step-end infinite;
+    }
+    @keyframes introCursorBlink{50%{opacity:0;}}
+
+    .seeing-reveal{
+      opacity:.58;filter:blur(1.15px);-webkit-filter:blur(1.15px);
+      transition:opacity 2.35s cubic-bezier(.22,.61,.36,1),
+                 filter 2.55s cubic-bezier(.22,.61,.36,1),
+                 -webkit-filter 2.55s cubic-bezier(.22,.61,.36,1);
+    }
+    .seeing-reveal.is-visible{opacity:1;filter:blur(0);-webkit-filter:blur(0);}
+    @media(max-width:760px){
+      .seeing-reveal{
+        transition:opacity .12s ease-out,filter .12s ease-out,-webkit-filter .12s ease-out;
+      }
+    }
+    @media(prefers-reduced-motion:reduce){
+      .seeing-reveal{opacity:1!important;filter:none!important;-webkit-filter:none!important;}
+    }
+
     /* =========================================================
        ACCESSIBILITY
        ========================================================= */
@@ -1731,7 +1757,7 @@
               </div>
 
 
-              <h1>
+              <h1 class="intro-typewriter">
                 I’m 𝐃𝐨𝐦𝐢𝐧𝐢𝐜 𝐑𝐲𝐚𝐧.
               </h1>
 
@@ -1768,7 +1794,7 @@
                 what I value, what I learn, and what I hope to create next.
       
               </p>
-              
+
 <p>People and their faces are deliberately absent from these images. I am less interested in documenting who was there than in what remains around them: the spaces they shaped, the objects they chose, the details they noticed, and the traces of a life that can be felt without ever being shown.</p>
 
 <p>The places I visit are treated with the same discretion. Some things are photographed. Some are remembered. Some are shared only in confidence.</p>
@@ -1779,7 +1805,7 @@
               </p>
 
 
-              <p>
+              <p class="seeing-reveal">
                 𝙀𝙫𝙚𝙧𝙮𝙩𝙝𝙞𝙣𝙜 𝙝𝙚𝙧𝙚 𝙗𝙚𝙜𝙞𝙣𝙨 𝙬𝙞𝙩𝙝 𝙖 𝙬𝙖𝙮 𝙤𝙛 𝙨𝙚𝙚𝙞𝙣𝙜.
               </p>
 
@@ -2763,6 +2789,71 @@
       updateSoundLabel
     );
 
+
+
+    /* PERSONAL MESSAGE EFFECTS */
+    const introTypewriter=document.querySelector(".intro-typewriter");
+
+    function runIntroTypewriter(){
+      if(!introTypewriter||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+      const originalText=introTypewriter.textContent.trim();
+      introTypewriter.textContent="";
+      introTypewriter.classList.add("is-typing");
+      const characters=Array.from(originalText);
+      let index=0;
+      function typeNext(){
+        if(index>=characters.length){
+          introTypewriter.classList.remove("is-typing");
+          return;
+        }
+        const character=characters[index++];
+        introTypewriter.textContent+=character;
+        window.setTimeout(typeNext,character===" "?105:82);
+      }
+      window.setTimeout(typeNext,1250);
+    }
+
+    const seeingReveal=document.querySelector(".seeing-reveal");
+    let seeingRevealComplete=false;
+
+    function revealSeeingSentence(){
+      if(!seeingReveal||seeingRevealComplete)return;
+      seeingRevealComplete=true;
+      seeingReveal.classList.add("is-visible");
+    }
+
+    function checkMobileSeeingReveal(){
+      if(!seeingReveal||seeingRevealComplete)return;
+      const rect=seeingReveal.getBoundingClientRect();
+      const triggerLine=window.innerHeight*.72;
+      if(rect.top<=triggerLine&&rect.bottom>0)revealSeeingSentence();
+    }
+
+    function setupSeeingReveal(){
+      if(!seeingReveal)return;
+      if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+        revealSeeingSentence();return;
+      }
+      if(window.matchMedia("(max-width: 760px)").matches){
+        window.addEventListener("scroll",checkMobileSeeingReveal,{passive:true});
+        window.addEventListener("resize",checkMobileSeeingReveal);
+        window.addEventListener("orientationchange",checkMobileSeeingReveal);
+        window.requestAnimationFrame(checkMobileSeeingReveal);
+        return;
+      }
+      const observer=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            revealSeeingSentence();
+            observer.disconnect();
+          }
+        });
+      },{threshold:.25});
+      window.setTimeout(()=>observer.observe(seeingReveal),2850);
+    }
+
+    runIntroTypewriter();
+    setupSeeingReveal();
 
     startAudio();
 
