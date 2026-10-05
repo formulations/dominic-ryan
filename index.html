@@ -27,6 +27,7 @@
 
   <title>Dominic Ryan | Formulations</title>
 
+
   <!-- =======================================================
        SITE ICONS
        DR LOGO ONLY
@@ -42,6 +43,7 @@
     rel="apple-touch-icon"
     href="dr-reveals-removebg-preview.png"
   >
+
 
   <style>
 
@@ -69,6 +71,7 @@
       color:var(--ink);
       overflow-x:hidden;
     }
+
 
     /* =========================================================
        BACKGROUND DR WATERMARK
@@ -112,6 +115,7 @@
       width:100%;
       min-height:100vh;
     }
+
 
     /* =========================================================
        HEADER
@@ -218,6 +222,7 @@
       white-space:nowrap;
     }
 
+
     /* =========================================================
        HERO / LETTER + PHOTO
        ========================================================= */
@@ -261,6 +266,7 @@
           clamp(-42px,-2vw,-12px)
         );
     }
+
 
     /* =========================================================
        PHOTO OBJECT
@@ -434,6 +440,7 @@
       object-position:
         center center;
     }
+
 
     /* =========================================================
        LETTER
@@ -655,8 +662,7 @@
     .signature-name{
       margin-top:0 !important;
     }
-
-    /* =========================================================
+        /* =========================================================
        FORMULATIONS / INSTAGRAM
        ========================================================= */
 
@@ -776,6 +782,7 @@
       min-height:360px;
     }
 
+
     /* =========================================================
        DESKTOP FLOATING NAV
        DEFAULT = ONE LINE
@@ -852,6 +859,7 @@
         );
     }
 
+
     /* =========================================================
        TWO-ROW DESKTOP NAV
        ONLY APPLIED AFTER REAL COLLISION TEST
@@ -914,6 +922,7 @@
       height:16px;
     }
 
+
     /* =========================================================
        VERY NARROW DESKTOP SAFETY STATE
        ========================================================= */
@@ -938,6 +947,7 @@
     .utility-nav.nav-vertical .utility-rule{
       display:none;
     }
+
 
     /* =========================================================
        FINAL DESKTOP FALLBACK
@@ -975,6 +985,7 @@
       height:15px;
     }
 
+
     /* =========================================================
        MUSIC
        ========================================================= */
@@ -1009,6 +1020,7 @@
 
       color:#655d56;
     }
+
 
     /* =========================================================
        LARGE DESKTOP
@@ -1050,6 +1062,7 @@
       }
 
     }
+
 
     /* =========================================================
        STANDARD DESKTOP / LAPTOP
@@ -1146,6 +1159,7 @@
       }
 
     }
+
 
     /* =========================================================
        COMPACT / 13-INCH DESKTOP
@@ -1270,6 +1284,7 @@
 
     }
 
+
     /* =========================================================
        MOBILE
        ========================================================= */
@@ -1332,6 +1347,7 @@
         transform:none;
       }
 
+
       /* LETTER */
 
       .paper{
@@ -1381,6 +1397,7 @@
       .paper .signature{
         width:205px;
       }
+
 
       /* PHOTO TUCKED UNDER LETTER */
 
@@ -1452,6 +1469,7 @@
           center center;
       }
 
+
       /* FORMULATIONS */
 
       .formulations-feed{
@@ -1495,6 +1513,7 @@
       .formulations-feed-widget{
         min-height:280px;
       }
+
 
       /* MOBILE NAV REMAINS NORMAL FOOTER */
 
@@ -1544,6 +1563,7 @@
         height:15px;
       }
 
+
       /* MUSIC REMAINS FLOATING */
 
       .sound-toggle{
@@ -1562,17 +1582,11 @@
 
     }
 
+
     /* =========================================================
-       NEW: PERSONAL MESSAGE EFFECTS
+       NEW EFFECT 1
+       "I'M DOMINIC RYAN." TYPEWRITER
        ========================================================= */
-
-    /*
-       EFFECT 1:
-       "I'm Dominic Ryan" typing cursor.
-
-       Only the span inside the first paragraph is affected.
-       Dearest Reader remains completely unchanged.
-    */
 
     .intro-typewriter{
       position:relative;
@@ -1609,19 +1623,19 @@
 
     }
 
-    /*
-       EFFECT 2:
-       "Everything here begins..." starts softly
-       out of focus and resolves when revealed.
 
-       DESKTOP:
-       Slow, editorial focus transition.
-    */
+    /* =========================================================
+       NEW EFFECT 2
+       "EVERYTHING HERE BEGINS..." FOCUS REVEAL
+       ========================================================= */
 
     .seeing-reveal{
       opacity:.58;
 
       filter:
+        blur(1.15px);
+
+      -webkit-filter:
         blur(1.15px);
 
       transition:
@@ -1631,7 +1645,15 @@
 
         filter
         2.55s
+        cubic-bezier(.22,.61,.36,1),
+
+        -webkit-filter
+        2.55s
         cubic-bezier(.22,.61,.36,1);
+
+      will-change:
+        opacity,
+        filter;
     }
 
     .seeing-reveal.is-visible{
@@ -1639,15 +1661,18 @@
 
       filter:
         blur(0);
+
+      -webkit-filter:
+        blur(0);
     }
+
 
     /*
        MOBILE:
-       Keep the sentence soft until it has been
-       meaningfully scrolled onto the screen.
+       The element stays blurred until it has moved
+       substantially into the visible screen.
 
-       Once the trigger is reached, resolve almost
-       instantaneously.
+       Once triggered, the change is effectively instant.
     */
 
     @media(max-width:760px){
@@ -1660,10 +1685,15 @@
 
           filter
           .12s
+          ease-out,
+
+          -webkit-filter
+          .12s
           ease-out;
       }
 
     }
+
 
     /* =========================================================
        ACCESSIBILITY
@@ -1693,15 +1723,12 @@
           0px !important;
       }
 
-      /*
-         NEW:
-         Don't leave the final sentence blurred
-         for Reduce Motion users.
-      */
-
       .seeing-reveal{
         opacity:1 !important;
+
         filter:none !important;
+
+        -webkit-filter:none !important;
       }
 
     }
@@ -1726,7 +1753,9 @@
 
   </div>
 
+
   <div class="site-shell">
+
 
     <!-- HEADER -->
 
@@ -1743,6 +1772,7 @@
 
         </div>
 
+
         <div>
 
           <div class="name">
@@ -1757,19 +1787,23 @@
 
       </div>
 
+
       <div class="location">
         Austin, Texas
       </div>
 
     </header>
 
+
     <main>
+
 
       <!-- LETTER + EDITORIAL PHOTO -->
 
       <section class="letter-wrap">
 
         <div class="hero-composition">
+
 
           <!-- PHOTO -->
 
@@ -1792,6 +1826,7 @@
 
           </div>
 
+
           <!-- LETTER -->
 
           <article class="paper">
@@ -1802,52 +1837,84 @@
                 A Personal Message
               </div>
 
-              <h1>
-                Dearest Reader,
+
+              <!--
+                   NEW:
+                   Only the original H1 receives the
+                   typewriter class.
+              -->
+
+              <h1 class="intro-typewriter">
+                I’m 𝐃𝐨𝐦𝐢𝐧𝐢𝐜 𝐑𝐲𝐚𝐧.
               </h1>
 
+
               <p>
-                <span class="intro-typewriter">I’m 𝐃𝐨𝐦𝐢𝐧𝐢𝐜 𝐑𝐲𝐚𝐧</span>, based in Austin, Texas.
+                Based in Austin, Texas.
                 I’ve always been drawn to things that carry a point of view — objects, places,
                 images, and ideas shaped by intention.
               </p>
 
+
               <p>
-                My professional life has been shaped by nearly a decade of experience in media,
-                marketing, and advertising. Today, I work in paid social at WPP Media, where I lead
-                work at the intersection of media, culture, technology, and human behavior. Campaigns
-                under my strategic leadership have received global recognition from Cannes Lions,
-                the Effies, and the Festival of Media — experiences that have deepened my understanding
-                of what makes an idea resonate and how thoughtful decisions can shape the way people
+                My professional life has been shaped by nearly a decade of experience in interiors,
+                creative strategy, media, and advertising.
+                Today, I lead teams and develop strategy in paid social, where I practice at the
+                intersection of media, culture, technology, and human behavior. Campaigns
+                under my strategic leadership have received global recognition from Cannes Lions®,
+                The New York Times®,
+                the Effie Awards®, and the Festival of Media — experiences that have deepened my
+                understanding
+                of what makes an idea resonate and how thoughtful decisions can shape the way
+                people
                 see, feel, and respond.
               </p>
 
+
               <p>
-                That instinct follows me outside of work. I have always noticed the details:
+                That instinct follows me outside of work. I have always noticed design:
                 proportion, material, patina, typography, architecture, the composition of a room,
                 or the evidence of a hand behind an object. I collect decorative objects, archival
-                books, clocks, crystal, porcelain, brass, and pieces from storied houses — not
+                books, clocks, crystal, alabaster, porcelain, brass, and pieces from storied maisons — not
                 according to category, but according to instinct.
               </p>
 
+
               <p>
-                Formulations is a record of that way of seeing — of art, design, travel, photography,
+                𝐹𝑜𝑟𝑚𝑢𝑙𝑎𝑡𝑖𝑜𝑛𝑠 is a private and highly considered collection of that way of seeing
+                — formulations of art, design, travel, photography,
                 and objects with a past. It is also, in some sense, a record of becoming: what I notice,
                 what I value, what I learn, and what I hope to create next.
               </p>
+
+
+              <p>
+                The moments I visit are treated with discretion. Some things are photographed. Some are
+                remembered. Some are shared only in confidence.
+              </p>
+
 
               <p>
                 The values I return to are simple: Authenticity, Integrity, and Growth. They shape
                 the way I work, the way I lead, and the life I continue to build.
               </p>
 
+
+              <!--
+                   NEW:
+                   Only this original paragraph receives
+                   the focus-reveal class.
+              -->
+
               <p class="seeing-reveal">
                 𝙀𝙫𝙚𝙧𝙮𝙩𝙝𝙞𝙣𝙜 𝙝𝙚𝙧𝙚 𝙗𝙚𝙜𝙞𝙣𝙨 𝙬𝙞𝙩𝙝 𝙖 𝙬𝙖𝙮 𝙤𝙛 𝙨𝙚𝙚𝙞𝙣𝙜.
               </p>
 
+
               <p class="closing">
                 With gratitude,
               </p>
+
 
               <img
                 class="signature"
@@ -1855,1067 +1922,17 @@
                 alt="Dominic Ryan signature"
               >
 
+
               <p class="signature-name">
                 Dominic Ryan
               </p>
+
 
             </div>
 
           </article>
 
-        </div>
-
-      </section>
-
-      <!-- FORMULATIONS / INSTAGRAM -->
-
-      <section
-        class="formulations-feed"
-        aria-labelledby="formulations-feed-title"
-      >
-
-        <div class="formulations-feed-head">
-
-          <div>
-
-            <div
-              class="formulations-feed-kicker"
-              id="formulations-feed-title"
-            >
-              FORMULATIONS
-            </div>
-
-            <div class="formulations-feed-sub">
-              Art · Design · Travel · Objects with a Past
-            </div>
-
-          </div>
-
-          <a
-            class="formulations-feed-link"
-            href="https://www.instagram.com/formulations/"
-            target="_blank"
-            rel="noopener"
-          >
-            Continue on Instagram →
-          </a>
-
-        </div>
-
-        <div class="formulations-feed-widget">
-
-          <script
-            src="https://elfsightcdn.com/platform.js"
-            async
-          ></script>
-
-          <div
-            class="elfsight-app-1855bc03-7115-41df-9a37-353c22423dbd"
-            data-elfsight-app-lazy
-          ></div>
 
         </div>
 
       </section>
-
-    </main>
-
-    <!-- DESKTOP FLOATING / MOBILE FOOTER NAV -->
-
-    <nav
-      class="utility-nav"
-      id="utility-nav"
-      aria-label="Site links"
-    >
-
-      <a
-        class="nav-home"
-        href="#top"
-      >
-        DOMINIC RYAN
-      </a>
-
-      <span
-        class="utility-rule nav-rule-one"
-        aria-hidden="true"
-      ></span>
-
-      <a
-        class="nav-instagram"
-        href="https://www.instagram.com/formulations/"
-        target="_blank"
-        rel="noopener"
-      >
-        @FORMULATIONS
-      </a>
-
-      <span
-        class="utility-rule nav-rule-two"
-        aria-hidden="true"
-      ></span>
-
-      <a
-        class="nav-linkedin"
-        href="https://www.linkedin.com/in/itsdominicryan"
-        target="_blank"
-        rel="noopener"
-      >
-        LINKEDIN
-      </a>
-
-    </nav>
-
-  </div>
-
-  <!-- MUSIC -->
-
-  <audio
-    id="site-audio"
-    autoplay
-    preload="auto"
-    playsinline
-  >
-
-    <source
-      src="music.mp3"
-      type="audio/mpeg"
-    >
-
-  </audio>
-
-  <button
-    class="sound-toggle"
-    id="sound-toggle"
-    type="button"
-    aria-label="Toggle music"
-  >
-    MUSIC ON
-  </button>
-
-  <script>
-
-    /* =======================================================
-       AUDIO
-       ======================================================= */
-
-    const audio =
-      document.getElementById(
-        "site-audio"
-      );
-
-    const soundToggle =
-      document.getElementById(
-        "sound-toggle"
-      );
-
-    audio.currentTime = 0;
-
-    audio.volume = 0.25;
-
-    audio.muted = false;
-
-    /* =======================================================
-       MEDIA SESSION
-       BLUE ARTWORK IS USED HERE ONLY
-       ======================================================= */
-
-    if(
-      'mediaSession'
-      in navigator
-    ){
-
-      navigator.mediaSession.metadata =
-        new MediaMetadata({
-
-          title:
-            'Dominic Ryan | Formulations',
-
-          artist:
-            'Dominic Ryan',
-
-          album:
-            'Formulations',
-
-          artwork:[
-            {
-
-              src:
-                'media-artwork.png',
-
-              sizes:
-                '1024x1024',
-
-              type:
-                'image/png'
-
-            }
-          ]
-
-        });
-
-    }
-
-    /* =======================================================
-       SUBTLE DESKTOP PHOTO MOVEMENT
-       ======================================================= */
-
-    const photoStage =
-      document.getElementById(
-        "photo-stage"
-      );
-
-    const photoFrame =
-      document.getElementById(
-        "photo-frame"
-      );
-
-    const desktopPhotoQuery =
-      window.matchMedia(
-        "(min-width: 761px)"
-      );
-
-    let photoTicking =
-      false;
-
-    function updatePhotoParallax(){
-
-      photoTicking =
-        false;
-
-      if(
-        !photoStage ||
-        !desktopPhotoQuery.matches
-      ){
-
-        document
-          .documentElement
-          .style
-          .setProperty(
-            "--photo-shift",
-            "0px"
-          );
-
-        return;
-      }
-
-      const hero =
-        document.querySelector(
-          ".hero-composition"
-        );
-
-      if(!hero){
-        return;
-      }
-
-      const rect =
-        hero.getBoundingClientRect();
-
-      const viewportHeight =
-        window.innerHeight;
-
-      const progress =
-        (
-          viewportHeight -
-          rect.top
-        )
-        /
-        (
-          viewportHeight +
-          rect.height
-        );
-
-      const normalized =
-        Math.max(
-          0,
-          Math.min(
-            1,
-            progress
-          )
-        );
-
-      const movement =
-        (
-          normalized -
-          .5
-        )
-        *
-        18;
-
-      document
-        .documentElement
-        .style
-        .setProperty(
-          "--photo-shift",
-          `${movement}px`
-        );
-
-    }
-
-    function requestPhotoUpdate(){
-
-      if(photoTicking){
-        return;
-      }
-
-      photoTicking =
-        true;
-
-      window
-        .requestAnimationFrame(
-          updatePhotoParallax
-        );
-
-    }
-
-    window.addEventListener(
-      "scroll",
-      requestPhotoUpdate,
-      {
-        passive:true
-      }
-    );
-
-    window.addEventListener(
-      "resize",
-      requestPhotoUpdate
-    );
-
-    requestPhotoUpdate();
-
-    /* =======================================================
-       DESKTOP NAV COLLISION ENGINE
-
-       IMPORTANT:
-       It measures CLEAN COPIES of every candidate nav layout.
-
-       That means the current state of the visible nav cannot
-       affect the next measurement.
-
-       DEFAULT:
-       One line.
-
-       ONLY STACK:
-       If the candidate one-line nav would actually collide
-       with the visible white photo frame.
-       ======================================================= */
-
-    const utilityNav =
-      document.getElementById(
-        "utility-nav"
-      );
-
-    const navDesktopQuery =
-      window.matchMedia(
-        "(min-width: 761px)"
-      );
-
-    const NAV_SAFE_GAP =
-      16;
-
-    let navCollisionTicking =
-      false;
-
-    function clearNavStates(){
-
-      if(!utilityNav){
-        return;
-      }
-
-      utilityNav.classList.remove(
-        "nav-stacked",
-        "nav-vertical",
-        "nav-footer-safe"
-      );
-
-    }
-
-    function measureNavCandidate(
-      stateClass = ""
-    ){
-
-      if(!utilityNav){
-        return null;
-      }
-
-      const clone =
-        utilityNav.cloneNode(
-          true
-        );
-
-      clone.removeAttribute(
-        "id"
-      );
-
-      clone.setAttribute(
-        "aria-hidden",
-        "true"
-      );
-
-      clone.classList.remove(
-        "nav-stacked",
-        "nav-vertical",
-        "nav-footer-safe"
-      );
-
-      if(stateClass){
-
-        clone.classList.add(
-          stateClass
-        );
-
-      }
-
-      clone.style.visibility =
-        "hidden";
-
-      clone.style.pointerEvents =
-        "none";
-
-      clone.style.transition =
-        "none";
-
-      clone.style.zIndex =
-        "-9999";
-
-      document.body.appendChild(
-        clone
-      );
-
-      const rect =
-        clone.getBoundingClientRect();
-
-      const result = {
-
-        left:
-          rect.left,
-
-        right:
-          rect.right,
-
-        top:
-          rect.top,
-
-        bottom:
-          rect.bottom,
-
-        width:
-          rect.width,
-
-        height:
-          rect.height
-
-      };
-
-      clone.remove();
-
-      return result;
-
-    }
-
-    function candidateCollidesWithPhoto(
-      navRect
-    ){
-
-      if(
-        !navRect ||
-        !photoFrame
-      ){
-        return false;
-      }
-
-      const photoRect =
-        photoFrame.getBoundingClientRect();
-
-      const horizontalOverlap =
-        navRect.right +
-        NAV_SAFE_GAP
-        >
-        photoRect.left
-        &&
-        navRect.left
-        <
-        photoRect.right +
-        NAV_SAFE_GAP;
-
-      const verticalOverlap =
-        navRect.bottom
-        >
-        photoRect.top
-        &&
-        navRect.top
-        <
-        photoRect.bottom;
-
-      return(
-        horizontalOverlap &&
-        verticalOverlap
-      );
-
-    }
-
-    function updateNavCollision(){
-
-      navCollisionTicking =
-        false;
-
-      if(
-        !utilityNav ||
-        !photoFrame
-      ){
-        return;
-      }
-
-      if(
-        !navDesktopQuery.matches
-      ){
-
-        clearNavStates();
-
-        return;
-      }
-
-      clearNavStates();
-
-      const oneLineRect =
-        measureNavCandidate();
-
-      if(
-        !candidateCollidesWithPhoto(
-          oneLineRect
-        )
-      ){
-
-        return;
-
-      }
-
-      const stackedRect =
-        measureNavCandidate(
-          "nav-stacked"
-        );
-
-      if(
-        !candidateCollidesWithPhoto(
-          stackedRect
-        )
-      ){
-
-        utilityNav
-          .classList
-          .add(
-            "nav-stacked"
-          );
-
-        return;
-
-      }
-
-      const verticalRect =
-        measureNavCandidate(
-          "nav-vertical"
-        );
-
-      if(
-        !candidateCollidesWithPhoto(
-          verticalRect
-        )
-      ){
-
-        utilityNav
-          .classList
-          .add(
-            "nav-vertical"
-          );
-
-        return;
-
-      }
-
-      utilityNav
-        .classList
-        .add(
-          "nav-footer-safe"
-        );
-
-    }
-
-    function requestNavCollisionUpdate(){
-
-      if(navCollisionTicking){
-        return;
-      }
-
-      navCollisionTicking =
-        true;
-
-      window
-        .requestAnimationFrame(
-          updateNavCollision
-        );
-
-    }
-
-    window.addEventListener(
-      "resize",
-      requestNavCollisionUpdate
-    );
-
-    window.addEventListener(
-      "load",
-      requestNavCollisionUpdate
-    );
-
-    window.addEventListener(
-      "scroll",
-      requestNavCollisionUpdate,
-      {
-        passive:true
-      }
-    );
-
-    if(
-      document.fonts &&
-      document.fonts.ready
-    ){
-
-      document
-        .fonts
-        .ready
-        .then(
-          requestNavCollisionUpdate
-        );
-
-    }
-
-    requestNavCollisionUpdate();
-
-    /* =======================================================
-       MUSIC
-       ======================================================= */
-
-    function updateSoundLabel(){
-
-      if(audio.ended){
-
-        soundToggle.textContent =
-          "MUSIC ENDED";
-
-      }
-
-      else if(audio.muted){
-
-        soundToggle.textContent =
-          "MUSIC OFF";
-
-      }
-
-      else{
-
-        soundToggle.textContent =
-          "MUSIC ON";
-
-      }
-
-    }
-
-    function startAudio(){
-
-      audio.currentTime = 0;
-
-      audio.muted = false;
-
-      const attempt =
-        audio.play();
-
-      if(
-        attempt !==
-        undefined
-      ){
-
-        attempt
-
-          .then(
-            () => {
-
-              updateSoundLabel();
-
-            }
-          )
-
-          .catch(
-            () => {
-
-              const beginOnInteraction =
-                () => {
-
-                  audio.currentTime = 0;
-
-                  audio.muted = false;
-
-                  audio
-                    .play()
-
-                    .then(
-                      updateSoundLabel
-                    )
-
-                    .catch(
-                      () => {}
-                    );
-
-                };
-
-              document.addEventListener(
-                "pointerdown",
-                beginOnInteraction,
-                {
-                  once:true
-                }
-              );
-
-              document.addEventListener(
-                "keydown",
-                beginOnInteraction,
-                {
-                  once:true
-                }
-              );
-
-              document.addEventListener(
-                "touchstart",
-                beginOnInteraction,
-                {
-                  once:true
-                }
-              );
-
-            }
-          );
-
-      }
-
-    }
-
-    soundToggle.addEventListener(
-      "click",
-      () => {
-
-        if(audio.ended){
-
-          audio.currentTime = 0;
-
-          audio.muted = false;
-
-          audio
-            .play()
-
-            .catch(
-              () => {}
-            );
-
-        }
-
-        else{
-
-          audio.muted =
-            !audio.muted;
-
-        }
-
-        updateSoundLabel();
-
-      }
-    );
-
-    audio.addEventListener(
-      "ended",
-      updateSoundLabel
-    );
-
-    /* =======================================================
-       NEW: PERSONAL MESSAGE EFFECT 1
-       "I'M DOMINIC RYAN" TYPEWRITER
-       ======================================================= */
-
-    const introTypewriter =
-      document.querySelector(
-        ".intro-typewriter"
-      );
-
-    function typeIntro(){
-
-      if(!introTypewriter){
-        return;
-      }
-
-      /*
-         Respect Reduce Motion.
-
-         In that case the original HTML remains
-         visible and nothing is changed.
-      */
-
-      if(
-        window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches
-      ){
-        return;
-      }
-
-      /*
-         Read the ORIGINAL phrase directly from
-         the HTML, including the bold Unicode
-         Dominic Ryan characters.
-      */
-
-      const introText =
-        introTypewriter.textContent;
-
-      /*
-         Preserve the span's original width.
-
-         This prevents the rest of the paragraph
-         from jumping around while the phrase types.
-      */
-
-      const originalWidth =
-        introTypewriter.getBoundingClientRect().width;
-
-      introTypewriter.style.display =
-        "inline-block";
-
-      introTypewriter.style.minWidth =
-        `${originalWidth}px`;
-
-      /*
-         Now clear ONLY this phrase.
-
-         Everything after the span:
-         ", based in Austin, Texas..."
-         remains untouched.
-      */
-
-      introTypewriter.textContent =
-        "";
-
-      introTypewriter.classList.add(
-        "is-typing"
-      );
-
-      const introCharacters =
-        Array.from(
-          introText
-        );
-
-      let characterIndex =
-        0;
-
-      function typeNextCharacter(){
-
-        if(
-          characterIndex >=
-          introCharacters.length
-        ){
-
-          introTypewriter
-            .classList
-            .remove(
-              "is-typing"
-            );
-
-          /*
-             Return the span to normal inline text
-             once typing is complete.
-          */
-
-          introTypewriter.style.display =
-            "";
-
-          introTypewriter.style.minWidth =
-            "";
-
-          return;
-        }
-
-        const character =
-          introCharacters[
-            characterIndex
-          ];
-
-        introTypewriter.textContent +=
-          character;
-
-        characterIndex++;
-
-        const delay =
-          character === " "
-          ? 105
-          : 82;
-
-        window.setTimeout(
-          typeNextCharacter,
-          delay
-        );
-
-      }
-
-      /*
-         This lines up with the existing
-         paper/text entrance rather than firing
-         before the letter is visible.
-      */
-
-      window.setTimeout(
-        typeNextCharacter,
-        1250
-      );
-
-    }
-
-    typeIntro();
-
-    /* =======================================================
-       NEW: PERSONAL MESSAGE EFFECT 2
-       "EVERYTHING HERE BEGINS..." FOCUS REVEAL
-       ======================================================= */
-
-    const seeingReveal =
-      document.querySelector(
-        ".seeing-reveal"
-      );
-
-    if(seeingReveal){
-
-      const reducedMotion =
-        window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches;
-
-      if(reducedMotion){
-
-        seeingReveal
-          .classList
-          .add(
-            "is-visible"
-          );
-
-      }
-
-      else{
-
-        const mobileRevealQuery =
-          window.matchMedia(
-            "(max-width: 760px)"
-          );
-
-        /*
-           DESKTOP:
-           Standard intersection behavior.
-
-           MOBILE:
-           Exclude the bottom 18% of the screen.
-           The sentence therefore needs to move
-           meaningfully into the viewport before
-           Safari can trigger the reveal.
-        */
-
-        const seeingObserver =
-          new IntersectionObserver(
-
-            entries => {
-
-              entries.forEach(
-                entry => {
-
-                  if(
-                    entry.isIntersecting
-                  ){
-
-                    entry
-                      .target
-                      .classList
-                      .add(
-                        "is-visible"
-                      );
-
-                    seeingObserver
-                      .unobserve(
-                        entry.target
-                      );
-
-                  }
-
-                }
-              );
-
-            },
-
-            mobileRevealQuery.matches
-
-              ? {
-                  threshold:0,
-
-                  rootMargin:
-                    "0px 0px -18% 0px"
-                }
-
-              : {
-                  threshold:.25
-                }
-
-          );
-
-        if(
-          mobileRevealQuery.matches
-        ){
-
-          /*
-             MOBILE:
-             Observe immediately.
-
-             It will NOT resolve just because the
-             sentence barely appears at the bottom.
-             The -18% root margin requires additional
-             scrolling.
-
-             Once triggered, CSS resolves it in .12s.
-          */
-
-          seeingObserver.observe(
-            seeingReveal
-          );
-
-        }
-
-        else{
-
-          /*
-             DESKTOP:
-             Keep the more deliberate timing.
-          */
-
-          window.setTimeout(
-            () => {
-
-              seeingObserver.observe(
-                seeingReveal
-              );
-
-            },
-            2850
-          );
-
-        }
-
-      }
-
-    }
-
-    startAudio();
-
-  </script>
-
-</body>
-
-</html>
