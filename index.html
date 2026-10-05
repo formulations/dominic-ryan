@@ -1371,13 +1371,25 @@
     50px;
 
   /* SAME GRADUAL LETTER REVEAL AS DESKTOP */
-  opacity:0;
-  animation:
-    paperGlowIn
-    4.2s
-    cubic-bezier(.22,.61,.36,1)
-    .45s
-    forwards;
+/* MOBILE LETTER FADE */
+opacity:0;
+
+box-shadow:
+  0 0 0 rgba(70,57,47,0),
+  0 0 0 rgba(70,57,47,0);
+
+animation:none;
+
+transition:
+  opacity 4.2s cubic-bezier(.22,.61,.36,1),
+  box-shadow 4.2s cubic-bezier(.22,.61,.36,1);
+}
+      .paper.mobile-paper-visible{
+  opacity:1;
+
+  box-shadow:
+    0 24px 55px rgba(70,57,47,.09),
+    0 3px 12px rgba(70,57,47,.045);
 }
 .paper-content{
   opacity:0;
@@ -2775,7 +2787,29 @@
 
 
     startAudio();
+/* MOBILE LETTER FADE TRIGGER */
 
+if (window.matchMedia("(max-width: 760px)").matches) {
+
+  const mobilePaper =
+    document.querySelector(".paper");
+
+  if (mobilePaper) {
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+
+        setTimeout(() => {
+          mobilePaper.classList.add(
+            "mobile-paper-visible"
+          );
+        }, 450);
+
+      });
+    });
+
+  }
+}
 
   </script>
 
