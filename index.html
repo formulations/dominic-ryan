@@ -1675,38 +1675,7 @@ transition:
       }
 
     }
-/* FINAL SENTENCE TYPEWRITER */
 
-.seeing-typewriter-text.is-typing::after{
-  content:"";
-  display:inline-block;
-  width:1px;
-  height:.95em;
-  margin-left:3px;
-  vertical-align:-.08em;
-  background:currentColor;
-
-  animation:
-    seeingCursorBlink
-    .72s
-    step-end
-    infinite;
-}
-
-@keyframes seeingCursorBlink{
-  50%{
-    opacity:0;
-  }
-}
-
-.seeing-ornament{
-  opacity:0;
-  transition:opacity .6s ease;
-}
-
-.seeing-ornament.is-visible{
-  opacity:1;
-}
   </style>
 
 </head>
@@ -1868,22 +1837,16 @@ transition:
               </p>
 
 
-              <p class="seeing-typewriter">
-  <span
-    class="seeing-typewriter-text"
-    data-text="𝙀𝙫𝙚𝙧𝙮𝙩𝙝𝙞𝙣𝙜 𝙝𝙚𝙧𝙚 𝙗𝙚𝙜𝙞𝙣𝙨 𝙬𝙞𝙩𝙝 𝙖 𝙬𝙖𝙮 𝙤𝙛 𝙨𝙚𝙚𝙞𝙣𝙜 ⸺ 𝙬𝙝𝙖𝙩 𝙛𝙤𝙡𝙡𝙤𝙬𝙨 𝙞𝙨 𝙖 𝙬𝙖𝙮 𝙤𝙛 𝙗𝙚𝙘𝙤𝙢𝙞𝙣𝙜."
-  ></span><span
-    class="seeing-ornament"
-    style="
-      display:inline-block;
-      font-size:1.1em;
-      line-height:1;
-      transform:scaleY(.82);
-      transform-origin:center;
-      vertical-align:-0.08em;
-    "
-  > ❧</span>
-</p>
+              <p>
+                𝙀𝙫𝙚𝙧𝙮𝙩𝙝𝙞𝙣𝙜 𝙝𝙚𝙧𝙚 𝙗𝙚𝙜𝙞𝙣𝙨 𝙬𝙞𝙩𝙝 𝙖 𝙬𝙖𝙮 𝙤𝙛 𝙨𝙚𝙚𝙞𝙣𝙜 ⸺ 𝙬𝙝𝙖𝙩 𝙛𝙤𝙡𝙡𝙤𝙬𝙨 𝙞𝙨 𝙖 𝙬𝙖𝙮 𝙤𝙛 𝙗𝙚𝙘𝙤𝙢𝙞𝙣𝙜. <span style="
+  display:inline-block;
+  font-size:1.1em;
+  line-height:1;
+  transform:scaleY(.82);
+  transform-origin:center;
+  vertical-align:-0.08em;
+">❧</span>
+              </p>
 
 
               <p class="closing">
@@ -2923,39 +2886,6 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("load", () => {
   window.scrollTo(0, 0);
 });
-/* FINAL SENTENCE TYPEWRITER */
-
-.seeing-typewriter-text.is-typing::after{
-  content:"";
-  display:inline-block;
-  width:1px;
-  height:.95em;
-  margin-left:3px;
-  vertical-align:-.08em;
-  background:currentColor;
-
-  animation:
-    seeingCursorBlink
-    .72s
-    step-end
-    infinite;
-}
-
-@keyframes seeingCursorBlink{
-  50%{
-    opacity:0;
-  }
-}
-
-.seeing-ornament{
-  opacity:0;
-  transition:opacity .6s ease;
-}
-
-.seeing-ornament.is-visible{
-  opacity:1;
-}
-    
   </script>
 
 
