@@ -607,54 +607,36 @@
     }
 
     .paper .signature{
-      display:block;
+  display:block;
 
-      width:205px;
+  width:205px;
 
-      max-width:55%;
+  max-width:55%;
 
-      height:auto;
+  height:auto;
 
-      margin:
-        4px
-        0
-        -4px
-        -8px;
+  margin:
+    4px
+    0
+    -4px
+    -8px;
 
-      opacity:0;
+  opacity:0;
 
-      transform:
-        translateY(8px);
+  transform:
+    translateY(8px);
 
-      animation:
-        signatureFloatIn
-        1.55s
-        cubic-bezier(.22,.61,.36,1)
-        2.75s
-        forwards;
-    }
+  transition:
+    opacity 1.55s cubic-bezier(.22,.61,.36,1),
+    transform 1.55s cubic-bezier(.22,.61,.36,1);
+}
 
-    @keyframes signatureFloatIn{
+.paper .signature.signature-visible{
+  opacity:1;
 
-      0%{
-        opacity:0;
-
-        transform:
-          translateY(8px);
-      }
-
-      55%{
-        opacity:.55;
-
-        transform:
-          translateY(3px);
-      }
-
-      100%{
-        opacity:1;
-
-        transform:
-          translateY(0);
+  transform:
+    translateY(0);
+}
       }
 
     }
@@ -2953,7 +2935,10 @@ if(finalTypewriter){
     finalTypewriter.querySelector(
       ".final-typewriter-ornament"
     );
-
+const finalSignature =
+  document.querySelector(
+    ".signature"
+  );
   const originalText =
     finalText.textContent;
 
@@ -3002,16 +2987,31 @@ finalText.classList.add(
 
       }
 
-      else{
+else{
 
-        finalText.classList.remove(
-          "typing"
+  finalText.classList.remove(
+    "typing"
+  );
+
+  finalOrnament.style.opacity =
+    "1";
+
+  setTimeout(
+    () => {
+
+      if(finalSignature){
+
+        finalSignature.classList.add(
+          "signature-visible"
         );
 
-        finalOrnament.style.opacity =
-          "1";
-
       }
+
+    },
+    600
+  );
+
+}
 
     }
 
