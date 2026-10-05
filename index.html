@@ -708,7 +708,7 @@
  grid-template-columns:
  auto
  1px
- auto;
+  auto;
  grid-template-rows:
  auto
  auto;
@@ -1339,9 +1339,11 @@
  filter:blur(0);
  }
 
- /* MOBILE:
- Wait until the sentence is substantially on-screen,
- then resolve essentially immediately.
+ /*
+ MOBILE:
+ Keep the initial soft focus, but once the
+ viewport trigger is reached, resolve essentially
+ instantaneously.
  */
 
  @media(max-width:760px){
@@ -1506,8 +1508,10 @@
  what I value, what I learn, and what I hope to create next.
  </p>
 
- <p>Much like myself, the moments I visit are treated with great discretion. Some things are
- photographed. Some are remembered. And most are shared only in confidence.</p>
+ <p>
+ Much like myself, the moments I visit are treated with great discretion. Some things are
+ photographed. Some are remembered. And most are shared only in confidence.
+ </p>
 
  <p>
  The values I return to are simple: Authenticity, Integrity, and Growth. They shape
@@ -1839,17 +1843,6 @@
 
  /* =======================================================
  DESKTOP NAV COLLISION ENGINE
- IMPORTANT:
- It measures CLEAN COPIES of every candidate nav layout.
- That means the current state of the visible nav cannot
- affect the next measurement.
-
- DEFAULT:
- One line.
-
- ONLY STACK:
- If the candidate one-line nav would actually collide
- with the visible white photo frame.
  ======================================================= */
 
  const utilityNav =
@@ -1861,11 +1854,6 @@
  window.matchMedia(
  "(min-width: 761px)"
  );
-
- /*
- Keep a little visual breathing room
- between navigation and photograph.
- */
 
  const NAV_SAFE_GAP =
  16;
@@ -1885,13 +1873,6 @@
  "nav-footer-safe"
  );
  }
-
- /*
- Create an invisible temporary copy.
- This lets us ask:
- "How large WOULD this nav be in this state?"
- The visible nav does not influence the result.
- */
 
  function measureNavCandidate(
  stateClass = ""
@@ -1966,14 +1947,6 @@
  return result;
  }
 
- /*
- Check actual 2D collision.
- This is better than simply checking whether
- the nav extends farther right than the photo.
- If the photo isn't vertically beside the nav,
- there is no collision.
- */
-
  function candidateCollidesWithPhoto(
  navRect
  ){
@@ -2026,12 +1999,6 @@
  return;
  }
 
- /*
- MOBILE:
- Remove every desktop state.
- CSS handles mobile normally.
- */
-
  if(
  !navDesktopQuery.matches
  ){
@@ -2039,16 +2006,7 @@
  return;
  }
 
- /*
- START FROM A CLEAN STATE.
- */
-
  clearNavStates();
-
- /*
- CANDIDATE 1:
- Original single-line navigation.
- */
 
  const oneLineRect =
  measureNavCandidate();
@@ -2060,11 +2018,6 @@
  ){
  return;
  }
-
- /*
- CANDIDATE 2:
- LinkedIn beneath the first row.
- */
 
  const stackedRect =
  measureNavCandidate(
@@ -2085,11 +2038,6 @@
  return;
  }
 
- /*
- CANDIDATE 3:
- Fully vertical.
- */
-
  const verticalRect =
  measureNavCandidate(
  "nav-vertical"
@@ -2108,13 +2056,6 @@
 
  return;
  }
-
- /*
- ABSOLUTE LAST RESORT:
- If there is physically no safe floating position,
- put the nav back into page flow instead of allowing
- it to cover the photograph.
- */
 
  utilityNav
  .classList
@@ -2415,17 +2356,13 @@
 
  /*
  MOBILE:
- Require most of the sentence to actually be
- inside the viewport before resolving it.
+ Trigger based on WHERE the sentence reaches
+ in the viewport rather than how much of the
+ paragraph Safari reports as intersecting.
 
  DESKTOP:
- Keep the more relaxed 25% visibility trigger.
+ Preserve the existing 25% behavior.
  */
-
- const revealThreshold =
- mobileRevealQuery.matches
- ? .72
- : .25;
 
  const seeingObserver =
  new IntersectionObserver(
@@ -2435,11 +2372,7 @@
  entries.forEach(
  entry => {
 
- if(
- entry.isIntersecting &&
- entry.intersectionRatio >=
- revealThreshold
- ){
+ if(entry.isIntersecting){
 
  entry.target.classList.add(
  "is-visible"
@@ -2456,9 +2389,16 @@
 
  },
 
- {
- threshold:
- revealThreshold
+ mobileRevealQuery.matches
+
+ ? {
+ threshold:0,
+ rootMargin:
+ "0px 0px -18% 0px"
+ }
+
+ : {
+ threshold:.25
  }
 
  );
@@ -2469,11 +2409,15 @@
 
  /*
  MOBILE:
- Start watching immediately, but because the
- threshold is 72%, the user has to scroll far
- enough for most of the sentence to appear.
+ Begin observing immediately.
 
- Once that happens, the CSS resolves it in .12s.
+ The bottom 18% of the viewport is excluded
+ from the observer's active area. The sentence
+ therefore has to be scrolled meaningfully
+ onto the screen before the effect fires.
+
+ Once triggered, the mobile CSS above resolves
+ the blur in .12 seconds.
  */
 
  seeingObserver.observe(
@@ -2486,7 +2430,7 @@
 
  /*
  DESKTOP:
- Preserve the finalized 2.85-second delay.
+ Preserve the finalized delay.
  */
 
  window.setTimeout(
