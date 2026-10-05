@@ -1,5 +1,3 @@
-No it doest? Do it as if this is the original:
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,6 +27,7 @@ No it doest? Do it as if this is the original:
 
   <title>Dominic Ryan | Formulations</title>
 
+
   <!-- =======================================================
        SITE ICONS
        DR LOGO ONLY
@@ -44,6 +43,7 @@ No it doest? Do it as if this is the original:
     rel="apple-touch-icon"
     href="dr-reveals-removebg-preview.png"
   >
+
 
   <style>
 
@@ -71,6 +71,7 @@ No it doest? Do it as if this is the original:
       color:var(--ink);
       overflow-x:hidden;
     }
+
 
     /* =========================================================
        BACKGROUND DR WATERMARK
@@ -114,6 +115,7 @@ No it doest? Do it as if this is the original:
       width:100%;
       min-height:100vh;
     }
+
 
     /* =========================================================
        HEADER
@@ -220,6 +222,7 @@ No it doest? Do it as if this is the original:
       white-space:nowrap;
     }
 
+
     /* =========================================================
        HERO / LETTER + PHOTO
        ========================================================= */
@@ -263,6 +266,7 @@ No it doest? Do it as if this is the original:
           clamp(-42px,-2vw,-12px)
         );
     }
+
 
     /* =========================================================
        PHOTO OBJECT
@@ -436,6 +440,7 @@ No it doest? Do it as if this is the original:
       object-position:
         center center;
     }
+
 
     /* =========================================================
        LETTER
@@ -658,6 +663,7 @@ No it doest? Do it as if this is the original:
       margin-top:0 !important;
     }
 
+
     /* =========================================================
        FORMULATIONS / INSTAGRAM
        ========================================================= */
@@ -778,6 +784,7 @@ No it doest? Do it as if this is the original:
       min-height:360px;
     }
 
+
     /* =========================================================
        DESKTOP FLOATING NAV
        DEFAULT = ONE LINE
@@ -854,6 +861,7 @@ No it doest? Do it as if this is the original:
         );
     }
 
+
     /* =========================================================
        TWO-ROW DESKTOP NAV
        ONLY APPLIED AFTER REAL COLLISION TEST
@@ -916,6 +924,7 @@ No it doest? Do it as if this is the original:
       height:16px;
     }
 
+
     /* =========================================================
        VERY NARROW DESKTOP SAFETY STATE
        ========================================================= */
@@ -940,6 +949,7 @@ No it doest? Do it as if this is the original:
     .utility-nav.nav-vertical .utility-rule{
       display:none;
     }
+
 
     /* =========================================================
        FINAL DESKTOP FALLBACK
@@ -977,6 +987,7 @@ No it doest? Do it as if this is the original:
       height:15px;
     }
 
+
     /* =========================================================
        MUSIC
        ========================================================= */
@@ -1011,6 +1022,7 @@ No it doest? Do it as if this is the original:
 
       color:#655d56;
     }
+
 
     /* =========================================================
        LARGE DESKTOP
@@ -1052,6 +1064,7 @@ No it doest? Do it as if this is the original:
       }
 
     }
+
 
     /* =========================================================
        STANDARD DESKTOP / LAPTOP
@@ -1148,6 +1161,7 @@ No it doest? Do it as if this is the original:
       }
 
     }
+
 
     /* =========================================================
        COMPACT / 13-INCH DESKTOP
@@ -1272,6 +1286,7 @@ No it doest? Do it as if this is the original:
 
     }
 
+
     /* =========================================================
        MOBILE
        ========================================================= */
@@ -1313,6 +1328,7 @@ No it doest? Do it as if this is the original:
         font-size:9px;
       }
 
+
       /* COMPLETE LETTER FIRST */
 
       .letter-wrap{
@@ -1333,6 +1349,7 @@ No it doest? Do it as if this is the original:
 
         transform:none;
       }
+
 
       /* LETTER */
 
@@ -1383,6 +1400,7 @@ No it doest? Do it as if this is the original:
       .paper .signature{
         width:205px;
       }
+
 
       /* PHOTO TUCKED UNDER LETTER */
 
@@ -1454,6 +1472,7 @@ No it doest? Do it as if this is the original:
           center center;
       }
 
+
       /* FORMULATIONS */
 
       .formulations-feed{
@@ -1497,6 +1516,7 @@ No it doest? Do it as if this is the original:
       .formulations-feed-widget{
         min-height:280px;
       }
+
 
       /* MOBILE NAV REMAINS NORMAL FOOTER */
 
@@ -1546,6 +1566,7 @@ No it doest? Do it as if this is the original:
         height:15px;
       }
 
+
       /* MUSIC REMAINS FLOATING */
 
       .sound-toggle{
@@ -1563,94 +1584,8 @@ No it doest? Do it as if this is the original:
       }
 
     }
-/* =========================================================
-   PERSONAL MESSAGE EFFECTS
-   ========================================================= */
 
-/* "I'M DOMINIC RYAN." TYPING EFFECT */
 
-.intro-typewriter{
-  position:relative;
-}
-
-.intro-typewriter.is-typing::after{
-  content:"";
-  display:inline-block;
-
-  width:1px;
-  height:.95em;
-
-  margin-left:3px;
-
-  vertical-align:-.08em;
-
-  background:currentColor;
-
-  opacity:.55;
-
-  animation:
-    introCursorBlink
-    .72s
-    step-end
-    infinite;
-}
-
-@keyframes introCursorBlink{
-
-  50%{
-    opacity:0;
-  }
-
-}
-
-/* "EVERYTHING HERE..." FOCUS EFFECT */
-
-.seeing-reveal{
-  opacity:.58;
-
-  filter:blur(1.15px);
-  -webkit-filter:blur(1.15px);
-
-  transition:
-    opacity 2.35s cubic-bezier(.22,.61,.36,1),
-    filter 2.55s cubic-bezier(.22,.61,.36,1),
-    -webkit-filter 2.55s cubic-bezier(.22,.61,.36,1);
-}
-
-.seeing-reveal.is-visible{
-  opacity:1;
-
-  filter:blur(0);
-  -webkit-filter:blur(0);
-}
-
-/* MOBILE:
-   Require scrolling, then reveal almost instantly.
-*/
-
-@media(max-width:760px){
-
-  .seeing-reveal{
-    transition:
-      opacity .12s ease-out,
-      filter .12s ease-out,
-      -webkit-filter .12s ease-out;
-  }
-
-}
-
-/* REDUCE MOTION */
-
-@media(prefers-reduced-motion:reduce){
-
-  .seeing-reveal{
-    opacity:1 !important;
-
-    filter:none !important;
-    -webkit-filter:none !important;
-  }
-
-}
     /* =========================================================
        ACCESSIBILITY
        ========================================================= */
@@ -1685,7 +1620,9 @@ No it doest? Do it as if this is the original:
 
 </head>
 
+
 <body id="top">
+
 
   <!-- BACKGROUND DR -->
 
@@ -1701,13 +1638,17 @@ No it doest? Do it as if this is the original:
 
   </div>
 
+
   <div class="site-shell">
+
 
     <!-- HEADER -->
 
     <header class="header">
 
+
       <div class="brand">
+
 
         <div class="brand-mark">
 
@@ -1718,11 +1659,13 @@ No it doest? Do it as if this is the original:
 
         </div>
 
+
         <div>
 
           <div class="name">
             DOMINIC RYAN
           </div>
+
 
           <div class="tagline">
             𝐹𝑜𝑟𝑚𝑢𝑙𝑎𝑡𝑖𝑜𝑛𝑠 𝑜𝑓 𝐴𝑟𝑡 · 𝐷𝑒𝑠𝑖𝑔𝑛 · 𝑇𝑟𝑎𝑣𝑒𝑙 · 𝑂𝑏𝑗𝑒𝑐𝑡𝑠 𝑤𝑖𝑡ℎ 𝑎 𝑃𝑎𝑠𝑡
@@ -1730,21 +1673,28 @@ No it doest? Do it as if this is the original:
 
         </div>
 
+
       </div>
+
 
       <div class="location">
         Austin, Texas
       </div>
 
+
     </header>
 
+
     <main>
+
 
       <!-- LETTER + EDITORIAL PHOTO -->
 
       <section class="letter-wrap">
 
+
         <div class="hero-composition">
+
 
           <!-- PHOTO -->
 
@@ -1767,25 +1717,31 @@ No it doest? Do it as if this is the original:
 
           </div>
 
+
           <!-- LETTER -->
 
           <article class="paper">
 
+
             <div class="paper-content">
+
 
               <div class="message-label">
                 A Personal Message
               </div>
 
-              <h1 class="intro-typewriter">
+
+              <h1>
                 I’m 𝐃𝐨𝐦𝐢𝐧𝐢𝐜 𝐑𝐲𝐚𝐧.
               </h1>
+
 
               <p>
                 Based in Austin, Texas.
                 I’ve always been drawn to things that carry a point of view — objects, places,
                 images, and ideas shaped by intention.
               </p>
+
 
               <p>
                 My professional life has been shaped by nearly a decade of experience in interiors, creative strategy, media, and advertising. 
@@ -1796,6 +1752,7 @@ No it doest? Do it as if this is the original:
                 see, feel, and respond.
               </p>
 
+
               <p>
                 That instinct follows me outside of work. I have always noticed design:
                 proportion, material, patina, typography, architecture, the composition of a room,
@@ -1804,29 +1761,31 @@ No it doest? Do it as if this is the original:
                 according to category, but according to instinct.
               </p>
 
+
               <p>
                 𝐹𝑜𝑟𝑚𝑢𝑙𝑎𝑡𝑖𝑜𝑛𝑠 is a private and highly considered collection of that way of seeing — formulations of art, design, travel, photography,
                 and objects with a past. It is also, in some sense, a record of becoming: what I notice,
                 what I value, what I learn, and what I hope to create next.
       
               </p>
-              
-<p>People and their faces are deliberately absent from these images. I am less interested in documenting who was there than in what remains around them: the spaces they shaped, the objects they chose, the details they noticed, and the traces of a life that can be felt without ever being shown.</p>
 
-<p>The places I visit are treated with the same discretion. Some things are photographed. Some are remembered. Some are shared only in confidence.</p>
+<p>The moments I visit are treated with discretion. Some things are photographed. Some are remembered. Some are shared only in confidence.</p>
 
               <p>
                 The values I return to are simple: Authenticity, Integrity, and Growth. They shape
                 the way I work, the way I lead, and the life I continue to build.
               </p>
 
-              <p class="seeing-reveal">
+
+              <p>
                 𝙀𝙫𝙚𝙧𝙮𝙩𝙝𝙞𝙣𝙜 𝙝𝙚𝙧𝙚 𝙗𝙚𝙜𝙞𝙣𝙨 𝙬𝙞𝙩𝙝 𝙖 𝙬𝙖𝙮 𝙤𝙛 𝙨𝙚𝙚𝙞𝙣𝙜.
               </p>
+
 
               <p class="closing">
                 With gratitude,
               </p>
+
 
               <img
                 class="signature"
@@ -1834,17 +1793,23 @@ No it doest? Do it as if this is the original:
                 alt="Dominic Ryan signature"
               >
 
+
               <p class="signature-name">
                 Dominic Ryan
               </p>
 
+
             </div>
+
 
           </article>
 
+
         </div>
 
+
       </section>
+
 
       <!-- FORMULATIONS / INSTAGRAM -->
 
@@ -1853,9 +1818,12 @@ No it doest? Do it as if this is the original:
         aria-labelledby="formulations-feed-title"
       >
 
+
         <div class="formulations-feed-head">
 
+
           <div>
+
 
             <div
               class="formulations-feed-kicker"
@@ -1864,11 +1832,14 @@ No it doest? Do it as if this is the original:
               FORMULATIONS
             </div>
 
+
             <div class="formulations-feed-sub">
               Art · Design · Travel · Objects with a Past
             </div>
 
+
           </div>
+
 
           <a
             class="formulations-feed-link"
@@ -1879,25 +1850,33 @@ No it doest? Do it as if this is the original:
             Continue on Instagram →
           </a>
 
+
         </div>
 
+
         <div class="formulations-feed-widget">
+
 
           <script
             src="https://elfsightcdn.com/platform.js"
             async
           ></script>
 
+
           <div
             class="elfsight-app-1855bc03-7115-41df-9a37-353c22423dbd"
             data-elfsight-app-lazy
           ></div>
 
+
         </div>
+
 
       </section>
 
+
     </main>
+
 
     <!-- DESKTOP FLOATING / MOBILE FOOTER NAV -->
 
@@ -1907,6 +1886,7 @@ No it doest? Do it as if this is the original:
       aria-label="Site links"
     >
 
+
       <a
         class="nav-home"
         href="#top"
@@ -1914,10 +1894,12 @@ No it doest? Do it as if this is the original:
         DOMINIC RYAN
       </a>
 
+
       <span
         class="utility-rule nav-rule-one"
         aria-hidden="true"
       ></span>
+
 
       <a
         class="nav-instagram"
@@ -1928,10 +1910,12 @@ No it doest? Do it as if this is the original:
         @FORMULATIONS
       </a>
 
+
       <span
         class="utility-rule nav-rule-two"
         aria-hidden="true"
       ></span>
+
 
       <a
         class="nav-linkedin"
@@ -1942,9 +1926,12 @@ No it doest? Do it as if this is the original:
         LINKEDIN
       </a>
 
+
     </nav>
 
+
   </div>
+
 
   <!-- MUSIC -->
 
@@ -1962,6 +1949,7 @@ No it doest? Do it as if this is the original:
 
   </audio>
 
+
   <button
     class="sound-toggle"
     id="sound-toggle"
@@ -1971,7 +1959,9 @@ No it doest? Do it as if this is the original:
     MUSIC ON
   </button>
 
+
   <script>
+
 
     /* =======================================================
        AUDIO
@@ -1987,11 +1977,13 @@ No it doest? Do it as if this is the original:
         "sound-toggle"
       );
 
+
     audio.currentTime = 0;
 
     audio.volume = 0.25;
 
     audio.muted = false;
+
 
     /* =======================================================
        MEDIA SESSION
@@ -2034,6 +2026,7 @@ No it doest? Do it as if this is the original:
 
     }
 
+
     /* =======================================================
        SUBTLE DESKTOP PHOTO MOVEMENT
        ======================================================= */
@@ -2056,10 +2049,12 @@ No it doest? Do it as if this is the original:
     let photoTicking =
       false;
 
+
     function updatePhotoParallax(){
 
       photoTicking =
         false;
+
 
       if(
         !photoStage ||
@@ -2077,20 +2072,25 @@ No it doest? Do it as if this is the original:
         return;
       }
 
+
       const hero =
         document.querySelector(
           ".hero-composition"
         );
 
+
       if(!hero){
         return;
       }
 
+
       const rect =
         hero.getBoundingClientRect();
 
+
       const viewportHeight =
         window.innerHeight;
+
 
       const progress =
         (
@@ -2103,6 +2103,7 @@ No it doest? Do it as if this is the original:
           rect.height
         );
 
+
       const normalized =
         Math.max(
           0,
@@ -2112,6 +2113,7 @@ No it doest? Do it as if this is the original:
           )
         );
 
+
       const movement =
         (
           normalized -
@@ -2120,15 +2122,17 @@ No it doest? Do it as if this is the original:
         *
         18;
 
+
       document
         .documentElement
         .style
         .setProperty(
           "--photo-shift",
-          ${movement}px
+          `${movement}px`
         );
 
     }
+
 
     function requestPhotoUpdate(){
 
@@ -2136,8 +2140,10 @@ No it doest? Do it as if this is the original:
         return;
       }
 
+
       photoTicking =
         true;
+
 
       window
         .requestAnimationFrame(
@@ -2145,6 +2151,7 @@ No it doest? Do it as if this is the original:
         );
 
     }
+
 
     window.addEventListener(
       "scroll",
@@ -2154,12 +2161,15 @@ No it doest? Do it as if this is the original:
       }
     );
 
+
     window.addEventListener(
       "resize",
       requestPhotoUpdate
     );
 
+
     requestPhotoUpdate();
+
 
     /* =======================================================
        DESKTOP NAV COLLISION ENGINE
@@ -2188,6 +2198,7 @@ No it doest? Do it as if this is the original:
         "(min-width: 761px)"
       );
 
+
     /*
        Keep a little visual breathing room
        between navigation and photograph.
@@ -2196,14 +2207,17 @@ No it doest? Do it as if this is the original:
     const NAV_SAFE_GAP =
       16;
 
+
     let navCollisionTicking =
       false;
+
 
     function clearNavStates(){
 
       if(!utilityNav){
         return;
       }
+
 
       utilityNav.classList.remove(
         "nav-stacked",
@@ -2212,6 +2226,7 @@ No it doest? Do it as if this is the original:
       );
 
     }
+
 
     /*
        Create an invisible temporary copy.
@@ -2230,25 +2245,30 @@ No it doest? Do it as if this is the original:
         return null;
       }
 
+
       const clone =
         utilityNav.cloneNode(
           true
         );
 
+
       clone.removeAttribute(
         "id"
       );
+
 
       clone.setAttribute(
         "aria-hidden",
         "true"
       );
 
+
       clone.classList.remove(
         "nav-stacked",
         "nav-vertical",
         "nav-footer-safe"
       );
+
 
       if(stateClass){
 
@@ -2257,6 +2277,7 @@ No it doest? Do it as if this is the original:
         );
 
       }
+
 
       clone.style.visibility =
         "hidden";
@@ -2270,12 +2291,15 @@ No it doest? Do it as if this is the original:
       clone.style.zIndex =
         "-9999";
 
+
       document.body.appendChild(
         clone
       );
 
+
       const rect =
         clone.getBoundingClientRect();
+
 
       const result = {
 
@@ -2299,11 +2323,14 @@ No it doest? Do it as if this is the original:
 
       };
 
+
       clone.remove();
+
 
       return result;
 
     }
+
 
     /*
        Check actual 2D collision.
@@ -2326,8 +2353,10 @@ No it doest? Do it as if this is the original:
         return false;
       }
 
+
       const photoRect =
         photoFrame.getBoundingClientRect();
+
 
       const horizontalOverlap =
         navRect.right +
@@ -2340,6 +2369,7 @@ No it doest? Do it as if this is the original:
         photoRect.right +
         NAV_SAFE_GAP;
 
+
       const verticalOverlap =
         navRect.bottom
         >
@@ -2349,6 +2379,7 @@ No it doest? Do it as if this is the original:
         <
         photoRect.bottom;
 
+
       return(
         horizontalOverlap &&
         verticalOverlap
@@ -2356,10 +2387,12 @@ No it doest? Do it as if this is the original:
 
     }
 
+
     function updateNavCollision(){
 
       navCollisionTicking =
         false;
+
 
       if(
         !utilityNav ||
@@ -2367,6 +2400,7 @@ No it doest? Do it as if this is the original:
       ){
         return;
       }
+
 
       /*
          MOBILE:
@@ -2383,11 +2417,13 @@ No it doest? Do it as if this is the original:
         return;
       }
 
+
       /*
          START FROM A CLEAN STATE.
       */
 
       clearNavStates();
+
 
       /*
          CANDIDATE 1:
@@ -2396,6 +2432,7 @@ No it doest? Do it as if this is the original:
 
       const oneLineRect =
         measureNavCandidate();
+
 
       if(
         !candidateCollidesWithPhoto(
@@ -2416,6 +2453,7 @@ No it doest? Do it as if this is the original:
 
       }
 
+
       /*
          CANDIDATE 2:
          LinkedIn beneath the first row.
@@ -2425,6 +2463,7 @@ No it doest? Do it as if this is the original:
         measureNavCandidate(
           "nav-stacked"
         );
+
 
       if(
         !candidateCollidesWithPhoto(
@@ -2442,6 +2481,7 @@ No it doest? Do it as if this is the original:
 
       }
 
+
       /*
          CANDIDATE 3:
          Fully vertical.
@@ -2454,6 +2494,7 @@ No it doest? Do it as if this is the original:
         measureNavCandidate(
           "nav-vertical"
         );
+
 
       if(
         !candidateCollidesWithPhoto(
@@ -2471,6 +2512,7 @@ No it doest? Do it as if this is the original:
 
       }
 
+
       /*
          ABSOLUTE LAST RESORT:
 
@@ -2487,14 +2529,17 @@ No it doest? Do it as if this is the original:
 
     }
 
+
     function requestNavCollisionUpdate(){
 
       if(navCollisionTicking){
         return;
       }
 
+
       navCollisionTicking =
         true;
+
 
       window
         .requestAnimationFrame(
@@ -2502,6 +2547,7 @@ No it doest? Do it as if this is the original:
         );
 
     }
+
 
     /*
        Re-evaluate whenever geometry can change.
@@ -2512,10 +2558,12 @@ No it doest? Do it as if this is the original:
       requestNavCollisionUpdate
     );
 
+
     window.addEventListener(
       "load",
       requestNavCollisionUpdate
     );
+
 
     /*
        The photograph moves slightly during scroll,
@@ -2529,6 +2577,7 @@ No it doest? Do it as if this is the original:
         passive:true
       }
     );
+
 
     /*
        Wait for fonts as well.
@@ -2551,7 +2600,9 @@ No it doest? Do it as if this is the original:
 
     }
 
+
     requestNavCollisionUpdate();
+
 
     /* =======================================================
        MUSIC
@@ -2582,14 +2633,17 @@ No it doest? Do it as if this is the original:
 
     }
 
+
     function startAudio(){
 
       audio.currentTime = 0;
 
       audio.muted = false;
 
+
       const attempt =
         audio.play();
+
 
       if(
         attempt !==
@@ -2609,12 +2663,15 @@ No it doest? Do it as if this is the original:
           .catch(
             () => {
 
+
               const beginOnInteraction =
                 () => {
+
 
                   audio.currentTime = 0;
 
                   audio.muted = false;
+
 
                   audio
                     .play()
@@ -2629,6 +2686,7 @@ No it doest? Do it as if this is the original:
 
                 };
 
+
               document.addEventListener(
                 "pointerdown",
                 beginOnInteraction,
@@ -2637,6 +2695,7 @@ No it doest? Do it as if this is the original:
                 }
               );
 
+
               document.addEventListener(
                 "keydown",
                 beginOnInteraction,
@@ -2644,6 +2703,7 @@ No it doest? Do it as if this is the original:
                   once:true
                 }
               );
+
 
               document.addEventListener(
                 "touchstart",
@@ -2660,15 +2720,18 @@ No it doest? Do it as if this is the original:
 
     }
 
+
     soundToggle.addEventListener(
       "click",
       () => {
+
 
         if(audio.ended){
 
           audio.currentTime = 0;
 
           audio.muted = false;
+
 
           audio
             .play()
@@ -2686,318 +2749,24 @@ No it doest? Do it as if this is the original:
 
         }
 
+
         updateSoundLabel();
 
       }
     );
 
+
     audio.addEventListener(
-  "ended",
-  updateSoundLabel
-);
-
-/* =======================================================
-   PERSONAL MESSAGE EFFECTS
-   ======================================================= */
-
-/* -------------------------------------------------------
-   EFFECT 1:
-   "I'M DOMINIC RYAN." TYPEWRITER
-   ------------------------------------------------------- */
-
-const introTypewriter =
-  document.querySelector(
-    ".intro-typewriter"
-  );
-
-function runIntroTypewriter(){
-
-  if(!introTypewriter){
-    return;
-  }
-
-  if(
-    window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches
-  ){
-    return;
-  }
-
-  const originalText =
-    introTypewriter
-      .textContent
-      .trim();
-
-  introTypewriter.textContent =
-    "";
-
-  introTypewriter
-    .classList
-    .add(
-      "is-typing"
+      "ended",
+      updateSoundLabel
     );
 
-  /*
-     Array.from() is intentional.
 
-     Your Dominic Ryan text contains special
-     Unicode characters, and this handles them
-     properly on both desktop and mobile.
-  */
+    startAudio();
 
-  const characters =
-    Array.from(
-      originalText
-    );
-
-  let index =
-    0;
-
-  function typeNext(){
-
-    if(
-      index >=
-      characters.length
-    ){
-
-      introTypewriter
-        .classList
-        .remove(
-          "is-typing"
-        );
-
-      return;
-    }
-
-    const character =
-      characters[index];
-
-    introTypewriter.textContent +=
-      character;
-
-    index++;
-
-    const delay =
-      character === " "
-        ? 105
-        : 82;
-
-    window.setTimeout(
-      typeNext,
-      delay
-    );
-
-  }
-
-  /*
-     Allows the existing paper/text entrance
-     to begin before typing starts.
-  */
-
-  window.setTimeout(
-    typeNext,
-    1250
-  );
-
-}
-
-runIntroTypewriter();
-
-/* -------------------------------------------------------
-   EFFECT 2:
-   "EVERYTHING HERE BEGINS..." REVEAL
-   ------------------------------------------------------- */
-
-const seeingReveal =
-  document.querySelector(
-    ".seeing-reveal"
-  );
-
-let seeingRevealComplete =
-  false;
-
-function revealSeeingSentence(){
-
-  if(
-    !seeingReveal ||
-    seeingRevealComplete
-  ){
-    return;
-  }
-
-  seeingRevealComplete =
-    true;
-
-  seeingReveal
-    .classList
-    .add(
-      "is-visible"
-    );
-
-}
-
-/* -------------------------------------------------------
-   MOBILE REVEAL
-
-   IMPORTANT:
-   This does NOT use IntersectionObserver.
-
-   Instead, Safari checks the sentence's actual
-   position every time you scroll.
-
-   The sentence must reach 72% down the screen
-   before it becomes sharp.
-   ------------------------------------------------------- */
-
-function checkMobileSeeingReveal(){
-
-  if(
-    !seeingReveal ||
-    seeingRevealComplete
-  ){
-    return;
-  }
-
-  const rect =
-    seeingReveal
-      .getBoundingClientRect();
-
-  const triggerLine =
-    window.innerHeight *
-    .72;
-
-  if(
-    rect.top <= triggerLine &&
-    rect.bottom > 0
-  ){
-
-    revealSeeingSentence();
-
-  }
-
-}
-
-/* -------------------------------------------------------
-   SETUP DESKTOP VS MOBILE
-   ------------------------------------------------------- */
-
-function setupSeeingReveal(){
-
-  if(!seeingReveal){
-    return;
-  }
-
-  const reduceMotion =
-    window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-  if(reduceMotion){
-
-    revealSeeingSentence();
-
-    return;
-
-  }
-
-  const isMobile =
-    window.matchMedia(
-      "(max-width: 760px)"
-    ).matches;
-
-  /*
-     MOBILE
-
-     Use actual scroll coordinates instead of
-     IntersectionObserver.
-
-     This is specifically to make the effect
-     dependable in mobile Safari.
-  */
-
-  if(isMobile){
-
-    window.addEventListener(
-      "scroll",
-      checkMobileSeeingReveal,
-      {
-        passive:true
-      }
-    );
-
-    window.addEventListener(
-      "resize",
-      checkMobileSeeingReveal
-    );
-
-    window.addEventListener(
-      "orientationchange",
-      checkMobileSeeingReveal
-    );
-
-    window.requestAnimationFrame(
-      checkMobileSeeingReveal
-    );
-
-    return;
-
-  }
-
-  /*
-     DESKTOP
-
-     Keep the slower atmospheric reveal.
-  */
-
-  const observer =
-    new IntersectionObserver(
-
-      entries => {
-
-        entries.forEach(
-          entry => {
-
-            if(
-              entry.isIntersecting
-            ){
-
-              revealSeeingSentence();
-
-              observer.disconnect();
-
-            }
-
-          }
-        );
-
-      },
-
-      {
-        threshold:.25
-      }
-
-    );
-
-  window.setTimeout(
-    () => {
-
-      observer.observe(
-        seeingReveal
-      );
-
-    },
-
-    2850
-  );
-
-}
-
-setupSeeingReveal();
-
-startAudio();
 
   </script>
+
 
 </body>
 
