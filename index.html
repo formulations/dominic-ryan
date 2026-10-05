@@ -1,3 +1,5 @@
+No it doest? Do it as if this is the original:
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1601,7 +1603,6 @@
 
 }
 
-
 /* "EVERYTHING HERE..." FOCUS EFFECT */
 
 .seeing-reveal{
@@ -1623,7 +1624,6 @@
   -webkit-filter:blur(0);
 }
 
-
 /* MOBILE:
    Require scrolling, then reveal almost instantly.
 */
@@ -1638,7 +1638,6 @@
   }
 
 }
-
 
 /* REDUCE MOTION */
 
@@ -2697,11 +2696,9 @@
   updateSoundLabel
 );
 
-
 /* =======================================================
    PERSONAL MESSAGE EFFECTS
    ======================================================= */
-
 
 /* -------------------------------------------------------
    EFFECT 1:
@@ -2713,13 +2710,11 @@ const introTypewriter =
     ".intro-typewriter"
   );
 
-
 function runIntroTypewriter(){
 
   if(!introTypewriter){
     return;
   }
-
 
   if(
     window.matchMedia(
@@ -2729,23 +2724,19 @@ function runIntroTypewriter(){
     return;
   }
 
-
   const originalText =
     introTypewriter
       .textContent
       .trim();
 
-
   introTypewriter.textContent =
     "";
-
 
   introTypewriter
     .classList
     .add(
       "is-typing"
     );
-
 
   /*
      Array.from() is intentional.
@@ -2760,22 +2751,15 @@ function runIntroTypewriter(){
       originalText
     );
 
-
   let index =
     0;
-
 
   function typeNext(){
 
     if(
-  index >=
-  characters.length
-){
-
-  /* Let the cursor blink after "Ryan." */
-
-  window.setTimeout(
-    () => {
+      index >=
+      characters.length
+    ){
 
       introTypewriter
         .classList
@@ -2783,30 +2767,21 @@ function runIntroTypewriter(){
           "is-typing"
         );
 
-    },
-    1400
-  );
-
-  return;
-}
-
+      return;
+    }
 
     const character =
       characters[index];
 
-
     introTypewriter.textContent +=
       character;
 
-
     index++;
-
 
     const delay =
       character === " "
         ? 105
         : 82;
-
 
     window.setTimeout(
       typeNext,
@@ -2814,7 +2789,6 @@ function runIntroTypewriter(){
     );
 
   }
-
 
   /*
      Allows the existing paper/text entrance
@@ -2828,9 +2802,7 @@ function runIntroTypewriter(){
 
 }
 
-
 runIntroTypewriter();
-
 
 /* -------------------------------------------------------
    EFFECT 2:
@@ -2842,10 +2814,8 @@ const seeingReveal =
     ".seeing-reveal"
   );
 
-
 let seeingRevealComplete =
   false;
-
 
 function revealSeeingSentence(){
 
@@ -2856,10 +2826,8 @@ function revealSeeingSentence(){
     return;
   }
 
-
   seeingRevealComplete =
     true;
-
 
   seeingReveal
     .classList
@@ -2868,7 +2836,6 @@ function revealSeeingSentence(){
     );
 
 }
-
 
 /* -------------------------------------------------------
    MOBILE REVEAL
@@ -2892,16 +2859,13 @@ function checkMobileSeeingReveal(){
     return;
   }
 
-
   const rect =
     seeingReveal
       .getBoundingClientRect();
 
-
   const triggerLine =
     window.innerHeight *
     .72;
-
 
   if(
     rect.top <= triggerLine &&
@@ -2914,7 +2878,6 @@ function checkMobileSeeingReveal(){
 
 }
 
-
 /* -------------------------------------------------------
    SETUP DESKTOP VS MOBILE
    ------------------------------------------------------- */
@@ -2925,12 +2888,10 @@ function setupSeeingReveal(){
     return;
   }
 
-
   const reduceMotion =
     window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-
 
   if(reduceMotion){
 
@@ -2940,12 +2901,10 @@ function setupSeeingReveal(){
 
   }
 
-
   const isMobile =
     window.matchMedia(
       "(max-width: 760px)"
     ).matches;
-
 
   /*
      MOBILE
@@ -2967,28 +2926,23 @@ function setupSeeingReveal(){
       }
     );
 
-
     window.addEventListener(
       "resize",
       checkMobileSeeingReveal
     );
-
 
     window.addEventListener(
       "orientationchange",
       checkMobileSeeingReveal
     );
 
-
     window.requestAnimationFrame(
       checkMobileSeeingReveal
     );
 
-
     return;
 
   }
-
 
   /*
      DESKTOP
@@ -3025,7 +2979,6 @@ function setupSeeingReveal(){
 
     );
 
-
   window.setTimeout(
     () => {
 
@@ -3040,9 +2993,7 @@ function setupSeeingReveal(){
 
 }
 
-
 setupSeeingReveal();
-
 
 startAudio();
 
