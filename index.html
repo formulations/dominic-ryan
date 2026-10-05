@@ -2637,29 +2637,43 @@ transition:
 
     function updateSoundLabel(){
 
-      if(audio.ended){
+  const soundIcon =
 
-        soundToggle.textContent =
-          "MUSIC ENDED";
+    document.getElementById("sound-icon");
 
-      }
+  if(audio.ended || audio.muted){
 
-      else if(audio.muted){
+    soundIcon.src =
 
-        soundToggle.textContent =
-          "MUSIC OFF";
+      "soundoff.png";
 
-      }
+    soundToggle.setAttribute(
 
-      else{
+      "aria-label",
 
-        soundToggle.textContent =
-          "MUSIC ON";
+      "Play music"
 
-      }
+    );
 
-    }
+  }
 
+  else{
+
+    soundIcon.src =
+
+      "soundon.png";
+
+    soundToggle.setAttribute(
+
+      "aria-label",
+
+      "Mute music"
+
+    );
+
+  }
+
+}
 
     function startAudio(){
 
