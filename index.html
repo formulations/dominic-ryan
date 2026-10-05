@@ -1585,7 +1585,97 @@
 
     }
 
+/* =========================================================
+   PERSONAL MESSAGE EFFECTS
+   ========================================================= */
 
+/* "I'M DOMINIC RYAN." TYPING EFFECT */
+
+.intro-typewriter{
+  position:relative;
+}
+
+.intro-typewriter.is-typing::after{
+  content:"";
+  display:inline-block;
+
+  width:1px;
+  height:.95em;
+
+  margin-left:3px;
+
+  vertical-align:-.08em;
+
+  background:currentColor;
+
+  opacity:.55;
+
+  animation:
+    introCursorBlink
+    .72s
+    step-end
+    infinite;
+}
+
+@keyframes introCursorBlink{
+
+  50%{
+    opacity:0;
+  }
+
+}
+
+
+/* "EVERYTHING HERE..." FOCUS EFFECT */
+
+.seeing-reveal{
+  opacity:.58;
+
+  filter:blur(1.15px);
+  -webkit-filter:blur(1.15px);
+
+  transition:
+    opacity 2.35s cubic-bezier(.22,.61,.36,1),
+    filter 2.55s cubic-bezier(.22,.61,.36,1),
+    -webkit-filter 2.55s cubic-bezier(.22,.61,.36,1);
+}
+
+.seeing-reveal.is-visible{
+  opacity:1;
+
+  filter:blur(0);
+  -webkit-filter:blur(0);
+}
+
+
+/* MOBILE:
+   Require scrolling, then reveal almost instantly.
+*/
+
+@media(max-width:760px){
+
+  .seeing-reveal{
+    transition:
+      opacity .12s ease-out,
+      filter .12s ease-out,
+      -webkit-filter .12s ease-out;
+  }
+
+}
+
+
+/* REDUCE MOTION */
+
+@media(prefers-reduced-motion:reduce){
+
+  .seeing-reveal{
+    opacity:1 !important;
+
+    filter:none !important;
+    -webkit-filter:none !important;
+  }
+
+}
     /* =========================================================
        ACCESSIBILITY
        ========================================================= */
@@ -1731,7 +1821,7 @@
               </div>
 
 
-              <h1>
+              <h1 class="intro-typewriter">
                 I’m 𝐃𝐨𝐦𝐢𝐧𝐢𝐜 𝐑𝐲𝐚𝐧.
               </h1>
 
@@ -1777,7 +1867,7 @@
               </p>
 
 
-              <p>
+              <p class="seeing-reveal">
                 𝙀𝙫𝙚𝙧𝙮𝙩𝙝𝙞𝙣𝙜 𝙝𝙚𝙧𝙚 𝙗𝙚𝙜𝙞𝙣𝙨 𝙬𝙞𝙩𝙝 𝙖 𝙬𝙖𝙮 𝙤𝙛 𝙨𝙚𝙚𝙞𝙣𝙜.
               </p>
 
@@ -2756,13 +2846,350 @@
     );
 
 
-    audio.addEventListener(
-      "ended",
-      updateSoundLabel
+audio.addEventListener(
+  "ended",
+  updateSoundLabel
+);
+
+
+/* =======================================================
+   PERSONAL MESSAGE EFFECTS
+   ======================================================= */
+
+
+/* -------------------------------------------------------
+   EFFECT 1:
+   "I'M DOMINIC RYAN." TYPEWRITER
+   ------------------------------------------------------- */
+
+const introTypewriter =
+  document.querySelector(
+    ".intro-typewriter"
+  );
+
+
+function runIntroTypewriter(){
+
+  if(!introTypewriter){
+    return;
+  }
+
+
+  if(
+    window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches
+  ){
+    return;
+  }
+
+
+  const originalText =
+    introTypewriter
+      .textContent
+      .trim();
+
+
+  introTypewriter.textContent =
+    "";
+
+
+  introTypewriter
+    .classList
+    .add(
+      "is-typing"
     );
 
 
-    startAudio();
+  /*
+     Array.from() is intentional.
+
+     Your Dominic Ryan text contains special
+     Unicode characters, and this handles them
+     properly on both desktop and mobile.
+  */
+
+  const characters =
+    Array.from(
+      originalText
+    );
+
+
+  let index =
+    0;
+
+
+  function typeNext(){
+
+    if(
+      index >=
+      characters.length
+    ){
+
+      introTypewriter
+        .classList
+        .remove(
+          "is-typing"
+        );
+
+      return;
+    }
+
+
+    const character =
+      characters[index];
+
+
+    introTypewriter.textContent +=
+      character;
+
+
+    index++;
+
+
+    const delay =
+      character === " "
+        ? 105
+        : 82;
+
+
+    window.setTimeout(
+      typeNext,
+      delay
+    );
+
+  }
+
+
+  /*
+     Allows the existing paper/text entrance
+     to begin before typing starts.
+  */
+
+  window.setTimeout(
+    typeNext,
+    1250
+  );
+
+}
+
+
+runIntroTypewriter();
+
+
+/* -------------------------------------------------------
+   EFFECT 2:
+   "EVERYTHING HERE BEGINS..." REVEAL
+   ------------------------------------------------------- */
+
+const seeingReveal =
+  document.querySelector(
+    ".seeing-reveal"
+  );
+
+
+let seeingRevealComplete =
+  false;
+
+
+function revealSeeingSentence(){
+
+  if(
+    !seeingReveal ||
+    seeingRevealComplete
+  ){
+    return;
+  }
+
+
+  seeingRevealComplete =
+    true;
+
+
+  seeingReveal
+    .classList
+    .add(
+      "is-visible"
+    );
+
+}
+
+
+/* -------------------------------------------------------
+   MOBILE REVEAL
+
+   IMPORTANT:
+   This does NOT use IntersectionObserver.
+
+   Instead, Safari checks the sentence's actual
+   position every time you scroll.
+
+   The sentence must reach 72% down the screen
+   before it becomes sharp.
+   ------------------------------------------------------- */
+
+function checkMobileSeeingReveal(){
+
+  if(
+    !seeingReveal ||
+    seeingRevealComplete
+  ){
+    return;
+  }
+
+
+  const rect =
+    seeingReveal
+      .getBoundingClientRect();
+
+
+  const triggerLine =
+    window.innerHeight *
+    .72;
+
+
+  if(
+    rect.top <= triggerLine &&
+    rect.bottom > 0
+  ){
+
+    revealSeeingSentence();
+
+  }
+
+}
+
+
+/* -------------------------------------------------------
+   SETUP DESKTOP VS MOBILE
+   ------------------------------------------------------- */
+
+function setupSeeingReveal(){
+
+  if(!seeingReveal){
+    return;
+  }
+
+
+  const reduceMotion =
+    window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+
+  if(reduceMotion){
+
+    revealSeeingSentence();
+
+    return;
+
+  }
+
+
+  const isMobile =
+    window.matchMedia(
+      "(max-width: 760px)"
+    ).matches;
+
+
+  /*
+     MOBILE
+
+     Use actual scroll coordinates instead of
+     IntersectionObserver.
+
+     This is specifically to make the effect
+     dependable in mobile Safari.
+  */
+
+  if(isMobile){
+
+    window.addEventListener(
+      "scroll",
+      checkMobileSeeingReveal,
+      {
+        passive:true
+      }
+    );
+
+
+    window.addEventListener(
+      "resize",
+      checkMobileSeeingReveal
+    );
+
+
+    window.addEventListener(
+      "orientationchange",
+      checkMobileSeeingReveal
+    );
+
+
+    window.requestAnimationFrame(
+      checkMobileSeeingReveal
+    );
+
+
+    return;
+
+  }
+
+
+  /*
+     DESKTOP
+
+     Keep the slower atmospheric reveal.
+  */
+
+  const observer =
+    new IntersectionObserver(
+
+      entries => {
+
+        entries.forEach(
+          entry => {
+
+            if(
+              entry.isIntersecting
+            ){
+
+              revealSeeingSentence();
+
+              observer.disconnect();
+
+            }
+
+          }
+        );
+
+      },
+
+      {
+        threshold:.25
+      }
+
+    );
+
+
+  window.setTimeout(
+    () => {
+
+      observer.observe(
+        seeingReveal
+      );
+
+    },
+
+    2850
+  );
+
+}
+
+
+setupSeeingReveal();
+
+
+startAudio();
 
 
   </script>
