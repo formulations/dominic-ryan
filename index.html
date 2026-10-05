@@ -606,7 +606,8 @@
       margin-top:20px;
     }
 
-    .paper .signature{
+.paper .signature{
+
   display:block;
 
   width:205px;
@@ -616,30 +617,50 @@
   height:auto;
 
   margin:
+
     4px
+
     0
+
     -4px
+
     -8px;
 
   opacity:0;
 
   transform:
-    translateY(8px);
+
+    translateY(3px);
+
+  filter:
+
+    blur(1.5px);
 
   transition:
-    opacity 1.55s cubic-bezier(.22,.61,.36,1),
-    transform 1.55s cubic-bezier(.22,.61,.36,1);
+
+    opacity 2.8s ease,
+
+    transform 2.8s cubic-bezier(.22,.61,.36,1),
+
+    filter 2.4s ease;
+
 }
 
 .paper .signature.signature-visible{
+
   opacity:1;
 
   transform:
-    translateY(0);
-}
-      }
 
-    }
+    translateY(0);
+
+  filter:
+
+    blur(0);
+
+}
+    
+
 
     .signature-name{
       margin-top:0 !important;
@@ -3092,7 +3113,7 @@ else{
 
 {
   threshold:.15,
-  rootMargin:"0px 0px -40% 0px"
+  rootMargin:"0px 0px -50% 0px"
 }
 
     );
