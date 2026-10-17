@@ -390,7 +390,7 @@
       font-weight: 400;
       letter-spacing: -.035em;
 
-      color: #51463e;
+      color: #9D8875;
     }
 
     .dr-contact-ornament {
@@ -398,7 +398,7 @@
       font-size: .66em;
       line-height: 1;
       font-weight: 400;
-      color: #51463e;
+      color: #9D8875;
     }
 
     .dr-contact-intro {
