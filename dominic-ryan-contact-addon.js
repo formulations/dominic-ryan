@@ -6,12 +6,20 @@
    https://formspree.io/f/xzedoqkn
 
    Designed for Dominic Ryan | Formulations
+
+   Includes:
+   - Automatic draft saving
+   - Session-based draft restoration
+   - Rich-text draft preservation
+   - Safe HTML restoration
+   - Draft clearing after successful submission
    ========================================================= */
 
 (() => {
   "use strict";
 
   const FORMSPREE_URL = "https://formspree.io/f/xzedoqkn";
+  const DRAFT_STORAGE_KEY = "dr-contact-draft";
 
   /* Prevent duplicate initialization. */
 
@@ -217,7 +225,6 @@
       width: 20px;
       height: 20px;
     }
-
 
     /* =====================================================
        ACCESSIBILITY
@@ -832,10 +839,6 @@
 
     /* =====================================================
        SHORT DESKTOP / LAPTOP VIEWPORTS
-
-       Preserves the full-size composition on larger screens,
-       but tightens vertical spacing when browser height is
-       limited, such as a 13-inch MacBook.
        ===================================================== */
 
     @media (min-width: 761px) and (max-height: 850px) {
@@ -1026,14 +1029,11 @@
 
     }
 
-
     /* =====================================================
        MOBILE
        ===================================================== */
 
     @media (max-width: 760px) {
-
-      /* HEADER */
 
       .header {
         gap: 12px;
@@ -1057,9 +1057,7 @@
         display: none;
       }
 
-      /* =================================================
-         MOBILE MODAL — KEYBOARD-AWARE VIEWPORT
-         ================================================= */
+      /* MOBILE MODAL — KEYBOARD-AWARE VIEWPORT */
 
       .dr-contact-overlay {
         position: fixed;
@@ -1111,19 +1109,13 @@
           23px
           23px;
 
-        /*
-          Mobile keeps the panel stationary while the
-          keyboard changes the visual viewport. Opacity
-          provides the open/close transition without
-          causing the panel to jump.
-        */
-
         transform: none !important;
 
-opacity: 0;
+        opacity: 0;
 
-transition:
-  opacity 1.1s cubic-bezier(.22,.61,.36,1) !important;
+        transition:
+          opacity 1.1s
+          cubic-bezier(.22,.61,.36,1) !important;
       }
 
       .dr-contact-overlay.is-open .dr-contact-dialog {
@@ -1143,9 +1135,7 @@ transition:
         font-size: 15px;
       }
 
-      /* =================================================
-         MOBILE INPUTS — IOS FOCUS ZOOM
-         ================================================= */
+      /* MOBILE INPUTS — IOS FOCUS ZOOM */
 
       .dr-contact-field {
         height: 53px;
@@ -1168,9 +1158,7 @@ transition:
         height: 21px;
       }
 
-      /* =================================================
-         MOBILE MESSAGE EDITOR — STABLE SCALE
-         ================================================= */
+      /* MOBILE MESSAGE EDITOR */
 
       .dr-contact-editor,
       .dr-contact-message-wrap {
@@ -1351,8 +1339,6 @@ transition:
     headerGroup.appendChild(location);
 
   }
-
-  
 
   /* =========================================================
      MODAL HTML
@@ -1716,6 +1702,433 @@ transition:
       );
 
     });
+
+  /* =========================================================
+     AUTOMATIC DRAFT SAVING — STATE
+     ========================================================= */
+
+  let draftSaveTimer = null;
+
+  /*
+    This flag prevents a successfully submitted message
+    from being saved again when the page closes.
+  */
+
+  let submissionSucceeded = false;
+
+  /* =========================================================
+     SAFE RICH-TEXT HTML
+     ========================================================= */
+
+  /*
+    Only permit formatting elements supported by the
+    message editor.
+
+    All other HTML elements are removed while their
+    text content is retained, except dangerous elements
+    such as scripts and embedded content.
+
+    Links are restricted to HTTP and HTTPS.
+  */
+
+  function sanitizeContactHTML(html) {
+
+    const template =
+      document.createElement("template");
+
+    template.innerHTML =
+      String(html || "");
+
+    const allowedTags = new Set([
+      "B",
+      "STRONG",
+      "I",
+      "EM",
+      "U",
+      "UL",
+      "OL",
+      "LI",
+      "A",
+      "P",
+      "DIV",
+      "BR",
+      "SPAN"
+    ]);
+
+    const blockedTags = new Set([
+      "SCRIPT",
+      "STYLE",
+      "IFRAME",
+      "OBJECT",
+      "EMBED",
+      "SVG",
+      "MATH",
+      "FORM",
+      "INPUT",
+      "BUTTON",
+      "TEXTAREA",
+      "SELECT",
+      "OPTION",
+      "LINK",
+      "META",
+      "BASE",
+      "TEMPLATE"
+    ]);
+
+    function cleanNode(node) {
+
+      if (node.nodeType === Node.TEXT_NODE) {
+        return document.createTextNode(
+          node.textContent || ""
+        );
+      }
+
+      if (node.nodeType !== Node.ELEMENT_NODE) {
+        return document.createDocumentFragment();
+      }
+
+      const tag = node.tagName;
+
+      if (blockedTags.has(tag)) {
+        return document.createDocumentFragment();
+      }
+
+      const fragment =
+        document.createDocumentFragment();
+
+      for (const child of Array.from(node.childNodes)) {
+        fragment.appendChild(
+          cleanNode(child)
+        );
+      }
+
+      if (!allowedTags.has(tag)) {
+        return fragment;
+      }
+
+      const clean =
+        document.createElement(
+          tag.toLowerCase()
+        );
+
+      if (tag === "A") {
+
+        const href =
+          node.getAttribute("href");
+
+        if (href) {
+
+          try {
+
+            const parsed =
+              new URL(
+                href,
+                window.location.href
+              );
+
+            if (
+              parsed.protocol === "https:" ||
+              parsed.protocol === "http:"
+            ) {
+
+              clean.setAttribute(
+                "href",
+                parsed.href
+              );
+
+              clean.setAttribute(
+                "rel",
+                "noopener noreferrer"
+              );
+
+            }
+
+          } catch (_) {
+            // Invalid links become ordinary text.
+          }
+
+        }
+
+      }
+
+      clean.appendChild(fragment);
+
+      return clean;
+
+    }
+
+    const safeContainer =
+      document.createElement("div");
+
+    for (
+      const child of Array.from(
+        template.content.childNodes
+      )
+    ) {
+
+      safeContainer.appendChild(
+        cleanNode(child)
+      );
+
+    }
+
+    return safeContainer.innerHTML;
+
+  }
+
+  /* =========================================================
+     AUTOMATIC DRAFT SAVING — SAVE
+     ========================================================= */
+
+  function saveContactDraft() {
+
+    if (submissionSucceeded) {
+      return;
+    }
+
+    const draft = {
+
+      name:
+        form.elements.name.value,
+
+      email:
+        form.elements.email.value,
+
+      subject:
+        form.elements.subject.value,
+
+      message:
+        sanitizeContactHTML(
+          editor.innerHTML
+        )
+
+    };
+
+    const hasContent =
+      draft.name.trim() ||
+      draft.email.trim() ||
+      draft.subject.trim() ||
+      editor.innerText.trim();
+
+    try {
+
+      if (!hasContent) {
+
+        sessionStorage.removeItem(
+          DRAFT_STORAGE_KEY
+        );
+
+        return;
+
+      }
+
+      sessionStorage.setItem(
+        DRAFT_STORAGE_KEY,
+        JSON.stringify(draft)
+      );
+
+    } catch (_) {
+
+      /*
+        Browser storage may be unavailable,
+        including in certain private modes.
+      */
+
+    }
+
+  }
+
+  /* =========================================================
+     AUTOMATIC DRAFT SAVING — SCHEDULE
+     ========================================================= */
+
+  function scheduleContactDraftSave() {
+
+    if (submissionSucceeded) {
+      return;
+    }
+
+    if (draftSaveTimer !== null) {
+
+      clearTimeout(
+        draftSaveTimer
+      );
+
+    }
+
+    draftSaveTimer =
+      window.setTimeout(
+        () => {
+
+          draftSaveTimer = null;
+
+          saveContactDraft();
+
+        },
+        250
+      );
+
+  }
+
+  /* =========================================================
+     AUTOMATIC DRAFT SAVING — RESTORE
+     ========================================================= */
+
+  function restoreContactDraft() {
+
+    if (submissionSucceeded) {
+      return;
+    }
+
+    try {
+
+      const savedDraft =
+        sessionStorage.getItem(
+          DRAFT_STORAGE_KEY
+        );
+
+      if (!savedDraft) {
+        return;
+      }
+
+      const draft =
+        JSON.parse(savedDraft);
+
+      if (
+        !draft ||
+        typeof draft !== "object" ||
+        Array.isArray(draft)
+      ) {
+        return;
+      }
+
+      form.elements.name.value =
+        typeof draft.name === "string"
+          ? draft.name
+          : "";
+
+      form.elements.email.value =
+        typeof draft.email === "string"
+          ? draft.email
+          : "";
+
+      form.elements.subject.value =
+        typeof draft.subject === "string"
+          ? draft.subject
+          : "";
+
+      if (
+        typeof draft.message === "string"
+      ) {
+
+        editor.innerHTML =
+          sanitizeContactHTML(
+            draft.message
+          );
+
+      }
+
+    } catch (_) {
+
+      /*
+        Ignore unavailable storage or
+        invalid saved draft data.
+      */
+
+    }
+
+  }
+
+  /* =========================================================
+     AUTOMATIC DRAFT SAVING — CLEAR
+     ========================================================= */
+
+  function clearContactDraft() {
+
+    if (draftSaveTimer !== null) {
+
+      clearTimeout(
+        draftSaveTimer
+      );
+
+      draftSaveTimer = null;
+
+    }
+
+    try {
+
+      sessionStorage.removeItem(
+        DRAFT_STORAGE_KEY
+      );
+
+    } catch (_) {
+
+      // Storage may be unavailable.
+
+    }
+
+  }
+
+  /* =========================================================
+     AUTOMATIC DRAFT SAVING — EVENTS
+     ========================================================= */
+
+  form
+    .querySelectorAll("input")
+    .forEach(input => {
+
+      input.addEventListener(
+        "input",
+        scheduleContactDraftSave
+      );
+
+      input.addEventListener(
+        "change",
+        scheduleContactDraftSave
+      );
+
+    });
+
+  editor.addEventListener(
+    "input",
+    scheduleContactDraftSave
+  );
+
+  /*
+    Restore the draft when the script initializes.
+  */
+
+  restoreContactDraft();
+
+  /*
+    Capture the latest changes when the visitor
+    refreshes or navigates away.
+
+    A successful submission is never saved again.
+  */
+
+  window.addEventListener(
+    "pagehide",
+    () => {
+
+      if (!submissionSucceeded) {
+
+        if (draftSaveTimer !== null) {
+
+          clearTimeout(
+            draftSaveTimer
+          );
+
+          draftSaveTimer = null;
+
+        }
+
+        saveContactDraft();
+
+      }
+
+    }
+  );
 
   /* =========================================================
      STATE
@@ -2305,6 +2718,13 @@ transition:
 
       closeTimer = null;
 
+      /*
+        If the previous close was interrupted,
+        restore the previous scroll lock first.
+      */
+
+      restoreBackgroundScroll();
+
     }
 
     modalOpen = true;
@@ -2312,13 +2732,30 @@ transition:
     previousFocus =
       document.activeElement;
 
+    /*
+      After a successful submission, reopening
+      the form begins a fresh message.
+
+      Otherwise, preserve the existing draft.
+    */
+
+    if (submissionSucceeded) {
+
+      submissionSucceeded = false;
+
+      form.reset();
+
+      editor.innerHTML = "";
+
+    } else {
+
+      restoreContactDraft();
+
+    }
+
     dialog.classList.remove(
       "is-success"
     );
-
-    form.reset();
-
-    editor.innerHTML = "";
 
     status.textContent = "";
 
@@ -2345,22 +2782,32 @@ transition:
 
     void overlay.offsetWidth;
 
-requestAnimationFrame(() => {
-  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
 
-    overlay.classList.add(
-      "is-open"
-    );
+      requestAnimationFrame(() => {
 
-  });
-});
+        if (modalOpen) {
+
+          overlay.classList.add(
+            "is-open"
+          );
+
+        }
+
+      });
+
+    });
 
     requestAnimationFrame(
       () => {
 
-        closeButton.focus({
-          preventScroll: true
-        });
+        if (modalOpen) {
+
+          closeButton.focus({
+            preventScroll: true
+          });
+
+        }
 
       }
     );
@@ -2375,6 +2822,29 @@ requestAnimationFrame(() => {
 
     if (!modalOpen) {
       return;
+    }
+
+    /*
+      Save immediately before closing.
+
+      This ensures even the most recent keystroke
+      is preserved without waiting for the timer.
+    */
+
+    if (!submissionSucceeded) {
+
+      if (draftSaveTimer !== null) {
+
+        clearTimeout(
+          draftSaveTimer
+        );
+
+        draftSaveTimer = null;
+
+      }
+
+      saveContactDraft();
+
     }
 
     modalOpen = false;
@@ -2738,6 +3208,16 @@ requestAnimationFrame(() => {
         70
       );
 
+      /*
+        Formatting changes do not always trigger
+        the editor's input event.
+
+        Save explicitly so bullets, links, and
+        text styling are preserved.
+      */
+
+      scheduleContactDraftSave();
+
     }
   );
 
@@ -2750,6 +3230,15 @@ requestAnimationFrame(() => {
     async event => {
 
       event.preventDefault();
+
+      /*
+        Prevent duplicate submissions while
+        the current request is in progress.
+      */
+
+      if (submitButton.disabled) {
+        return;
+      }
 
       const name =
         form.elements.name.value.trim();
@@ -2817,6 +3306,13 @@ requestAnimationFrame(() => {
 
       }
 
+      /*
+        Capture the current draft before attempting
+        submission, in case the network request fails.
+      */
+
+      saveContactDraft();
+
       submitButton.disabled = true;
 
       status.textContent =
@@ -2868,6 +3364,18 @@ requestAnimationFrame(() => {
         }
 
         /*
+          Formspree has confirmed successful submission.
+
+          Mark the submission as complete BEFORE clearing
+          storage, preventing pagehide or pending timers
+          from recreating the saved draft.
+        */
+
+        submissionSucceeded = true;
+
+        clearContactDraft();
+
+        /*
           Close the software keyboard before showing the
           success state on mobile.
         */
@@ -2885,6 +3393,18 @@ requestAnimationFrame(() => {
 
         }
 
+        /*
+          Clear the submitted fields.
+
+          The success message is shown immediately.
+          A new blank form appears the next time
+          the visitor opens the contact modal.
+        */
+
+        form.reset();
+
+        editor.innerHTML = "";
+
         dialog.classList.add(
           "is-success"
         );
@@ -2896,6 +3416,11 @@ requestAnimationFrame(() => {
       }
 
       catch (error) {
+
+        /*
+          The draft remains saved so the visitor
+          can retry without rewriting the message.
+        */
 
         status.textContent =
           "Your message couldn't be sent. Please try again.";
