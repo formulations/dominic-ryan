@@ -259,8 +259,8 @@
       pointer-events: none;
 
       transition:
-        opacity .35s ease,
-        visibility .35s ease;
+        opacity .65s ease,
+        visibility .65s ease;
     }
 
     .dr-contact-overlay.is-open {
