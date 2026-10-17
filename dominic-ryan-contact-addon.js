@@ -624,7 +624,7 @@
       line-height: 1.56;
       letter-spacing: normal;
 
-      color: #5c524b;
+      color: #9D8875;
     }
 
     .dr-contact-message:empty::before {
