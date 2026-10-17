@@ -26,6 +26,33 @@
   >
 
   <title>Dominic Ryan | Formulations</title>
+    <!-- =======================================================
+       WEBSITE FONT PRELOADS
+       ======================================================= -->
+
+  <link
+    rel="preload"
+    href="./AvenirNext-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  >
+
+  <link
+    rel="preload"
+    href="./AvenirNext-Medium.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  >
+
+  <link
+    rel="preload"
+    href="./gfs-didot-latin-400-normal.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  >
 
 
   <!-- =======================================================
@@ -46,7 +73,51 @@
 
 
   <style>
+  <style>
 
+    /* =========================================================
+       DOMINIC RYAN — SELF-HOSTED WEBSITE FONTS
+       ========================================================= */
+
+    /* AVENIR NEXT — REGULAR */
+
+    @font-face {
+      font-family: "DR Avenir Next";
+      src: url("./AvenirNext-Regular.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    /* AVENIR NEXT — MEDIUM */
+
+    @font-face {
+      font-family: "DR Avenir Next";
+      src: url("./AvenirNext-Medium.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+    }
+
+    /* AVENIR NEXT — DEMIBOLD */
+
+    @font-face {
+      font-family: "DR Avenir Next";
+      src: url("./AvenirNext-DemiBold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+    }
+
+    /* GFS DIDOT — REGULAR */
+
+    @font-face {
+      font-family: "DR Didot";
+      src: url("./gfs-didot-latin-400-normal.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
     :root{
       --bg:#f2ede6;
       --paper:#fbf8f2;
@@ -1733,17 +1804,55 @@ transition:
           auto !important;
       }
 
-      :root{
+            :root{
         --photo-shift:
           0px !important;
       }
 
     }
 
+
+    /* =========================================================
+       DOMINIC RYAN — UNIVERSAL TYPOGRAPHY
+       ========================================================= */
+
+    /* DIDOT — EDITORIAL HEADINGS */
+
+    .name,
+    .formulations-feed-kicker {
+      font-family:
+        "DR Didot",
+        Didot,
+        "Didot LT STD",
+        "Bodoni 72",
+        "Bodoni MT",
+        Georgia,
+        serif;
+    }
+
+
+    /* AVENIR NEXT — BODY TEXT AND NAVIGATION */
+
+    .tagline,
+    .location,
+    .message-label,
+    .paper h1,
+    .paper p,
+    .formulations-feed-sub,
+    .formulations-feed-link,
+    .utility-nav {
+      font-family:
+        "DR Avenir Next",
+        "Avenir Next",
+        "Gill Sans",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+    }
+
   </style>
 
 </head>
-
 
 <body id="top">
 
