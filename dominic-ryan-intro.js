@@ -32,7 +32,7 @@
       align-items: center;
       justify-content: center;
 
-      background: #9D8875;
+      background: #9d8873;
 
       opacity: 1;
       visibility: visible;
