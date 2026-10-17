@@ -69,7 +69,7 @@
 @media (max-width: 760px) {
   .dr-intro img {
     width: min(40vw, 120px);
-    transform: translateX(10px);
+    transform: translate(15px, -15px);
   }
 }
 
