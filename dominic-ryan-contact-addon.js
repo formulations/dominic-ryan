@@ -99,7 +99,7 @@
       overflow: hidden;
       isolation: isolate;
 
-      background: #8b786b;
+      background: #9D8875;
 
       border: 1px solid rgba(255,255,255,.32);
       border-radius: 2px;
@@ -184,13 +184,13 @@
     @media (hover: hover) and (pointer: fine) {
 
       .dr-contact-trigger:hover {
-        background: #968276;
+        background: #aa9583;
 
         border-color:
           rgba(255,255,255,.48);
 
         box-shadow:
-          0 0 17px rgba(139,120,107,.19),
+          0 0 17px rgba(157,136,117,.19),
           0 3px 12px rgba(70,57,47,.07);
       }
 
@@ -201,10 +201,10 @@
     }
 
     .dr-contact-trigger:active {
-      background: #806d61;
+      background: #8b7766;
 
       box-shadow:
-        0 0 12px rgba(139,120,107,.16);
+        0 0 12px rgba(157,136,117,.16);
     }
 
     .dr-contact-mail {
@@ -236,7 +236,7 @@
     .dr-contact-close:focus-visible,
     .dr-contact-submit:focus-visible,
     .dr-contact-toolbar button:focus-visible {
-      outline: 2px solid #8b786b;
+      outline: 2px solid #9D8875;
       outline-offset: 3px;
     }
 
@@ -459,46 +459,47 @@
     }
 
     .dr-contact-field input {
-  width: 100%;
-  min-width: 0;
-  height: 100%;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
 
-  border: 0;
-  outline: 0;
+      border: 0;
+      outline: 0;
 
-  background: transparent;
+      background: transparent;
 
-  padding: 0 14px 0 0;
+      padding: 0 14px 0 0;
 
-  font-family:
-    "Avenir Next",
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+      font-family:
+        "Avenir Next",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
 
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.56;
-  letter-spacing: .01em;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.56;
+      letter-spacing: .01em;
 
-  color: #5c524b;
+      color: #5c524b;
 
-  -webkit-text-fill-color: #5c524b;
-}
-.dr-contact-field input:-webkit-autofill,
-.dr-contact-field input:-webkit-autofill:hover,
-.dr-contact-field input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #5c524b;
+      -webkit-text-fill-color: #5c524b;
+    }
 
-  -webkit-box-shadow:
-    0 0 0 1000px #fbf8f2 inset;
+    .dr-contact-field input:-webkit-autofill,
+    .dr-contact-field input:-webkit-autofill:hover,
+    .dr-contact-field input:-webkit-autofill:focus {
+      -webkit-text-fill-color: #5c524b;
 
-  box-shadow:
-    0 0 0 1000px #fbf8f2 inset;
+      -webkit-box-shadow:
+        0 0 0 1000px #fbf8f2 inset;
 
-  transition:
-    background-color 9999s ease-out;
-}
+      box-shadow:
+        0 0 0 1000px #fbf8f2 inset;
+
+      transition:
+        background-color 9999s ease-out;
+    }
 
     .dr-contact-field input::placeholder {
       color: #746c65;
@@ -809,28 +810,77 @@
     }
 
     /* =====================================================
-       MOBILE
+       MOBILE — MINIMAL ENVELOPE HEADER
        ===================================================== */
 
     @media (max-width: 760px) {
 
-      .dr-contact-header {
-        gap: 10px;
+      /* Preserve the existing branding and tagline. */
+
+      .header {
+        gap: 12px;
       }
+
+      .brand {
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      /* Envelope occupies the top-right corner. */
+
+      .dr-contact-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+
+        flex: 0 0 auto;
+        gap: 0;
+      }
+
+      /* Hide location on mobile only. */
+
+      .dr-contact-header .location {
+        display: none;
+      }
+
+      /* Rounded-square envelope button. */
 
       .dr-contact-trigger {
-        padding: 8px 10px;
-        gap: 7px;
+        width: 44px;
+        height: 44px;
 
-        font-size: 8px;
-        letter-spacing: .05em;
+        min-width: 44px;
+        min-height: 44px;
+
+        padding: 0;
+        gap: 0;
+
+        border-radius: 8px;
+
+        background: #9D8875;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      .dr-contact-mail,
+      /* Hide text; preserve the envelope icon. */
+
+      .dr-contact-trigger > span:last-child {
+        display: none;
+      }
+
+      .dr-contact-mail {
+        width: 20px;
+        height: 20px;
+      }
+
       .dr-contact-mail svg {
-        width: 15px;
-        height: 15px;
+        width: 20px;
+        height: 20px;
       }
+
+      /* MODAL */
 
       .dr-contact-overlay {
         padding: 12px;
@@ -861,15 +911,16 @@
         font-size: 15px;
       }
 
+      /* FORM FIELDS — PREVENT IOS AUTO-ZOOM */
+
       .dr-contact-field {
         height: 53px;
       }
-      
-.dr-contact-field input {
 
-  font-size: 16px;
+      .dr-contact-field input {
+        font-size: 16px;
+      }
 
-}
       .dr-contact-field-icon {
         flex-basis: 51px;
       }
@@ -883,28 +934,28 @@
         min-height: 215px;
       }
 
-      /* MOBILE MESSAGE TYPOGRAPHY */
+      /* MESSAGE TYPOGRAPHY — PREVENT IOS AUTO-ZOOM */
 
-/* MOBILE MESSAGE TYPOGRAPHY — PREVENT IOS AUTO-ZOOM */
+      .dr-contact-message,
+      .dr-contact-message * {
+        font-size: 16px;
+      }
 
-.dr-contact-message,
-.dr-contact-message * {
-  font-size: 16px;
-}
+      .dr-contact-message {
+        min-height: 175px;
 
-.dr-contact-message {
-  min-height: 175px;
+        font-family:
+          "Avenir Next",
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
 
-  font-family:
-    "Avenir Next",
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+        line-height: 1.56;
 
-  line-height: 1.56;
+        -webkit-text-size-adjust: 100%;
+      }
 
-  -webkit-text-size-adjust: 100%;
-}
+      /* TOOLBAR */
 
       .dr-contact-toolbar {
         gap: 0;
@@ -918,6 +969,8 @@
       .dr-contact-toolbar-separator {
         margin: 0 3px;
       }
+
+      /* FORM FOOTER */
 
       .dr-contact-submit {
         min-width: 0;
@@ -938,16 +991,11 @@
 
     }
 
+    /* =====================================================
+       VERY NARROW MOBILE
+       ===================================================== */
+
     @media (max-width: 390px) {
-
-      .dr-contact-trigger {
-        font-size: 7px;
-        padding: 7px;
-      }
-
-      .dr-contact-header {
-        gap: 6px;
-      }
 
       .dr-contact-dialog {
         padding-left: 18px;
@@ -1005,6 +1053,13 @@
 
     headerButton.className =
       "dr-contact-trigger";
+
+    /* Accessible name for icon-only mobile button. */
+
+    headerButton.setAttribute(
+      "aria-label",
+      "Get in touch"
+    );
 
     headerButton.setAttribute(
       "data-dr-contact-open",
@@ -1251,21 +1306,52 @@
                 aria-hidden="true"
               ></span>
 
-              <button
-                type="button"
-                data-format="list"
-                aria-label="Bulleted list"
-              >
-                ☷
-              </button>
+            <button
+  type="button"
+  data-format="list"
+  aria-label="Bulleted list"
+>
+  <svg
+    viewBox="0 0 24 24"
+    width="19"
+    height="19"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none"/>
+    <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/>
+    <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none"/>
+
+    <path d="M9 6h11"/>
+    <path d="M9 12h11"/>
+    <path d="M9 18h11"/>
+  </svg>
+</button>
 
               <button
-                type="button"
-                data-format="link"
-                aria-label="Insert link"
-              >
-                🔗
-              </button>
+  type="button"
+  data-format="link"
+  aria-label="Insert link"
+>
+  <svg
+    viewBox="0 0 24 24"
+    width="19"
+    height="19"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M10 13.5a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L10.9 5.53"/>
+    <path d="M14 10.5a5 5 0 0 0-7.07 0L4.81 12.62a5 5 0 0 0 7.07 7.07l1.22-1.22"/>
+  </svg>
+</button>
 
             </div>
 
