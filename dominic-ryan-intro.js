@@ -1,5 +1,6 @@
 /* =========================================================
    DOMINIC RYAN — BRANDED INTRODUCTION
+   APNG VERSION — DESKTOP + MOBILE
    ========================================================= */
 
 (() => {
@@ -18,12 +19,6 @@
   } catch (_) {
     // Continue if session storage is unavailable.
   }
-
-  /* =========================================================
-     DEVICE DETECTION
-     ========================================================= */
-
-  const isMobile = window.matchMedia("(max-width: 760px)").matches;
 
   /* =========================================================
      STYLING
@@ -57,7 +52,6 @@
       pointer-events: none;
     }
 
-    .dr-intro video,
     .dr-intro img {
       display: block;
 
@@ -70,16 +64,9 @@
       pointer-events: none;
     }
 
-    /* DESKTOP WEBM COLOR */
-
-    .dr-intro video {
-      filter: brightness(0) saturate(100%) invert(94%) sepia(5%) saturate(271%) hue-rotate(332deg) brightness(102%) contrast(91%);
-    }
-
     /* MOBILE */
 
     @media (max-width: 760px) {
-      .dr-intro video,
       .dr-intro img {
         width: min(40vw, 120px);
       }
@@ -105,37 +92,17 @@
   intro.className = "dr-intro";
   intro.setAttribute("aria-label", "Dominic Ryan");
 
-  if (isMobile) {
+  /* =========================================================
+     APNG — ALL DEVICES
+     ========================================================= */
 
-    /* MOBILE — TRANSPARENT APNG */
+  const logo = document.createElement("img");
 
-    const logo = document.createElement("img");
+  logo.src = "dr-reveal-ivory-mobile.apng?v=1";
+  logo.alt = "Dominic Ryan";
+  logo.setAttribute("fetchpriority", "high");
 
-    logo.src = "dr-reveal-ivory-mobile.apng?v=1";
-    logo.alt = "Dominic Ryan";
-    logo.setAttribute("fetchpriority", "high");
-
-    intro.appendChild(logo);
-
-  } else {
-
-    /* DESKTOP — ORIGINAL 60FPS WEBM */
-
-    const logo = document.createElement("video");
-
-    logo.src = "dr-reveal-60fps-transparent-correctedd.webm";
-
-    logo.autoplay = true;
-    logo.muted = true;
-    logo.playsInline = true;
-    logo.preload = "auto";
-    logo.loop = false;
-
-    logo.setAttribute("aria-label", "Dominic Ryan");
-    logo.setAttribute("disablepictureinpicture", "");
-
-    intro.appendChild(logo);
-  }
+  intro.appendChild(logo);
 
   document.body.appendChild(intro);
 
