@@ -485,6 +485,20 @@
 
   -webkit-text-fill-color: #5c524b;
 }
+.dr-contact-field input:-webkit-autofill,
+.dr-contact-field input:-webkit-autofill:hover,
+.dr-contact-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #5c524b;
+
+  -webkit-box-shadow:
+    0 0 0 1000px #fbf8f2 inset;
+
+  box-shadow:
+    0 0 0 1000px #fbf8f2 inset;
+
+  transition:
+    background-color 9999s ease-out;
+}
 
     .dr-contact-field input::placeholder {
       color: #746c65;
@@ -850,7 +864,12 @@
       .dr-contact-field {
         height: 53px;
       }
+      
+.dr-contact-field input {
 
+  font-size: 16px;
+
+}
       .dr-contact-field-icon {
         flex-basis: 51px;
       }
