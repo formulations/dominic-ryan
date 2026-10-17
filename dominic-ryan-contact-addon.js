@@ -110,7 +110,7 @@
       overflow: hidden;
       isolation: isolate;
 
-      background: #9D8875;
+      background: #9d8873;
 
       border: 1px solid rgba(255,255,255,.32);
       border-radius: 8px;
@@ -227,7 +227,7 @@
     .dr-contact-close:focus-visible,
     .dr-contact-submit:focus-visible,
     .dr-contact-toolbar button:focus-visible {
-      outline: 2px solid #9D8875;
+      outline: 2px solid #9d8873;
       outline-offset: 3px;
     }
 
@@ -390,7 +390,7 @@
       font-weight: 400;
       letter-spacing: -.035em;
 
-      color: #9D8875;
+      color: #9d8873;
     }
 
     .dr-contact-ornament {
@@ -398,7 +398,7 @@
       font-size: .66em;
       line-height: 1;
       font-weight: 400;
-      color: #9D8875;
+      color: #9d8873;
     }
 
     .dr-contact-intro {
@@ -667,7 +667,7 @@
       line-height: 1.56;
       letter-spacing: normal;
 
-      color: #9D8875;
+      color: #9d8873;
     }
 
     .dr-contact-message:empty::before {
@@ -1203,7 +1203,7 @@ transition:
         font-weight: 400;
         line-height: 1.56;
 
-        color: #9D8875;
+        color: #9d8873;
 
         -webkit-text-size-adjust: 100%;
         text-size-adjust: 100%;
