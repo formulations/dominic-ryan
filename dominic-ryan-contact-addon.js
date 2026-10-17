@@ -6,19 +6,12 @@
    https://formspree.io/f/xzedoqkn
 
    Designed for Dominic Ryan | Formulations
-
-   Updates:
-   - Mobile opening/closing transitions
-   - Keyboard-aware field and caret positioning
-   - Restores page position after closing
-   - Disables form autocomplete suggestions where supported
    ========================================================= */
 
 (() => {
   "use strict";
 
   const FORMSPREE_URL = "https://formspree.io/f/xzedoqkn";
-  const CLOSE_MS = 370;
 
   /* Prevent duplicate initialization. */
 
@@ -135,8 +128,6 @@
         box-shadow .8s ease;
     }
 
-    /* DIFFUSED LIGHT */
-
     .dr-contact-trigger::before {
       content: "";
 
@@ -161,8 +152,6 @@
         opacity .75s
         cubic-bezier(.22,.61,.36,1);
     }
-
-    /* FOLDED CORNER */
 
     .dr-contact-trigger::after {
       content: "";
@@ -233,6 +222,15 @@
       cursor: pointer;
     }
 
+    /* Keep injected CONTACT divider + link together. */
+
+    .dr-contact-nav-group {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
     /* =====================================================
        ACCESSIBILITY
        ===================================================== */
@@ -284,7 +282,7 @@
     }
 
     /* =====================================================
-       MODAL PANEL — ELEGANT ENTRANCE / EXIT
+       MODAL PANEL
        ===================================================== */
 
     .dr-contact-dialog {
@@ -318,26 +316,24 @@
       box-shadow:
         0 26px 75px rgba(35,28,24,.23);
 
-      transform:
-        translateY(14px)
-        scale(.99);
+      opacity: 0;
 
-      opacity: .96;
+      transform:
+        translateY(12px);
 
       transition:
+        opacity .38s ease,
         transform .4s
-          cubic-bezier(.22,.61,.36,1),
-        opacity .35s ease;
+        cubic-bezier(.22,.61,.36,1);
 
       scrollbar-width: thin;
     }
 
     .dr-contact-overlay.is-open .dr-contact-dialog {
-      transform:
-        translateY(0)
-        scale(1);
-
       opacity: 1;
+
+      transform:
+        translateY(0);
     }
 
     /* CLOSE BUTTON */
@@ -847,6 +843,222 @@
     }
 
     /* =====================================================
+       SHORT DESKTOP / LAPTOP VIEWPORTS
+
+       Preserves the full-size composition on larger screens,
+       but tightens vertical spacing when browser height is
+       limited, such as a 13-inch MacBook.
+       ===================================================== */
+
+    @media (min-width: 761px) and (max-height: 850px) {
+
+      .dr-contact-overlay {
+        padding-top: 14px;
+        padding-bottom: 14px;
+      }
+
+      .dr-contact-dialog {
+        max-height: calc(100dvh - 28px);
+
+        padding:
+          31px
+          43px
+          22px;
+      }
+
+      .dr-contact-close {
+        top: 13px;
+        right: 17px;
+      }
+
+      .dr-contact-eyebrow {
+        margin-bottom: 7px;
+      }
+
+      .dr-contact-title {
+        font-size: 45px;
+        margin-bottom: 5px;
+      }
+
+      .dr-contact-intro {
+        font-size: 15.5px;
+        line-height: 1.4;
+        margin-bottom: 17px;
+      }
+
+      .dr-contact-field {
+        height: 49px;
+        margin-bottom: 8px;
+      }
+
+      .dr-contact-field-icon {
+        flex-basis: 52px;
+      }
+
+      .dr-contact-field-icon svg {
+        width: 21px;
+        height: 21px;
+      }
+
+      .dr-contact-divider {
+        margin-top: 13px;
+        margin-bottom: 13px;
+      }
+
+      .dr-contact-toolbar {
+        min-height: 43px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+      }
+
+      .dr-contact-toolbar button {
+        height: 32px;
+      }
+
+      .dr-contact-message-wrap {
+        min-height: 168px;
+
+        padding:
+          15px
+          18px
+          15px;
+      }
+
+      .dr-contact-message {
+        min-height: 138px;
+      }
+
+      .dr-contact-footer {
+        margin-top: 18px;
+      }
+
+      .dr-contact-monogram {
+        width: 58px;
+      }
+
+      .dr-contact-submit {
+        min-height: 48px;
+      }
+
+      .dr-contact-status {
+        margin-top: 9px;
+        min-height: 16px;
+      }
+
+    }
+
+    /* =====================================================
+       EXTRA-SHORT DESKTOP VIEWPORTS
+       ===================================================== */
+
+    @media (min-width: 761px) and (max-height: 720px) {
+
+      .dr-contact-overlay {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+      .dr-contact-dialog {
+        max-height: calc(100dvh - 20px);
+
+        padding:
+          25px
+          39px
+          17px;
+      }
+
+      .dr-contact-close {
+        top: 9px;
+      }
+
+      .dr-contact-eyebrow {
+        margin-bottom: 5px;
+      }
+
+      .dr-contact-title {
+        font-size: 40px;
+        margin-bottom: 3px;
+      }
+
+      .dr-contact-intro {
+        font-size: 14px;
+        line-height: 1.35;
+        margin-bottom: 12px;
+      }
+
+      .dr-contact-field {
+        height: 44px;
+        margin-bottom: 6px;
+      }
+
+      .dr-contact-divider {
+        margin-top: 9px;
+        margin-bottom: 9px;
+      }
+
+      .dr-contact-toolbar {
+        min-height: 39px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+
+      .dr-contact-toolbar button {
+        height: 30px;
+      }
+
+      .dr-contact-message-wrap {
+        min-height: 125px;
+
+        padding:
+          12px
+          17px
+          12px;
+      }
+
+      .dr-contact-message {
+        min-height: 101px;
+      }
+
+      .dr-contact-footer {
+        margin-top: 13px;
+      }
+
+      .dr-contact-monogram {
+        width: 51px;
+      }
+
+      .dr-contact-submit {
+        min-height: 44px;
+      }
+
+      .dr-contact-status {
+        margin-top: 6px;
+        min-height: 14px;
+      }
+
+    }
+
+    /* =====================================================
+       FOOTER RESPONSIVENESS
+       ===================================================== */
+
+    @media (max-width: 760px) {
+
+      /*
+        CONTACT and its divider remain one atomic unit.
+        This prevents the divider from being orphaned on
+        one line while CONTACT wraps onto another.
+      */
+
+      .dr-contact-nav-group {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+      }
+
+    }
+
+    /* =====================================================
        MOBILE
        ===================================================== */
 
@@ -900,21 +1112,11 @@
 
         display: flex;
 
-        /*
-          Align the panel to the top of the visible
-          viewport so opening the keyboard does not
-          recenter the entire contact form.
-        */
-
         align-items: flex-start;
         justify-content: center;
 
         overflow: hidden;
       }
-
-      /* =================================================
-         MOBILE PANEL — ELEGANT ANIMATION
-         ================================================= */
 
       .dr-contact-dialog {
         box-sizing: border-box;
@@ -941,32 +1143,19 @@
           23px;
 
         /*
-          A small vertical movement rather than
-          scaling prevents the form from appearing
-          to zoom in and out.
+          Mobile keeps the panel stationary while the
+          keyboard changes the visual viewport. Opacity
+          provides the open/close transition without
+          causing the panel to jump.
         */
 
-        transform: translateY(12px);
-        opacity: .96;
+        transform: none !important;
 
         transition:
-          transform .38s
-            cubic-bezier(.22,.61,.36,1),
-          opacity .35s ease;
+          opacity .35s ease !important;
       }
 
       .dr-contact-overlay.is-open .dr-contact-dialog {
-        transform: translateY(0);
-        opacity: 1;
-      }
-
-      /*
-        While the keyboard is open, disable panel
-        movement to keep the text cursor stable.
-      */
-
-      .dr-contact-overlay.is-keyboard-open .dr-contact-dialog {
-        transition: none !important;
         transform: none !important;
       }
 
@@ -984,7 +1173,7 @@
       }
 
       /* =================================================
-         MOBILE INPUTS — PREVENT IOS FOCUS ZOOM
+         MOBILE INPUTS — IOS FOCUS ZOOM
          ================================================= */
 
       .dr-contact-field {
@@ -1201,6 +1390,19 @@
 
   if (nav) {
 
+    /*
+      The divider and CONTACT link live inside one wrapper.
+
+      This is intentional: the browser can wrap the group,
+      but cannot separate CONTACT from its divider.
+    */
+
+    const footerGroup =
+      document.createElement("span");
+
+    footerGroup.className =
+      "dr-contact-nav-group";
+
     const divider =
       document.createElement("span");
 
@@ -1228,8 +1430,10 @@
     footerLink.textContent =
       "CONTACT";
 
-    nav.appendChild(divider);
-    nav.appendChild(footerLink);
+    footerGroup.appendChild(divider);
+    footerGroup.appendChild(footerLink);
+
+    nav.appendChild(footerGroup);
 
   }
 
@@ -1294,8 +1498,8 @@
 
         <form
           id="dr-contact-form"
-          novalidate
           autocomplete="off"
+          novalidate
         >
 
           <!-- NAME -->
@@ -1315,9 +1519,6 @@
               placeholder="Your name"
               aria-label="Your name"
               autocomplete="off"
-              autocorrect="off"
-              autocapitalize="words"
-              spellcheck="false"
               required
               maxlength="150"
             >
@@ -1341,9 +1542,6 @@
               placeholder="Your email"
               aria-label="Your email"
               autocomplete="off"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
               required
               maxlength="254"
             >
@@ -1367,9 +1565,6 @@
               placeholder="Subject"
               aria-label="Subject"
               autocomplete="off"
-              autocorrect="off"
-              autocapitalize="sentences"
-              spellcheck="false"
               required
               maxlength="200"
             >
@@ -1487,7 +1682,6 @@
                 aria-multiline="true"
                 data-placeholder="Write your message..."
                 spellcheck="true"
-                autocomplete="off"
               ></div>
 
             </div>
@@ -1586,27 +1780,46 @@
   const toolbar =
     overlay.querySelector(".dr-contact-toolbar");
 
+  /* =========================================================
+     AUTOCOMPLETE SUPPRESSION
+     ========================================================= */
+
+  form.setAttribute(
+    "autocomplete",
+    "off"
+  );
+
+  form
+    .querySelectorAll("input")
+    .forEach(input => {
+
+      input.setAttribute(
+        "autocomplete",
+        "off"
+      );
+
+    });
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+
   let previousFocus = null;
 
-  let previousOverflow = "";
-  let previousHtmlOverflow = "";
-  let previousBodyOverscroll = "";
+  let fieldScrollTimer = null;
+  let fieldScrollFrame = null;
+
+  let modalOpen = false;
+  let closeTimer = null;
 
   let savedScrollX = 0;
   let savedScrollY = 0;
 
-  let fieldScrollTimer = null;
-  let fieldScrollFrame = null;
-  let focusFollowTimer = null;
-  let closeTimer = null;
-
-  let isClosing = false;
-  let isOpen = false;
-
-  let savedSelection = null;
+  let previousBodyStyles = null;
+  let previousHtmlOverflow = "";
 
   /* =========================================================
-     MOBILE — DETECT SCREEN SIZE
+     MOBILE — VIEWPORT MANAGEMENT
      ========================================================= */
 
   function isMobileContact() {
@@ -1617,88 +1830,25 @@
 
   }
 
-  /* =========================================================
-     MOBILE — CANCEL PENDING FIELD SCROLLING
-     ========================================================= */
-
-  function cancelFieldScrolling() {
-
-    if (fieldScrollTimer !== null) {
-
-      clearTimeout(
-        fieldScrollTimer
-      );
-
-      fieldScrollTimer = null;
-
-    }
-
-    if (fieldScrollFrame !== null) {
-
-      cancelAnimationFrame(
-        fieldScrollFrame
-      );
-
-      fieldScrollFrame = null;
-
-    }
-
-    if (focusFollowTimer !== null) {
-
-      clearTimeout(
-        focusFollowTimer
-      );
-
-      focusFollowTimer = null;
-
-    }
-
-  }
-
-  /* =========================================================
-     MOBILE — RESET VIEWPORT ADJUSTMENTS
-     ========================================================= */
-
-  function resetContactViewport() {
-
-    const properties = [
-      "--dr-viewport-top",
-      "--dr-viewport-left",
-      "--dr-viewport-width",
-      "--dr-viewport-height"
-    ];
-
-    properties.forEach(
-      property => {
-
-        overlay.style.removeProperty(
-          property
-        );
-
-      }
-    );
-
-    overlay.classList.remove(
-      "is-keyboard-open"
-    );
-
-  }
-
-  /* =========================================================
-     MOBILE — VIEWPORT MANAGEMENT
-     ========================================================= */
-
   function syncContactViewport() {
 
-    if (
-      !isOpen ||
-      isClosing ||
-      !isMobileContact()
-    ) {
+    if (!isMobileContact()) {
 
-      if (!isOpen) {
-        resetContactViewport();
-      }
+      overlay.style.removeProperty(
+        "--dr-viewport-top"
+      );
+
+      overlay.style.removeProperty(
+        "--dr-viewport-left"
+      );
+
+      overlay.style.removeProperty(
+        "--dr-viewport-width"
+      );
+
+      overlay.style.removeProperty(
+        "--dr-viewport-height"
+      );
 
       return;
 
@@ -1731,28 +1881,6 @@
       `${viewport.height}px`
     );
 
-    /*
-      Detect whether the visible viewport has
-      been reduced substantially by the keyboard.
-
-      This is used only to stabilize the modal.
-    */
-
-    const keyboardHeight =
-      Math.max(
-        0,
-        window.innerHeight -
-        (
-          viewport.height +
-          viewport.offsetTop
-        )
-      );
-
-    overlay.classList.toggle(
-      "is-keyboard-open",
-      keyboardHeight > 110
-    );
-
   }
 
   /* =========================================================
@@ -1775,9 +1903,7 @@
         ".dr-contact-field input"
       )
     ) {
-
       return active;
-
     }
 
     return null;
@@ -1798,9 +1924,7 @@
       !selection.rangeCount ||
       !editor.contains(selection.anchorNode)
     ) {
-
       return null;
-
     }
 
     const range =
@@ -1815,9 +1939,7 @@
       rect &&
       rect.height > 0
     ) {
-
       return rect;
-
     }
 
     const rects =
@@ -1836,13 +1958,10 @@
   function scrollActiveContactField() {
 
     if (
-      !isOpen ||
-      isClosing ||
-      !isMobileContact()
+      !isMobileContact() ||
+      !modalOpen
     ) {
-
       return;
-
     }
 
     const active =
@@ -1879,15 +1998,6 @@
       const caretRect =
         getEditorCaretRect();
 
-      /*
-        When the editor is empty, reveal the
-        beginning of the message area.
-
-        Once the visitor begins typing, follow
-        the actual text cursor instead of
-        trying to display the entire editor.
-      */
-
       if (
         caretRect &&
         editor.innerText.trim()
@@ -1907,11 +2017,7 @@
           editorRect.top;
 
         targetBottom =
-          editorRect.top +
-          Math.min(
-            85,
-            availableHeight * 0.35
-          );
+          editorRect.top + 85;
 
       }
 
@@ -1939,33 +2045,22 @@
 
     }
 
-    /*
-      Reserve some room beneath the message
-      cursor so visitors can see additional
-      lines above the keyboard.
-
-      The website itself is not zoomed.
-    */
-
-    const lowerContext =
+    const contextSpace =
       active === editor
         ? Math.min(
-            90,
+            95,
             Math.max(
-              18,
-              availableHeight * 0.27
+              22,
+              availableHeight * 0.30
             )
           )
         : 14;
 
-    const preferredTop =
-      visibleTop + 12;
-
     const preferredBottom =
-      Math.max(
-        preferredTop + 30,
-        visibleBottom - lowerContext
-      );
+      visibleBottom - contextSpace;
+
+    const preferredTop =
+      visibleTop + 14;
 
     let scrollAmount = 0;
 
@@ -2006,19 +2101,7 @@
     delay = 60
   ) {
 
-    if (
-      !isOpen ||
-      isClosing ||
-      !isMobileContact()
-    ) {
-
-      return;
-
-    }
-
-    if (
-      fieldScrollTimer !== null
-    ) {
+    if (fieldScrollTimer !== null) {
 
       clearTimeout(
         fieldScrollTimer
@@ -2067,13 +2150,8 @@
 
   function handleContactViewportChange() {
 
-    if (
-      !isOpen ||
-      isClosing
-    ) {
-
+    if (!modalOpen) {
       return;
-
     }
 
     syncContactViewport();
@@ -2127,55 +2205,27 @@
           "input, [contenteditable='true']"
         )
       ) {
-
         return;
-
       }
-
-      /*
-        First adjustment when the field
-        receives focus.
-      */
 
       scheduleContactFieldScroll(
         80
       );
 
-      /*
-        Second adjustment after the iPhone
-        keyboard has had time to animate.
-      */
+      window.setTimeout(
+        () => {
 
-      if (
-        focusFollowTimer !== null
-      ) {
+          if (modalOpen) {
 
-        clearTimeout(
-          focusFollowTimer
-        );
+            syncContactViewport();
 
-      }
+            scrollActiveContactField();
 
-      focusFollowTimer =
-        window.setTimeout(
-          () => {
+          }
 
-            focusFollowTimer = null;
-
-            if (
-              isOpen &&
-              !isClosing
-            ) {
-
-              syncContactViewport();
-
-              scrollActiveContactField();
-
-            }
-
-          },
-          420
-        );
+        },
+        420
+      );
 
     }
   );
@@ -2218,6 +2268,105 @@
   );
 
   /* =========================================================
+     PAGE SCROLL LOCK
+     ========================================================= */
+
+  function lockBackgroundScroll() {
+
+    savedScrollX =
+      window.scrollX ||
+      window.pageXOffset ||
+      0;
+
+    savedScrollY =
+      window.scrollY ||
+      window.pageYOffset ||
+      0;
+
+    previousBodyStyles = {
+      position:
+        document.body.style.position,
+
+      top:
+        document.body.style.top,
+
+      left:
+        document.body.style.left,
+
+      right:
+        document.body.style.right,
+
+      width:
+        document.body.style.width,
+
+      overflow:
+        document.body.style.overflow
+    };
+
+    previousHtmlOverflow =
+      document.documentElement.style.overflow;
+
+    document.body.style.position =
+      "fixed";
+
+    document.body.style.top =
+      `-${savedScrollY}px`;
+
+    document.body.style.left =
+      `-${savedScrollX}px`;
+
+    document.body.style.right =
+      "0";
+
+    document.body.style.width =
+      "100%";
+
+    document.body.style.overflow =
+      "hidden";
+
+    document.documentElement.style.overflow =
+      "hidden";
+
+  }
+
+  function restoreBackgroundScroll() {
+
+    if (!previousBodyStyles) {
+      return;
+    }
+
+    document.body.style.position =
+      previousBodyStyles.position;
+
+    document.body.style.top =
+      previousBodyStyles.top;
+
+    document.body.style.left =
+      previousBodyStyles.left;
+
+    document.body.style.right =
+      previousBodyStyles.right;
+
+    document.body.style.width =
+      previousBodyStyles.width;
+
+    document.body.style.overflow =
+      previousBodyStyles.overflow;
+
+    document.documentElement.style.overflow =
+      previousHtmlOverflow;
+
+    window.scrollTo({
+      left: savedScrollX,
+      top: savedScrollY,
+      behavior: "instant"
+    });
+
+    previousBodyStyles = null;
+
+  }
+
+  /* =========================================================
      OPEN CONTACT MODAL
      ========================================================= */
 
@@ -2227,18 +2376,11 @@
       event.preventDefault();
     }
 
-    if (
-      isOpen &&
-      !isClosing
-    ) {
-
+    if (modalOpen) {
       return;
-
     }
 
-    if (
-      closeTimer !== null
-    ) {
+    if (closeTimer !== null) {
 
       clearTimeout(
         closeTimer
@@ -2248,33 +2390,10 @@
 
     }
 
-    isClosing = false;
-    isOpen = true;
-
-    /*
-      Save the previously focused element
-      and the website's scroll position.
-    */
+    modalOpen = true;
 
     previousFocus =
       document.activeElement;
-
-    previousOverflow =
-      document.body.style.overflow;
-
-    previousHtmlOverflow =
-      document.documentElement.style.overflow;
-
-    previousBodyOverscroll =
-      document.body.style.overscrollBehavior;
-
-    savedScrollX =
-      window.scrollX;
-
-    savedScrollY =
-      window.scrollY;
-
-    /* Reset the form. */
 
     dialog.classList.remove(
       "is-success"
@@ -2284,8 +2403,6 @@
 
     editor.innerHTML = "";
 
-    savedSelection = null;
-
     status.textContent = "";
 
     status.classList.remove(
@@ -2294,30 +2411,9 @@
 
     dialog.scrollTop = 0;
 
-    /*
-      Prevent background scrolling without
-      changing the body's position or scale.
-    */
-
-    document.body.style.overflow =
-      "hidden";
-
-    document.documentElement.style.overflow =
-      "hidden";
-
-    document.body.style.overscrollBehavior =
-      "none";
-
-    /*
-      Prepare the mobile viewport before
-      displaying the contact form.
-    */
+    lockBackgroundScroll();
 
     syncContactViewport();
-
-    overlay.classList.add(
-      "is-open"
-    );
 
     overlay.setAttribute(
       "aria-hidden",
@@ -2325,14 +2421,26 @@
     );
 
     /*
-      Focus the close button rather than
-      an input to avoid opening the keyboard
-      automatically.
+      Force the hidden state to render before adding
+      is-open. This keeps the entrance transition clean
+      and independent from keyboard viewport changes.
     */
 
-    closeButton.focus({
-      preventScroll: true
-    });
+    void overlay.offsetWidth;
+
+    overlay.classList.add(
+      "is-open"
+    );
+
+    requestAnimationFrame(
+      () => {
+
+        closeButton.focus({
+          preventScroll: true
+        });
+
+      }
+    );
 
   }
 
@@ -2342,26 +2450,40 @@
 
   function closeContact() {
 
+    if (!modalOpen) {
+      return;
+    }
+
+    modalOpen = false;
+
     if (
-      !isOpen ||
-      isClosing
+      fieldScrollTimer !== null
     ) {
 
-      return;
+      clearTimeout(
+        fieldScrollTimer
+      );
+
+      fieldScrollTimer = null;
 
     }
 
-    isClosing = true;
+    if (
+      fieldScrollFrame !== null
+    ) {
 
-    cancelFieldScrolling();
+      cancelAnimationFrame(
+        fieldScrollFrame
+      );
+
+      fieldScrollFrame = null;
+
+    }
 
     /*
-      Dismiss the keyboard before completing
-      the closing animation.
-
-      This avoids immediately returning focus
-      to the website while the keyboard is
-      still visible.
+      Blur any active form field first so the iPhone
+      keyboard begins closing before the underlying page
+      is restored.
     */
 
     const active =
@@ -2369,21 +2491,13 @@
 
     if (
       active &&
-      dialog.contains(active) &&
+      overlay.contains(active) &&
       typeof active.blur === "function"
     ) {
 
       active.blur();
 
     }
-
-    /*
-      Re-enable the normal closing animation.
-    */
-
-    overlay.classList.remove(
-      "is-keyboard-open"
-    );
 
     overlay.classList.remove(
       "is-open"
@@ -2394,95 +2508,51 @@
       "true"
     );
 
-    /* =====================================================
-       COMPLETE CLOSING AFTER THE FADE
-       ===================================================== */
-
-    const finishClose = () => {
-
-      closeTimer = null;
-
-      if (!isClosing) {
-        return;
-      }
-
-      isOpen = false;
-      isClosing = false;
-
-      /*
-        Remove all temporary viewport
-        measurements from the modal.
-      */
-
-      resetContactViewport();
-
-      /*
-        Restore the website's original
-        scrolling behavior.
-      */
-
-      document.body.style.overflow =
-        previousOverflow;
-
-      document.documentElement.style.overflow =
-        previousHtmlOverflow;
-
-      document.body.style.overscrollBehavior =
-        previousBodyOverscroll;
-
-      /*
-        Safari may shift the page while the
-        keyboard is being dismissed.
-
-        Restore the original scroll position
-        without modifying viewport scale.
-      */
-
-      if (
-        Math.abs(
-          window.scrollX - savedScrollX
-        ) > 1 ||
-        Math.abs(
-          window.scrollY - savedScrollY
-        ) > 1
-      ) {
-
-        window.scrollTo(
-          savedScrollX,
-          savedScrollY
-        );
-
-      }
-
-      /*
-        Return keyboard focus to the button
-        that originally opened the modal.
-      */
-
-      if (
-        previousFocus &&
-        typeof previousFocus.focus === "function"
-      ) {
-
-        previousFocus.focus({
-          preventScroll: true
-        });
-
-      }
-
-    };
-
-    const reducedMotion =
-      window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches;
+    /*
+      Keep the page fixed until the closing transition
+      finishes. Restoring the body too early is what can
+      cause the underlying page to visibly jump.
+    */
 
     closeTimer =
       window.setTimeout(
-        finishClose,
-        reducedMotion
-          ? 0
-          : CLOSE_MS
+        () => {
+
+          closeTimer = null;
+
+          restoreBackgroundScroll();
+
+          if (
+            previousFocus &&
+            typeof previousFocus.focus === "function"
+          ) {
+
+            previousFocus.focus({
+              preventScroll: true
+            });
+
+          }
+
+          /*
+            Safari can perform a late scroll adjustment
+            when focus returns. Reassert the original
+            coordinates on the next paint.
+          */
+
+          requestAnimationFrame(
+            () => {
+
+              window.scrollTo({
+                left: savedScrollX,
+                top: savedScrollY,
+                behavior: "instant"
+              });
+
+            }
+          );
+
+        },
+        400
       );
 
   }
@@ -2538,13 +2608,8 @@
     "keydown",
     event => {
 
-      if (
-        !isOpen ||
-        isClosing
-      ) {
-
+      if (!modalOpen) {
         return;
-
       }
 
       if (
@@ -2560,58 +2625,54 @@
       }
 
       if (
-        event.key !== "Tab"
+        event.key === "Tab"
       ) {
 
-        return;
+        const focusable =
+          Array.from(
+            dialog.querySelectorAll(
+              'button:not([disabled]), input:not([disabled]), [contenteditable="true"], a[href]'
+            )
+          ).filter(
+            element =>
+              element.getClientRects().length
+          );
 
-      }
+        if (
+          !focusable.length
+        ) {
+          return;
+        }
 
-      const focusable =
-        Array.from(
-          dialog.querySelectorAll(
-            'button:not([disabled]), input:not([disabled]), [contenteditable="true"], a[href]'
-          )
-        ).filter(
-          element =>
-            element.getClientRects().length
-        );
+        const first =
+          focusable[0];
 
-      if (
-        !focusable.length
-      ) {
+        const last =
+          focusable[
+            focusable.length - 1
+          ];
 
-        return;
+        if (
+          event.shiftKey &&
+          document.activeElement === first
+        ) {
 
-      }
+          event.preventDefault();
 
-      const first =
-        focusable[0];
+          last.focus();
 
-      const last =
-        focusable[
-          focusable.length - 1
-        ];
+        }
 
-      if (
-        event.shiftKey &&
-        document.activeElement === first
-      ) {
+        else if (
+          !event.shiftKey &&
+          document.activeElement === last
+        ) {
 
-        event.preventDefault();
+          event.preventDefault();
 
-        last.focus();
+          first.focus();
 
-      }
-
-      else if (
-        !event.shiftKey &&
-        document.activeElement === last
-      ) {
-
-        event.preventDefault();
-
-        first.focus();
+        }
 
       }
 
@@ -2619,88 +2680,7 @@
   );
 
   /* =========================================================
-     RICH TEXT — SAVE SELECTION
-     ========================================================= */
-
-  function rememberSelection() {
-
-    const selection =
-      window.getSelection();
-
-    if (
-      !selection ||
-      !selection.rangeCount ||
-      !editor.contains(
-        selection.anchorNode
-      )
-    ) {
-
-      return;
-
-    }
-
-    savedSelection =
-      selection
-        .getRangeAt(0)
-        .cloneRange();
-
-  }
-
-  /* =========================================================
-     RICH TEXT — RESTORE SELECTION
-     ========================================================= */
-
-  function restoreSelection() {
-
-    if (!savedSelection) {
-      return;
-    }
-
-    const selection =
-      window.getSelection();
-
-    if (!selection) {
-      return;
-    }
-
-    try {
-
-      selection.removeAllRanges();
-
-      selection.addRange(
-        savedSelection
-      );
-
-    }
-
-    catch (_) {
-
-      /*
-        A stale selection can occur after
-        the editor has been reset.
-      */
-
-    }
-
-  }
-
-  editor.addEventListener(
-    "keyup",
-    rememberSelection
-  );
-
-  editor.addEventListener(
-    "mouseup",
-    rememberSelection
-  );
-
-  editor.addEventListener(
-    "input",
-    rememberSelection
-  );
-
-  /* =========================================================
-     RICH TEXT — PREVENT TOOLBAR FROM STEALING FOCUS
+     RICH TEXT FORMATTING
      ========================================================= */
 
   toolbar.addEventListener(
@@ -2713,18 +2693,12 @@
         )
       ) {
 
-        rememberSelection();
-
         event.preventDefault();
 
       }
 
     }
   );
-
-  /* =========================================================
-     RICH TEXT FORMATTING
-     ========================================================= */
 
   toolbar.addEventListener(
     "click",
@@ -2742,89 +2716,100 @@
       const format =
         button.dataset.format;
 
+      editor.focus({
+        preventScroll: true
+      });
+
+      if (
+        format === "bold"
+      ) {
+
+        document.execCommand(
+          "bold",
+          false,
+          null
+        );
+
+      }
+
+      if (
+        format === "italic"
+      ) {
+
+        document.execCommand(
+          "italic",
+          false,
+          null
+        );
+
+      }
+
+      if (
+        format === "underline"
+      ) {
+
+        document.execCommand(
+          "underline",
+          false,
+          null
+        );
+
+      }
+
+      if (
+        format === "list"
+      ) {
+
+        document.execCommand(
+          "insertUnorderedList",
+          false,
+          null
+        );
+
+      }
+
       if (
         format === "link"
       ) {
-
-        rememberSelection();
 
         const url =
           window.prompt(
             "Enter a link beginning with https://"
           );
 
-        if (!url) {
-          return;
-        }
+        if (url) {
 
-        try {
+          try {
 
-          const parsed =
-            new URL(
-              url.trim()
-            );
+            const parsed =
+              new URL(
+                url.trim()
+              );
 
-          if (
-            parsed.protocol !== "https:" &&
-            parsed.protocol !== "http:"
-          ) {
+            if (
+              parsed.protocol === "https:" ||
+              parsed.protocol === "http:"
+            ) {
 
-            return;
+              document.execCommand(
+                "createLink",
+                false,
+                parsed.href
+              );
+
+            }
 
           }
 
-          editor.focus({
-            preventScroll: true
-          });
+          catch (_) {
 
-          restoreSelection();
+            /* Invalid links are ignored. */
 
-          document.execCommand(
-            "createLink",
-            false,
-            parsed.href
-          );
-
-        }
-
-        catch (_) {
-
-          /* Invalid links are ignored. */
+          }
 
         }
 
       }
-
-      else {
-
-        editor.focus({
-          preventScroll: true
-        });
-
-        restoreSelection();
-
-        const commands = {
-          bold: "bold",
-          italic: "italic",
-          underline: "underline",
-          list: "insertUnorderedList"
-        };
-
-        if (
-          commands[format]
-        ) {
-
-          document.execCommand(
-            commands[format],
-            false,
-            null
-          );
-
-        }
-
-      }
-
-      rememberSelection();
 
       scheduleContactFieldScroll(
         70
@@ -2861,10 +2846,6 @@
         "is-error"
       );
 
-      /* =====================================================
-         REQUIRED FIELDS
-         ===================================================== */
-
       if (
         !name ||
         !email ||
@@ -2883,10 +2864,6 @@
 
       }
 
-      /* =====================================================
-         EMAIL VALIDATION
-         ===================================================== */
-
       if (
         !form.elements.email.checkValidity()
       ) {
@@ -2901,10 +2878,6 @@
         return;
 
       }
-
-      /* =====================================================
-         MESSAGE LENGTH
-         ===================================================== */
 
       if (
         message.length > 20000
@@ -2925,13 +2898,6 @@
 
       status.textContent =
         "Sending your message…";
-
-      /*
-        Submit plain text to Formspree.
-
-        Rich-text HTML is intentionally not
-        included in the payload.
-      */
 
       const payload = {
         name,
@@ -2978,28 +2944,23 @@
 
         }
 
-        /* =================================================
-           SUCCESS — DISMISS KEYBOARD FIRST
-           ================================================= */
+        /*
+          Close the software keyboard before showing the
+          success state on mobile.
+        */
 
         const active =
           document.activeElement;
 
         if (
           active &&
-          dialog.contains(active) &&
+          overlay.contains(active) &&
           typeof active.blur === "function"
         ) {
 
           active.blur();
 
         }
-
-        cancelFieldScrolling();
-
-        overlay.classList.remove(
-          "is-keyboard-open"
-        );
 
         dialog.classList.add(
           "is-success"
