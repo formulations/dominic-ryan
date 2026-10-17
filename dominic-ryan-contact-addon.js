@@ -6,6 +6,12 @@
    https://formspree.io/f/xzedoqkn
 
    Designed for Dominic Ryan | Formulations
+
+   Mobile improvements:
+   - Stable modal scale
+   - Keyboard-aware visual viewport
+   - iOS focus-zoom prevention
+   - Full-width editor while typing
    ========================================================= */
 
 (() => {
@@ -93,7 +99,6 @@
       justify-content: center;
 
       gap: 9px;
-
       padding: 9px 15px;
 
       overflow: hidden;
@@ -117,7 +122,6 @@
       letter-spacing: .14em;
 
       white-space: nowrap;
-
       cursor: pointer;
 
       box-shadow:
@@ -149,7 +153,6 @@
         );
 
       filter: blur(17px);
-
       opacity: 0;
 
       transition:
@@ -254,6 +257,8 @@
       align-items: center;
       justify-content: center;
 
+      box-sizing: border-box;
+
       padding: 24px;
 
       background: rgba(44,38,34,.43);
@@ -283,6 +288,8 @@
     .dr-contact-dialog {
       position: relative;
 
+      box-sizing: border-box;
+
       width: min(100%, 636px);
 
       max-height:
@@ -291,7 +298,9 @@
           calc(100dvh - 48px)
         );
 
+      overflow-x: hidden;
       overflow-y: auto;
+
       overscroll-behavior: contain;
 
       padding:
@@ -525,6 +534,11 @@
        ===================================================== */
 
     .dr-contact-editor {
+      box-sizing: border-box;
+
+      width: 100%;
+      min-width: 0;
+
       border: 1px solid #d0c6bc;
       border-radius: 6px;
 
@@ -577,15 +591,13 @@
       background: rgba(135,115,100,.12);
     }
 
-    /* Consistent editorial SVG icon styling */
-
-.dr-contact-toolbar button svg {
-  display: block;
-  width: 19px;
-  height: 19px;
-  margin: 0 auto;
-  color: #493a30;
-}
+    .dr-contact-toolbar button svg {
+      display: block;
+      width: 19px;
+      height: 19px;
+      margin: 0 auto;
+      color: #493a30;
+    }
 
     .dr-contact-toolbar-separator {
       width: 1px;
@@ -603,6 +615,11 @@
 
       display: flex;
       align-items: flex-start;
+
+      box-sizing: border-box;
+
+      width: 100%;
+      min-width: 0;
 
       min-height: 235px;
 
@@ -632,11 +649,14 @@
     }
 
     /* =====================================================
-       MESSAGE TYPOGRAPHY — MATCHES WEBSITE LETTER
+       MESSAGE TYPOGRAPHY
        ===================================================== */
 
     .dr-contact-message {
-      flex: 1;
+      display: block;
+
+      flex: 1 1 auto;
+
       min-width: 0;
       min-height: 195px;
 
@@ -688,8 +708,6 @@
 
       margin-top: 29px;
     }
-
-    /* ORIGINAL DR REPOSITORY LOGO */
 
     .dr-contact-monogram {
       display: block;
@@ -820,12 +838,12 @@
     }
 
     /* =====================================================
-       MOBILE — MINIMAL ENVELOPE HEADER
+       MOBILE
        ===================================================== */
 
     @media (max-width: 760px) {
 
-      /* Preserve the existing branding and tagline. */
+      /* HEADER */
 
       .header {
         gap: 12px;
@@ -836,8 +854,6 @@
         flex: 1 1 auto;
       }
 
-      /* Envelope occupies the top-right corner. */
-
       .dr-contact-header {
         display: flex;
         align-items: flex-start;
@@ -847,13 +863,9 @@
         gap: 0;
       }
 
-      /* Hide location on mobile only. */
-
       .dr-contact-header .location {
         display: none;
       }
-
-      /* Rounded-square envelope button. */
 
       .dr-contact-trigger {
         width: 44px;
@@ -874,38 +886,70 @@
         justify-content: center;
       }
 
-      /* Hide text; preserve the envelope icon. */
-
       .dr-contact-trigger > span:last-child {
         display: none;
       }
 
-      .dr-contact-mail {
-        width: 20px;
-        height: 20px;
-      }
-
+      .dr-contact-mail,
       .dr-contact-mail svg {
         width: 20px;
         height: 20px;
       }
 
-      /* MODAL */
+      /* =================================================
+         MOBILE MODAL — KEYBOARD-AWARE VIEWPORT
+         ================================================= */
 
       .dr-contact-overlay {
+        position: fixed;
+
+        top: var(--dr-viewport-top, 0px);
+        left: var(--dr-viewport-left, 0px);
+
+        right: auto;
+        bottom: auto;
+
+        width: var(--dr-viewport-width, 100%);
+        height: var(--dr-viewport-height, 100dvh);
+
+        max-width: none;
+
+        box-sizing: border-box;
+
         padding: 12px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        overflow: hidden;
       }
 
       .dr-contact-dialog {
-        width: 100%;
+        box-sizing: border-box;
 
-        max-height:
-          calc(100dvh - 24px);
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+
+        max-height: 100%;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        -webkit-overflow-scrolling: touch;
 
         padding:
           39px
           23px
           23px;
+
+        transform: none !important;
+        transition: none !important;
+      }
+
+      .dr-contact-overlay.is-open .dr-contact-dialog {
+        transform: none !important;
       }
 
       .dr-contact-title {
@@ -921,14 +965,20 @@
         font-size: 15px;
       }
 
-      /* FORM FIELDS — PREVENT IOS AUTO-ZOOM */
+      /* =================================================
+         MOBILE INPUTS — IOS FOCUS ZOOM
+         ================================================= */
 
       .dr-contact-field {
         height: 53px;
       }
 
-      .dr-contact-field input {
-        font-size: 16px;
+      .dr-contact-field input,
+      .dr-contact-field input:focus {
+        font-size: 16px !important;
+
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
       }
 
       .dr-contact-field-icon {
@@ -940,18 +990,29 @@
         height: 21px;
       }
 
+      /* =================================================
+         MOBILE MESSAGE EDITOR — STABLE SCALE
+         ================================================= */
+
+      .dr-contact-editor,
+      .dr-contact-message-wrap {
+        box-sizing: border-box;
+
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+      }
+
       .dr-contact-message-wrap {
         min-height: 215px;
       }
 
-      /* MESSAGE TYPOGRAPHY — PREVENT IOS AUTO-ZOOM */
-
-      .dr-contact-message,
-      .dr-contact-message * {
-        font-size: 16px;
-      }
-
       .dr-contact-message {
+        display: block;
+
+        flex: 1 1 auto;
+
+        min-width: 0;
         min-height: 175px;
 
         font-family:
@@ -960,9 +1021,27 @@
           Arial,
           sans-serif;
 
+        font-size: 17px !important;
+        font-weight: 400;
         line-height: 1.56;
 
+        color: #9D8875;
+
         -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+
+        outline: none;
+
+        overflow-wrap: anywhere;
+        word-break: normal;
+      }
+
+      .dr-contact-message:focus {
+        font-size: 17px !important;
+      }
+
+      .dr-contact-message * {
+        font-size: inherit !important;
       }
 
       /* TOOLBAR */
@@ -1063,8 +1142,6 @@
 
     headerButton.className =
       "dr-contact-trigger";
-
-    /* Accessible name for icon-only mobile button. */
 
     headerButton.setAttribute(
       "aria-label",
@@ -1316,52 +1393,52 @@
                 aria-hidden="true"
               ></span>
 
-            <button
-  type="button"
-  data-format="list"
-  aria-label="Bulleted list"
->
-  <svg
-    viewBox="0 0 24 24"
-    width="19"
-    height="19"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.6"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none"/>
-    <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/>
-    <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none"/>
+              <button
+                type="button"
+                data-format="list"
+                aria-label="Bulleted list"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="19"
+                  height="19"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none"/>
+                  <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/>
+                  <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none"/>
 
-    <path d="M9 6h11"/>
-    <path d="M9 12h11"/>
-    <path d="M9 18h11"/>
-  </svg>
-</button>
+                  <path d="M9 6h11"/>
+                  <path d="M9 12h11"/>
+                  <path d="M9 18h11"/>
+                </svg>
+              </button>
 
               <button
-  type="button"
-  data-format="link"
-  aria-label="Insert link"
->
-  <svg
-    viewBox="0 0 24 24"
-    width="19"
-    height="19"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.6"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M10 13.5a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L10.9 5.53"/>
-    <path d="M14 10.5a5 5 0 0 0-7.07 0L4.81 12.62a5 5 0 0 0 7.07 7.07l1.22-1.22"/>
-  </svg>
-</button>
+                type="button"
+                data-format="link"
+                aria-label="Insert link"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="19"
+                  height="19"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M10 13.5a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L10.9 5.53"/>
+                  <path d="M14 10.5a5 5 0 0 0-7.07 0L4.81 12.62a5 5 0 0 0 7.07 7.07l1.22-1.22"/>
+                </svg>
+              </button>
 
             </div>
 
@@ -1482,6 +1559,69 @@
   let previousOverflow = "";
 
   /* =========================================================
+     MOBILE — VISUAL VIEWPORT MANAGEMENT
+     ========================================================= */
+
+  function syncContactViewport() {
+
+    if (window.innerWidth > 760) {
+      return;
+    }
+
+    const viewport =
+      window.visualViewport;
+
+    if (!viewport) {
+      return;
+    }
+
+    overlay.style.setProperty(
+      "--dr-viewport-top",
+      `${viewport.offsetTop}px`
+    );
+
+    overlay.style.setProperty(
+      "--dr-viewport-left",
+      `${viewport.offsetLeft}px`
+    );
+
+    overlay.style.setProperty(
+      "--dr-viewport-width",
+      `${viewport.width}px`
+    );
+
+    overlay.style.setProperty(
+      "--dr-viewport-height",
+      `${viewport.height}px`
+    );
+
+  }
+
+  if (window.visualViewport) {
+
+    window.visualViewport.addEventListener(
+      "resize",
+      syncContactViewport
+    );
+
+    window.visualViewport.addEventListener(
+      "scroll",
+      syncContactViewport
+    );
+
+  }
+
+  window.addEventListener(
+    "orientationchange",
+    syncContactViewport
+  );
+
+  window.addEventListener(
+    "resize",
+    syncContactViewport
+  );
+
+  /* =========================================================
      OPEN CONTACT MODAL
      ========================================================= */
 
@@ -1517,7 +1657,11 @@
     document.body.style.overflow =
       "hidden";
 
-    closeButton.focus();
+    syncContactViewport();
+
+    closeButton.focus({
+      preventScroll: true
+    });
 
   }
 
@@ -1541,7 +1685,11 @@
       previousFocus &&
       typeof previousFocus.focus === "function"
     ) {
-      previousFocus.focus();
+
+      previousFocus.focus({
+        preventScroll: true
+      });
+
     }
 
   }
@@ -1684,7 +1832,9 @@
       const format =
         button.dataset.format;
 
-      editor.focus();
+      editor.focus({
+        preventScroll: true
+      });
 
       if (format === "bold") {
 
@@ -1767,166 +1917,6 @@
   );
 
   /* =========================================================
-     SANITIZE FORMATTED HTML
-     ========================================================= */
-
-  function sanitizeMessageHTML(html) {
-
-    const template =
-      document.createElement("template");
-
-    template.innerHTML = html;
-
-    const allowedTags =
-      new Set([
-        "B",
-        "STRONG",
-        "I",
-        "EM",
-        "U",
-        "P",
-        "DIV",
-        "BR",
-        "UL",
-        "OL",
-        "LI",
-        "A",
-        "SPAN",
-        "FONT"
-      ]);
-
-    function clean(node) {
-
-      if (
-        node.nodeType === Node.TEXT_NODE
-      ) {
-
-        return document.createTextNode(
-          node.textContent
-        );
-
-      }
-
-      if (
-        node.nodeType !== Node.ELEMENT_NODE
-      ) {
-
-        return document.createDocumentFragment();
-
-      }
-
-      const tag =
-        node.tagName;
-
-      const fragment =
-        document.createDocumentFragment();
-
-      if (
-        !allowedTags.has(tag)
-      ) {
-
-        node.childNodes.forEach(
-          child =>
-            fragment.appendChild(
-              clean(child)
-            )
-        );
-
-        return fragment;
-
-      }
-
-      const element =
-        document.createElement(
-          tag.toLowerCase()
-        );
-
-      if (tag === "A") {
-
-        const href =
-          node.getAttribute("href");
-
-        if (href) {
-
-          try {
-
-            const parsed =
-              new URL(
-                href,
-                window.location.href
-              );
-
-            if (
-              parsed.protocol === "https:" ||
-              parsed.protocol === "http:"
-            ) {
-
-              element.setAttribute(
-                "href",
-                parsed.href
-              );
-
-            }
-
-          }
-
-          catch (_) {}
-
-        }
-
-      }
-
-      if (
-        tag === "SPAN" ||
-        tag === "FONT"
-      ) {
-
-        const style =
-          node.getAttribute("style") || "";
-
-        const match =
-          style.match(
-            /(?:^|;)\s*color\s*:\s*(#[0-9a-fA-F]{3,6})\s*(?:;|$)/i
-          );
-
-        if (match) {
-
-          element.style.color =
-            match[1];
-
-        }
-
-      }
-
-      node.childNodes.forEach(
-        child =>
-          element.appendChild(
-            clean(child)
-          )
-      );
-
-      return element;
-
-    }
-
-    const result =
-      document.createElement("div");
-
-    template.content.childNodes.forEach(
-      node => {
-
-        result.appendChild(
-          clean(node)
-        );
-
-      }
-    );
-
-    return result.innerHTML;
-
-  }
-
-  /* =========================================================
      FORMSPREE SUBMISSION
      ========================================================= */
 
@@ -2007,13 +1997,13 @@
       status.textContent =
         "Sending your message…";
 
-const payload = {
-  name,
-  email,
-  _replyto: email,
-  subject,
-  message
-};
+      const payload = {
+        name,
+        email,
+        _replyto: email,
+        subject,
+        message
+      };
 
       try {
 
