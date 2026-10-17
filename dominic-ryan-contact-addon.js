@@ -1213,19 +1213,6 @@
 
               <button
                 type="button"
-                data-format="color"
-                aria-label="Text color"
-              >
-                ◉
-              </button>
-
-              <span
-                class="dr-contact-toolbar-separator"
-                aria-hidden="true"
-              ></span>
-
-              <button
-                type="button"
                 data-format="list"
                 aria-label="Bulleted list"
               >
