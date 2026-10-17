@@ -1120,8 +1120,10 @@
 
         transform: none !important;
 
-        transition:
-          opacity .35s ease !important;
+opacity: 0;
+
+transition:
+  opacity 1.1s cubic-bezier(.22,.61,.36,1) !important;
       }
 
       .dr-contact-overlay.is-open .dr-contact-dialog {
