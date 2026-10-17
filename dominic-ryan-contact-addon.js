@@ -13,6 +13,12 @@
 
   const FORMSPREE_URL = "https://formspree.io/f/xzedoqkn";
 
+  /* Prevent duplicate initialization. */
+
+  if (document.getElementById("dr-contact-overlay")) {
+    return;
+  }
+
   /* =========================================================
      SVG ICONS
      ========================================================= */
@@ -457,6 +463,8 @@
     }
 
     .dr-contact-field input {
+      box-sizing: border-box;
+
       width: 100%;
       min-width: 0;
       height: 100%;
@@ -879,7 +887,14 @@
         padding: 12px;
 
         display: flex;
-        align-items: center;
+
+        /*
+          Align to the top of the available viewport
+          so the dialog does not recenter when the
+          keyboard opens.
+        */
+
+        align-items: flex-start;
         justify-content: center;
 
         overflow: hidden;
@@ -898,6 +913,11 @@
         overflow-y: auto;
 
         -webkit-overflow-scrolling: touch;
+
+        overscroll-behavior-y: contain;
+
+        scroll-padding-top: 18px;
+        scroll-padding-bottom: 24px;
 
         padding:
           39px
@@ -1135,7 +1155,7 @@
   }
 
   /* =========================================================
-     FOOTER — SEND A MESSAGE
+     FOOTER — CONTACT
      ========================================================= */
 
   const nav =
@@ -1513,17 +1533,49 @@
   const submitButton =
     overlay.querySelector(".dr-contact-submit");
 
+  const toolbar =
+    overlay.querySelector(".dr-contact-toolbar");
+
   let previousFocus = null;
   let previousOverflow = "";
 
+  let fieldScrollTimer = null;
+  let fieldScrollFrame = null;
+
   /* =========================================================
-     MOBILE — VISUAL VIEWPORT MANAGEMENT
+     MOBILE — VIEWPORT MANAGEMENT
      ========================================================= */
+
+  function isMobileContact() {
+
+    return window.matchMedia(
+      "(max-width: 760px)"
+    ).matches;
+
+  }
 
   function syncContactViewport() {
 
-    if (window.innerWidth > 760) {
+    if (!isMobileContact()) {
+
+      overlay.style.removeProperty(
+        "--dr-viewport-top"
+      );
+
+      overlay.style.removeProperty(
+        "--dr-viewport-left"
+      );
+
+      overlay.style.removeProperty(
+        "--dr-viewport-width"
+      );
+
+      overlay.style.removeProperty(
+        "--dr-viewport-height"
+      );
+
       return;
+
     }
 
     const viewport =
@@ -1555,28 +1607,412 @@
 
   }
 
+  /* =========================================================
+     MOBILE — IDENTIFY ACTIVE FIELD
+     ========================================================= */
+
+  function getActiveContactField() {
+
+    const active =
+      document.activeElement;
+
+    if (active === editor) {
+      return editor;
+    }
+
+    if (
+      active &&
+      active.matches &&
+      active.matches(
+        ".dr-contact-field input"
+      )
+    ) {
+      return active;
+    }
+
+    return null;
+
+  }
+
+  /* =========================================================
+     MOBILE — FIND MESSAGE CURSOR
+     ========================================================= */
+
+  function getEditorCaretRect() {
+
+    const selection =
+      window.getSelection();
+
+    if (
+      !selection ||
+      !selection.rangeCount ||
+      !editor.contains(selection.anchorNode)
+    ) {
+      return null;
+    }
+
+    const range =
+      selection.getRangeAt(0).cloneRange();
+
+    range.collapse(false);
+
+    const rect =
+      range.getBoundingClientRect();
+
+    if (
+      rect &&
+      rect.height > 0
+    ) {
+      return rect;
+    }
+
+    const rects =
+      range.getClientRects();
+
+    return rects.length
+      ? rects[0]
+      : null;
+
+  }
+
+  /* =========================================================
+     MOBILE — SCROLL ACTIVE FIELD INTO VIEW
+     ========================================================= */
+
+  function scrollActiveContactField() {
+
+    if (
+      !isMobileContact() ||
+      !overlay.classList.contains("is-open")
+    ) {
+      return;
+    }
+
+    const active =
+      getActiveContactField();
+
+    if (!active) {
+      return;
+    }
+
+    const dialogRect =
+      dialog.getBoundingClientRect();
+
+    const visibleTop =
+      dialogRect.top + 18;
+
+    const visibleBottom =
+      dialogRect.bottom - 22;
+
+    const availableHeight =
+      visibleBottom - visibleTop;
+
+    if (availableHeight <= 0) {
+      return;
+    }
+
+    let targetTop;
+    let targetBottom;
+
+    if (active === editor) {
+
+      const editorRect =
+        editor.getBoundingClientRect();
+
+      const caretRect =
+        getEditorCaretRect();
+
+      /*
+        When the message editor first receives focus,
+        reveal the beginning of the writing area.
+
+        As the message grows, follow the actual cursor.
+      */
+
+      if (
+        caretRect &&
+        editor.innerText.trim()
+      ) {
+
+        targetTop =
+          caretRect.top;
+
+        targetBottom =
+          caretRect.bottom;
+
+      }
+
+      else {
+
+        targetTop =
+          editorRect.top;
+
+        targetBottom =
+          editorRect.top + 85;
+
+      }
+
+    }
+
+    else {
+
+      const field =
+        active.closest(
+          ".dr-contact-field"
+        );
+
+      if (!field) {
+        return;
+      }
+
+      const fieldRect =
+        field.getBoundingClientRect();
+
+      targetTop =
+        fieldRect.top;
+
+      targetBottom =
+        fieldRect.bottom;
+
+    }
+
+    /*
+      Reserve some space beneath the message cursor.
+
+      This helps visitors see several lines of their
+      writing instead of having the cursor sit directly
+      against the keyboard.
+    */
+
+    const contextSpace =
+      active === editor
+        ? Math.min(
+            95,
+            Math.max(
+              22,
+              availableHeight * 0.30
+            )
+          )
+        : 14;
+
+    const preferredBottom =
+      visibleBottom - contextSpace;
+
+    const preferredTop =
+      visibleTop + 14;
+
+    let scrollAmount = 0;
+
+    if (
+      targetBottom > preferredBottom
+    ) {
+
+      scrollAmount =
+        targetBottom - preferredBottom;
+
+    }
+
+    else if (
+      targetTop < preferredTop
+    ) {
+
+      scrollAmount =
+        targetTop - preferredTop;
+
+    }
+
+    if (
+      Math.abs(scrollAmount) > 1
+    ) {
+
+      dialog.scrollTop +=
+        scrollAmount;
+
+    }
+
+  }
+
+  /* =========================================================
+     MOBILE — SCHEDULE FIELD SCROLLING
+     ========================================================= */
+
+  function scheduleContactFieldScroll(
+    delay = 60
+  ) {
+
+    if (fieldScrollTimer !== null) {
+
+      clearTimeout(
+        fieldScrollTimer
+      );
+
+    }
+
+    fieldScrollTimer =
+      window.setTimeout(
+        () => {
+
+          fieldScrollTimer = null;
+
+          if (
+            fieldScrollFrame !== null
+          ) {
+
+            cancelAnimationFrame(
+              fieldScrollFrame
+            );
+
+          }
+
+          fieldScrollFrame =
+            requestAnimationFrame(
+              () => {
+
+                fieldScrollFrame = null;
+
+                syncContactViewport();
+
+                scrollActiveContactField();
+
+              }
+            );
+
+        },
+        delay
+      );
+
+  }
+
+  /* =========================================================
+     MOBILE — KEYBOARD / VIEWPORT CHANGES
+     ========================================================= */
+
+  function handleContactViewportChange() {
+
+    syncContactViewport();
+
+    if (
+      getActiveContactField()
+    ) {
+
+      scheduleContactFieldScroll(
+        70
+      );
+
+    }
+
+  }
+
   if (window.visualViewport) {
 
     window.visualViewport.addEventListener(
       "resize",
-      syncContactViewport
+      handleContactViewportChange
     );
 
     window.visualViewport.addEventListener(
       "scroll",
-      syncContactViewport
+      handleContactViewportChange
     );
 
   }
 
   window.addEventListener(
-    "orientationchange",
-    syncContactViewport
+    "resize",
+    handleContactViewportChange
   );
 
   window.addEventListener(
-    "resize",
-    syncContactViewport
+    "orientationchange",
+    handleContactViewportChange
+  );
+
+  /* =========================================================
+     MOBILE — FOCUS MANAGEMENT
+     ========================================================= */
+
+  dialog.addEventListener(
+    "focusin",
+    event => {
+
+      if (
+        !event.target.matches(
+          "input, [contenteditable='true']"
+        )
+      ) {
+        return;
+      }
+
+      /*
+        Initial adjustment when the field receives focus.
+      */
+
+      scheduleContactFieldScroll(
+        80
+      );
+
+      /*
+        Second adjustment after the iPhone keyboard
+        has had time to animate into place.
+      */
+
+      window.setTimeout(
+        () => {
+
+          if (
+            overlay.classList.contains(
+              "is-open"
+            )
+          ) {
+
+            syncContactViewport();
+
+            scrollActiveContactField();
+
+          }
+
+        },
+        420
+      );
+
+    }
+  );
+
+  /* =========================================================
+     MOBILE — FOLLOW MESSAGE WHILE TYPING
+     ========================================================= */
+
+  editor.addEventListener(
+    "input",
+    () => {
+
+      scheduleContactFieldScroll(
+        40
+      );
+
+    }
+  );
+
+  editor.addEventListener(
+    "keyup",
+    () => {
+
+      scheduleContactFieldScroll(
+        40
+      );
+
+    }
+  );
+
+  editor.addEventListener(
+    "click",
+    () => {
+
+      scheduleContactFieldScroll(
+        60
+      );
+
+    }
   );
 
   /* =========================================================
@@ -1595,7 +2031,9 @@
     previousOverflow =
       document.body.style.overflow;
 
-    dialog.classList.remove("is-success");
+    dialog.classList.remove(
+      "is-success"
+    );
 
     form.reset();
 
@@ -1603,9 +2041,15 @@
 
     status.textContent = "";
 
-    status.classList.remove("is-error");
+    status.classList.remove(
+      "is-error"
+    );
 
-    overlay.classList.add("is-open");
+    dialog.scrollTop = 0;
+
+    overlay.classList.add(
+      "is-open"
+    );
 
     overlay.setAttribute(
       "aria-hidden",
@@ -1629,7 +2073,33 @@
 
   function closeContact() {
 
-    overlay.classList.remove("is-open");
+    if (
+      fieldScrollTimer !== null
+    ) {
+
+      clearTimeout(
+        fieldScrollTimer
+      );
+
+      fieldScrollTimer = null;
+
+    }
+
+    if (
+      fieldScrollFrame !== null
+    ) {
+
+      cancelAnimationFrame(
+        fieldScrollFrame
+      );
+
+      fieldScrollFrame = null;
+
+    }
+
+    overlay.classList.remove(
+      "is-open"
+    );
 
     overlay.setAttribute(
       "aria-hidden",
@@ -1657,15 +2127,19 @@
      ========================================================= */
 
   document
-    .querySelectorAll("[data-dr-contact-open]")
-    .forEach(trigger => {
+    .querySelectorAll(
+      "[data-dr-contact-open]"
+    )
+    .forEach(
+      trigger => {
 
-      trigger.addEventListener(
-        "click",
-        openContact
-      );
+        trigger.addEventListener(
+          "click",
+          openContact
+        );
 
-    });
+      }
+    );
 
   closeButton.addEventListener(
     "click",
@@ -1680,8 +2154,12 @@
     "click",
     event => {
 
-      if (event.target === overlay) {
+      if (
+        event.target === overlay
+      ) {
+
         closeContact();
+
       }
 
     }
@@ -1696,38 +2174,52 @@
     event => {
 
       if (
-        !overlay.classList.contains("is-open")
+        !overlay.classList.contains(
+          "is-open"
+        )
       ) {
         return;
       }
 
-      if (event.key === "Escape") {
+      if (
+        event.key === "Escape"
+      ) {
 
         event.preventDefault();
 
         closeContact();
 
         return;
+
       }
 
-      if (event.key === "Tab") {
+      if (
+        event.key === "Tab"
+      ) {
 
-        const focusable = Array.from(
-          dialog.querySelectorAll(
-            'button:not([disabled]), input:not([disabled]), [contenteditable="true"], a[href]'
-          )
-        ).filter(
-          element =>
-            element.getClientRects().length
-        );
+        const focusable =
+          Array.from(
+            dialog.querySelectorAll(
+              'button:not([disabled]), input:not([disabled]), [contenteditable="true"], a[href]'
+            )
+          ).filter(
+            element =>
+              element.getClientRects().length
+          );
 
-        if (!focusable.length) {
+        if (
+          !focusable.length
+        ) {
           return;
         }
 
-        const first = focusable[0];
+        const first =
+          focusable[0];
+
         const last =
-          focusable[focusable.length - 1];
+          focusable[
+            focusable.length - 1
+          ];
 
         if (
           event.shiftKey &&
@@ -1735,6 +2227,7 @@
         ) {
 
           event.preventDefault();
+
           last.focus();
 
         }
@@ -1745,6 +2238,7 @@
         ) {
 
           event.preventDefault();
+
           first.focus();
 
         }
@@ -1758,17 +2252,18 @@
      RICH TEXT FORMATTING
      ========================================================= */
 
-  const toolbar =
-    overlay.querySelector(".dr-contact-toolbar");
-
   toolbar.addEventListener(
     "mousedown",
     event => {
 
       if (
-        event.target.closest("button")
+        event.target.closest(
+          "button"
+        )
       ) {
+
         event.preventDefault();
+
       }
 
     }
@@ -1794,7 +2289,9 @@
         preventScroll: true
       });
 
-      if (format === "bold") {
+      if (
+        format === "bold"
+      ) {
 
         document.execCommand(
           "bold",
@@ -1804,7 +2301,9 @@
 
       }
 
-      if (format === "italic") {
+      if (
+        format === "italic"
+      ) {
 
         document.execCommand(
           "italic",
@@ -1814,7 +2313,9 @@
 
       }
 
-      if (format === "underline") {
+      if (
+        format === "underline"
+      ) {
 
         document.execCommand(
           "underline",
@@ -1824,7 +2325,9 @@
 
       }
 
-      if (format === "list") {
+      if (
+        format === "list"
+      ) {
 
         document.execCommand(
           "insertUnorderedList",
@@ -1834,7 +2337,9 @@
 
       }
 
-      if (format === "link") {
+      if (
+        format === "link"
+      ) {
 
         const url =
           window.prompt(
@@ -1846,7 +2351,9 @@
           try {
 
             const parsed =
-              new URL(url.trim());
+              new URL(
+                url.trim()
+              );
 
             if (
               parsed.protocol === "https:" ||
@@ -1864,12 +2371,18 @@
           }
 
           catch (_) {
+
             /* Invalid links are ignored. */
+
           }
 
         }
 
       }
+
+      scheduleContactFieldScroll(
+        70
+      );
 
     }
   );
@@ -1990,7 +2503,9 @@
             }
           );
 
-        if (!response.ok) {
+        if (
+          !response.ok
+        ) {
 
           throw new Error(
             "Form submission failed."
