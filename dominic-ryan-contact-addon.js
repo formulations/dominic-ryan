@@ -2007,24 +2007,13 @@
       status.textContent =
         "Sending your message…";
 
-      const payload = {
-
-        name,
-
-        email,
-
-        _replyto: email,
-
-        subject,
-
-        message,
-
-        formatted_message:
-          sanitizeMessageHTML(
-            editor.innerHTML
-          )
-
-      };
+const payload = {
+  name,
+  email,
+  _replyto: email,
+  subject,
+  message
+};
 
       try {
 
