@@ -758,7 +758,7 @@
 
       margin: 0 0 15px;
 
-      color: #51463e;
+      color: #9D8875;
     }
 
     .dr-contact-success p {
