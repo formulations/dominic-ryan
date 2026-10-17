@@ -1350,61 +1350,7 @@
 
   }
 
-  /* =========================================================
-     FOOTER — CONTACT
-     ========================================================= */
-
-  const nav =
-    document.getElementById("utility-nav");
-
-  if (nav) {
-
-    /*
-      The divider and CONTACT link live inside one wrapper.
-
-      This is intentional: the browser can wrap the group,
-      but cannot separate CONTACT from its divider.
-    */
-
-    const footerGroup =
-      document.createElement("span");
-
-    footerGroup.className =
-      "dr-contact-nav-group";
-
-    const divider =
-      document.createElement("span");
-
-    divider.className =
-      "utility-rule dr-contact-nav-rule";
-
-    divider.setAttribute(
-      "aria-hidden",
-      "true"
-    );
-
-    const footerLink =
-      document.createElement("a");
-
-    footerLink.href = "#contact";
-
-    footerLink.className =
-      "dr-contact-nav-link";
-
-    footerLink.setAttribute(
-      "data-dr-contact-open",
-      ""
-    );
-
-    footerLink.textContent =
-      "CONTACT";
-
-    footerGroup.appendChild(divider);
-    footerGroup.appendChild(footerLink);
-
-    nav.appendChild(footerGroup);
-
-  }
+  
 
   /* =========================================================
      MODAL HTML
