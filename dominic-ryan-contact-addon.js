@@ -2354,7 +2354,6 @@ requestAnimationFrame(() => {
 
   });
 });
-    );
 
     requestAnimationFrame(
       () => {
