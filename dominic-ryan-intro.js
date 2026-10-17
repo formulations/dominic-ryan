@@ -5,7 +5,10 @@
 (() => {
   "use strict";
 
-  // Display once per browsing session.
+  /* =========================================================
+     SESSION CONTROL
+     ========================================================= */
+
   try {
     if (sessionStorage.getItem("dr-intro-shown")) {
       return;
@@ -15,6 +18,12 @@
   } catch (_) {
     // Continue if session storage is unavailable.
   }
+
+  /* =========================================================
+     DEVICE DETECTION
+     ========================================================= */
+
+  const isMobile = window.matchMedia("(max-width: 760px)").matches;
 
   /* =========================================================
      STYLING
@@ -32,7 +41,7 @@
       align-items: center;
       justify-content: center;
 
-      background: #9d8873;
+      background: #9D8873;
 
       opacity: 1;
       visibility: visible;
@@ -48,26 +57,30 @@
       pointer-events: none;
     }
 
-    .dr-intro video {
+    .dr-intro video,
+    .dr-intro img {
       display: block;
 
       width: min(40vw, 150px);
       height: auto;
 
       object-fit: contain;
-
       background: transparent;
 
       pointer-events: none;
+    }
 
-      /* Warm ivory monogram — #F0EBE3 */
+    /* DESKTOP WEBM COLOR */
+
+    .dr-intro video {
       filter: brightness(0) saturate(100%) invert(94%) sepia(5%) saturate(271%) hue-rotate(332deg) brightness(102%) contrast(91%);
     }
 
     /* MOBILE */
 
     @media (max-width: 760px) {
-      .dr-intro video {
+      .dr-intro video,
+      .dr-intro img {
         width: min(40vw, 120px);
       }
     }
@@ -90,24 +103,39 @@
   const intro = document.createElement("div");
 
   intro.className = "dr-intro";
-
   intro.setAttribute("aria-label", "Dominic Ryan");
 
-  const logo = document.createElement("video");
+  if (isMobile) {
 
-  logo.src = "dr-reveal-60fps-transparent-correctedd.webm";
+    /* MOBILE — TRANSPARENT APNG */
 
-  logo.autoplay = true;
-  logo.muted = true;
-  logo.playsInline = true;
-  logo.preload = "auto";
-  logo.loop = false;
+    const logo = document.createElement("img");
 
-  logo.setAttribute("aria-label", "Dominic Ryan");
+    logo.src = "dr-reveal-ivory-mobile.apng?v=1";
+    logo.alt = "Dominic Ryan";
+    logo.setAttribute("fetchpriority", "high");
 
-  logo.setAttribute("disablepictureinpicture", "");
+    intro.appendChild(logo);
 
-  intro.appendChild(logo);
+  } else {
+
+    /* DESKTOP — ORIGINAL 60FPS WEBM */
+
+    const logo = document.createElement("video");
+
+    logo.src = "dr-reveal-60fps-transparent-correctedd.webm";
+
+    logo.autoplay = true;
+    logo.muted = true;
+    logo.playsInline = true;
+    logo.preload = "auto";
+    logo.loop = false;
+
+    logo.setAttribute("aria-label", "Dominic Ryan");
+    logo.setAttribute("disablepictureinpicture", "");
+
+    intro.appendChild(logo);
+  }
 
   document.body.appendChild(intro);
 
@@ -115,12 +143,12 @@
      ANIMATION TIMING
      ========================================================= */
 
-  // Begin fading after the 2.55-second animation.
+  // Begin fading after the animation finishes.
   window.setTimeout(() => {
     intro.classList.add("is-finished");
   }, 2550);
 
-  // Remove the overlay after the 0.8-second fade.
+  // Remove the overlay after the fade.
   window.setTimeout(() => {
     intro.remove();
     style.remove();
