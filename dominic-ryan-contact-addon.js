@@ -885,10 +885,26 @@
 
       /* MOBILE MESSAGE TYPOGRAPHY */
 
-      .dr-contact-message {
-        min-height: 175px;
-        font-size: 16px;
-      }
+/* MOBILE MESSAGE TYPOGRAPHY — PREVENT IOS AUTO-ZOOM */
+
+.dr-contact-message,
+.dr-contact-message * {
+  font-size: 16px;
+}
+
+.dr-contact-message {
+  min-height: 175px;
+
+  font-family:
+    "Avenir Next",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  line-height: 1.56;
+
+  -webkit-text-size-adjust: 100%;
+}
 
       .dr-contact-toolbar {
         gap: 0;
