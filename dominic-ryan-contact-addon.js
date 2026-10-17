@@ -218,18 +218,6 @@
       height: 20px;
     }
 
-    .dr-contact-nav-link {
-      cursor: pointer;
-    }
-
-    /* Keep injected CONTACT divider + link together. */
-
-    .dr-contact-nav-group {
-      display: inline-flex;
-      align-items: center;
-      flex: 0 0 auto;
-      white-space: nowrap;
-    }
 
     /* =====================================================
        ACCESSIBILITY
@@ -1038,25 +1026,6 @@
 
     }
 
-    /* =====================================================
-       FOOTER RESPONSIVENESS
-       ===================================================== */
-
-    @media (max-width: 760px) {
-
-      /*
-        CONTACT and its divider remain one atomic unit.
-        This prevents the divider from being orphaned on
-        one line while CONTACT wraps onto another.
-      */
-
-      .dr-contact-nav-group {
-        display: inline-flex;
-        align-items: center;
-        white-space: nowrap;
-      }
-
-    }
 
     /* =====================================================
        MOBILE
