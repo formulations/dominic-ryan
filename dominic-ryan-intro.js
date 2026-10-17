@@ -95,7 +95,7 @@
 
   const logo = document.createElement("video");
 
-  logo.src = "dr-reveal-60fps-transparent-corrected.webm";
+  logo.src = "dr-reveal-60fps-transparent-correctedd.webm";
 
   logo.autoplay = true;
   logo.muted = true;
