@@ -48,13 +48,17 @@
       pointer-events: none;
     }
 
-    .dr-intro img {
+    .dr-intro video {
       display: block;
 
       width: min(40vw, 150px);
       height: auto;
 
       object-fit: contain;
+
+      background: transparent;
+
+      pointer-events: none;
 
       /* Warm ivory monogram — #F0EBE3 */
       filter: brightness(0) saturate(100%) invert(94%) sepia(5%) saturate(271%) hue-rotate(332deg) brightness(102%) contrast(91%);
@@ -63,7 +67,7 @@
     /* MOBILE */
 
     @media (max-width: 760px) {
-      .dr-intro img {
+      .dr-intro video {
         width: min(40vw, 120px);
       }
     }
@@ -89,14 +93,19 @@
 
   intro.setAttribute("aria-label", "Dominic Ryan");
 
-  const logo = document.createElement("img");
+  const logo = document.createElement("video");
 
-  // Versioned GIF reference to help prevent outdated caching.
-  logo.src = "dr-reveal-entrance.gif?v=3";
+  logo.src = "dr-reveal-entrance.webm";
 
-  logo.alt = "Dominic Ryan";
+  logo.autoplay = true;
+  logo.muted = true;
+  logo.playsInline = true;
+  logo.preload = "auto";
+  logo.loop = false;
 
-  logo.setAttribute("fetchpriority", "high");
+  logo.setAttribute("aria-label", "Dominic Ryan");
+
+  logo.setAttribute("disablepictureinpicture", "");
 
   intro.appendChild(logo);
 
