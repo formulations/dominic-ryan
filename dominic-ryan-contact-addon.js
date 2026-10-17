@@ -1417,6 +1417,55 @@
 
     }
 
+    /* =====================================================
+       UNIVERSAL TYPOGRAPHY — SELF-HOSTED FONTS
+       ===================================================== */
+
+    /* GFS DIDOT — HEADINGS */
+
+    .dr-contact-title,
+    .dr-contact-success h3,
+    .dr-contact-confirmation h3 {
+      font-family:
+        "DR Didot",
+        Didot,
+        "Bodoni 72",
+        Georgia,
+        serif;
+    }
+
+    /* AVENIR NEXT — FORM TEXT */
+
+    .dr-contact-eyebrow,
+    .dr-contact-field input,
+    .dr-contact-message,
+    .dr-contact-submit,
+    .dr-contact-status,
+    .dr-contact-keep,
+    .dr-contact-discard {
+      font-family:
+        "DR Avenir Next",
+        "Avenir Next",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+    }
+
+    /* AVENIR NEXT — MOBILE MESSAGE EDITOR */
+
+    @media (max-width: 760px) {
+
+      .dr-contact-message {
+        font-family:
+          "DR Avenir Next",
+          "Avenir Next",
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+      }
+
+    }
+
   `;
 
   const styleElement =
