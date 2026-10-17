@@ -51,7 +51,7 @@
     .dr-intro img {
       display: block;
 
-      width: min(55vw, 220px);
+      width: min(40vw, 150px);
       height: auto;
 
       object-fit: contain;
@@ -64,7 +64,7 @@
 
     @media (max-width: 760px) {
       .dr-intro img {
-        width: min(55vw, 170px);
+        width: min(40vw, 120px);
       }
     }
 
@@ -91,8 +91,8 @@
 
   const logo = document.createElement("img");
 
-  // Versioned reference helps prevent an outdated GIF from loading.
-  logo.src = "dr-reveal-entrance.gif?v=2";
+  // Versioned GIF reference to help prevent outdated caching.
+  logo.src = "dr-reveal-entrance.gif?v=3";
 
   logo.alt = "Dominic Ryan";
 
