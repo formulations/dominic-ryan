@@ -51,7 +51,7 @@
     .dr-intro img {
       display: block;
 
-      width: min(65vw, 360px);
+      width: min(55vw, 220px);
       height: auto;
 
       object-fit: contain;
@@ -64,7 +64,7 @@
 
     @media (max-width: 760px) {
       .dr-intro img {
-        width: min(75vw, 290px);
+        width: min(55vw, 170px);
       }
     }
 
@@ -87,21 +87,16 @@
 
   intro.className = "dr-intro";
 
-  intro.setAttribute(
-    "aria-label",
-    "Dominic Ryan"
-  );
+  intro.setAttribute("aria-label", "Dominic Ryan");
 
   const logo = document.createElement("img");
 
-  logo.src = "dr-reveal-entrance.gif";
+  // Versioned reference helps prevent an outdated GIF from loading.
+  logo.src = "dr-reveal-entrance.gif?v=2";
 
   logo.alt = "Dominic Ryan";
 
-  logo.setAttribute(
-    "fetchpriority",
-    "high"
-  );
+  logo.setAttribute("fetchpriority", "high");
 
   intro.appendChild(logo);
 
@@ -111,22 +106,15 @@
      ANIMATION TIMING
      ========================================================= */
 
-  // Allow the 2.55-second GIF to finish.
+  // Begin fading after the 2.55-second animation.
   window.setTimeout(() => {
-
-    intro.classList.add(
-      "is-finished"
-    );
-
+    intro.classList.add("is-finished");
   }, 2550);
 
-  // Remove the introduction after the 0.8-second fade.
+  // Remove the overlay after the 0.8-second fade.
   window.setTimeout(() => {
-
     intro.remove();
-
     style.remove();
-
   }, 3350);
 
 })();
