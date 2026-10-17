@@ -6,12 +6,6 @@
    https://formspree.io/f/xzedoqkn
 
    Designed for Dominic Ryan | Formulations
-
-   Mobile improvements:
-   - Stable modal scale
-   - Keyboard-aware visual viewport
-   - iOS focus-zoom prevention
-   - Full-width editor while typing
    ========================================================= */
 
 (() => {
@@ -88,7 +82,7 @@
     }
 
     /* =====================================================
-       CORRESPONDENCE BUTTON
+       ENVELOPE BUTTON — DESKTOP AND MOBILE
        ===================================================== */
 
     .dr-contact-trigger {
@@ -98,8 +92,14 @@
       align-items: center;
       justify-content: center;
 
-      gap: 9px;
-      padding: 9px 15px;
+      width: 44px;
+      height: 44px;
+
+      min-width: 44px;
+      min-height: 44px;
+
+      padding: 0;
+      gap: 0;
 
       overflow: hidden;
       isolation: isolate;
@@ -107,21 +107,10 @@
       background: #9D8875;
 
       border: 1px solid rgba(255,255,255,.32);
-      border-radius: 2px;
+      border-radius: 8px;
 
       color: #fbf8f2;
 
-      font-family:
-        "Avenir Next",
-        "Helvetica Neue",
-        Arial,
-        sans-serif;
-
-      font-size: 9px;
-      font-weight: 500;
-      letter-spacing: .14em;
-
-      white-space: nowrap;
       cursor: pointer;
 
       box-shadow:
@@ -215,16 +204,16 @@
       align-items: center;
       justify-content: center;
 
-      width: 17px;
-      height: 17px;
+      width: 20px;
+      height: 20px;
 
       flex: none;
     }
 
     .dr-contact-mail svg {
       display: block;
-      width: 17px;
-      height: 17px;
+      width: 20px;
+      height: 20px;
     }
 
     .dr-contact-nav-link {
@@ -867,35 +856,6 @@
         display: none;
       }
 
-      .dr-contact-trigger {
-        width: 44px;
-        height: 44px;
-
-        min-width: 44px;
-        min-height: 44px;
-
-        padding: 0;
-        gap: 0;
-
-        border-radius: 8px;
-
-        background: #9D8875;
-
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .dr-contact-trigger > span:last-child {
-        display: none;
-      }
-
-      .dr-contact-mail,
-      .dr-contact-mail svg {
-        width: 20px;
-        height: 20px;
-      }
-
       /* =================================================
          MOBILE MODAL — KEYBOARD-AWARE VIEWPORT
          ================================================= */
@@ -1118,7 +1078,7 @@
   document.head.appendChild(styleElement);
 
   /* =========================================================
-     HEADER — GET IN TOUCH
+     HEADER — ENVELOPE BUTTON
      ========================================================= */
 
   const header =
@@ -1162,8 +1122,6 @@
       <span class="dr-contact-mail" aria-hidden="true">
         ${icons.envelope}
       </span>
-
-      <span>GET IN TOUCH</span>
     `;
 
     location.parentNode.insertBefore(
@@ -1177,7 +1135,7 @@
   }
 
   /* =========================================================
-     FOOTER — GET IN TOUCH
+     FOOTER — SEND A MESSAGE
      ========================================================= */
 
   const nav =
@@ -1210,7 +1168,7 @@
     );
 
     footerLink.textContent =
-      "GET IN TOUCH";
+      "CONTACT";
 
     nav.appendChild(divider);
     nav.appendChild(footerLink);
