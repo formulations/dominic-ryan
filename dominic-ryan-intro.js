@@ -46,7 +46,8 @@
   width: min(65vw, 360px);
   height: auto;
   object-fit: contain;
-  filter: brightness(0) saturate(100%) invert(97%) sepia(5%) saturate(349%) hue-rotate(319deg) brightness(103%) contrast(96%);
+  filter: brightness(0) saturate(100%) invert(94%) sepia(5%) saturate(271%) hue-rotate(332deg) brightness(102%) contrast(91%);
+};
     }
 
     @media (max-width: 760px) {
