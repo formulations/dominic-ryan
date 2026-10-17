@@ -1590,31 +1590,6 @@
 
       }
 
-      if (format === "color") {
-
-        const color =
-          window.prompt(
-            "Enter a text color (for example #8b786b):",
-            "#8b786b"
-          );
-
-        if (
-          color &&
-          /^#[0-9a-fA-F]{6}$/.test(
-            color.trim()
-          )
-        ) {
-
-          document.execCommand(
-            "foreColor",
-            false,
-            color.trim()
-          );
-
-        }
-
-      }
-
       if (format === "link") {
 
         const url =
