@@ -601,21 +601,30 @@
       height: 23px;
     }
 
+    /* =====================================================
+       MESSAGE TYPOGRAPHY — MATCHES WEBSITE LETTER
+       ===================================================== */
+
     .dr-contact-message {
       flex: 1;
       min-width: 0;
       min-height: 195px;
 
       outline: 0;
-
       overflow-wrap: anywhere;
 
-      font-family: Georgia, serif;
+      font-family:
+        "Avenir Next",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
 
-      font-size: 16px;
-      line-height: 1.55;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.56;
+      letter-spacing: normal;
 
-      color: #51463e;
+      color: #5c524b;
     }
 
     .dr-contact-message:empty::before {
@@ -758,7 +767,7 @@
 
       margin: 0 0 15px;
 
-      color: #9D8875;
+      color: #51463e;
     }
 
     .dr-contact-success p {
@@ -850,8 +859,11 @@
         min-height: 215px;
       }
 
+      /* MOBILE MESSAGE TYPOGRAPHY */
+
       .dr-contact-message {
         min-height: 175px;
+        font-size: 16px;
       }
 
       .dr-contact-toolbar {
