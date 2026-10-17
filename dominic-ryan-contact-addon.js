@@ -577,6 +577,16 @@
       background: rgba(135,115,100,.12);
     }
 
+    /* Consistent editorial SVG icon styling */
+
+.dr-contact-toolbar button svg {
+  display: block;
+  width: 19px;
+  height: 19px;
+  margin: 0 auto;
+  color: #493a30;
+}
+
     .dr-contact-toolbar-separator {
       width: 1px;
       height: 24px;
