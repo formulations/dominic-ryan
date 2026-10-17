@@ -1009,5 +1009,433 @@
       submitButton.disabled = false;
     }
   });
+/* =========================================================
+   DOMINIC RYAN — CONTACT DESIGN REFINEMENTS
 
+   - Refined SVG icons
+   - Original branding colors
+   - Corrected header alignment
+   - Soft-focus correspondence button
+   - Elegant hover transitions
+   ========================================================= */
+
+
+/* =========================================================
+   1. REPLACE UNICODE ICONS WITH REFINED SVG ICONS
+   ========================================================= */
+
+const drRefinedIcons = {
+
+  person: `
+    <svg
+      viewBox="0 0 24 24"
+      width="23"
+      height="23"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="7.5" r="3.5"/>
+      <path d="M4.5 20v-1.5a7.5 7.5 0 0 1 15 0V20H4.5Z"/>
+    </svg>
+  `,
+
+  envelope: `
+    <svg
+      viewBox="0 0 24 24"
+      width="23"
+      height="23"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="2.5" y="5" width="19" height="14" rx="1"/>
+      <path d="m3 6 9 7 9-7"/>
+    </svg>
+  `,
+
+  tag: `
+    <svg
+      viewBox="0 0 24 24"
+      width="23"
+      height="23"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.5 12.5 12 21 3 12l8.5-8.5H20.5v9Z"/>
+      <circle cx="16.5" cy="7.5" r="1.25"/>
+    </svg>
+  `,
+
+  pencil: `
+    <svg
+      viewBox="0 0 24 24"
+      width="23"
+      height="23"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m4 20 4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20Z"/>
+      <path d="m14.5 7.5 3 3"/>
+    </svg>
+  `
+
+};
+
+
+/* APPLY ICONS TO FORM FIELDS */
+
+const drFieldIcons =
+  overlay.querySelectorAll(
+    ".dr-contact-field-icon"
+  );
+
+const drFieldIconNames = [
+  "person",
+  "envelope",
+  "tag"
+];
+
+drFieldIcons.forEach((icon, index) => {
+
+  const iconName = drFieldIconNames[index];
+
+  if (iconName) {
+    icon.innerHTML = drRefinedIcons[iconName];
+  }
+
+});
+
+
+/* REPLACE MESSAGE PENCIL */
+
+const drPencil =
+  overlay.querySelector(
+    ".dr-contact-pencil"
+  );
+
+if (drPencil) {
+  drPencil.innerHTML = drRefinedIcons.pencil;
+}
+
+
+/* REPLACE HEADER ENVELOPE */
+
+const drHeaderMail =
+  document.querySelector(
+    ".dr-contact-trigger .dr-contact-mail"
+  );
+
+if (drHeaderMail) {
+  drHeaderMail.innerHTML = drRefinedIcons.envelope;
+}
+
+
+/* =========================================================
+   2. REFINED CONTACT STYLING
+   ========================================================= */
+
+const drRefinementStyles = `
+
+  /* -----------------------------------------
+     HEADER ALIGNMENT
+     ----------------------------------------- */
+
+  .dr-contact-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .dr-contact-header .location {
+    padding-top: 0;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+
+  /* -----------------------------------------
+     CORRESPONDENCE BUTTON
+     ----------------------------------------- */
+
+  .dr-contact-trigger {
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    padding: 9px 15px;
+
+    overflow: hidden;
+    isolation: isolate;
+
+    background: #8b786b;
+
+    border: 1px solid rgba(255,255,255,.32);
+
+    border-radius: 2px;
+
+    color: #fbf8f2;
+
+    box-shadow:
+      0 2px 7px rgba(70,57,47,.07);
+
+    transform: none;
+
+    transition:
+      background-color .7s ease,
+      border-color .7s ease,
+      box-shadow .8s ease;
+  }
+
+
+  /* DIFFUSED LIGHT LAYER */
+
+  .dr-contact-trigger::before {
+    content: "";
+
+    position: absolute;
+
+    inset: -35%;
+
+    z-index: -1;
+
+    pointer-events: none;
+
+    background:
+      radial-gradient(
+        ellipse at 35% 40%,
+        rgba(255,255,255,.30) 0%,
+        rgba(255,255,255,.13) 35%,
+        transparent 72%
+      );
+
+    filter: blur(17px);
+
+    opacity: 0;
+
+    transition:
+      opacity .75s
+      cubic-bezier(.22,.61,.36,1);
+  }
+
+
+  /* REFINED FOLDED-CORNER DETAIL */
+
+  .dr-contact-trigger::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 9px;
+    height: 9px;
+
+    background:
+      linear-gradient(
+        225deg,
+        rgba(251,248,242,.42) 0%,
+        rgba(251,248,242,.12) 48%,
+        transparent 50%
+      );
+
+    pointer-events: none;
+  }
+
+
+  /* SOFT-FOCUS HOVER */
+
+  @media (hover: hover) and (pointer: fine) {
+
+    .dr-contact-trigger:hover {
+      background: #968276;
+
+      border-color:
+        rgba(255,255,255,.48);
+
+      box-shadow:
+        0 0 17px rgba(139,120,107,.19),
+        0 3px 12px rgba(70,57,47,.07);
+
+      transform: none;
+    }
+
+    .dr-contact-trigger:hover::before {
+      opacity: 1;
+    }
+
+  }
+
+
+  /* SOFT PRESS RESPONSE */
+
+  .dr-contact-trigger:active {
+    background: #806d61;
+
+    box-shadow:
+      0 0 12px rgba(139,120,107,.16);
+
+    transform: none;
+  }
+
+
+  /* ENVELOPE REMAINS SHARP */
+
+  .dr-contact-mail {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 17px;
+    height: 17px;
+
+    flex: none;
+  }
+
+  .dr-contact-mail svg {
+    display: block;
+
+    width: 17px;
+    height: 17px;
+
+    stroke-width: 1.8;
+  }
+
+
+  /* -----------------------------------------
+     TITLE — ORIGINAL BRAND BROWN
+     ----------------------------------------- */
+
+  .dr-contact-title {
+    color: #51463e;
+  }
+
+  .dr-contact-ornament {
+    color: #51463e;
+  }
+
+
+  /* -----------------------------------------
+     FORM ICONS
+     ----------------------------------------- */
+
+  .dr-contact-field-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 59px;
+
+    color: #51463e;
+  }
+
+  .dr-contact-field-icon svg {
+    display: block;
+
+    width: 23px;
+    height: 23px;
+
+    stroke-width: 1.8;
+  }
+
+  .dr-contact-pencil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #51463e;
+  }
+
+  .dr-contact-pencil svg {
+    display: block;
+
+    width: 23px;
+    height: 23px;
+
+    stroke-width: 1.8;
+  }
+
+
+  /* -----------------------------------------
+     MOBILE REFINEMENTS
+     ----------------------------------------- */
+
+  @media (max-width: 760px) {
+
+    .dr-contact-header {
+      gap: 10px;
+    }
+
+    .dr-contact-trigger {
+      padding: 8px 10px;
+
+      gap: 7px;
+
+      font-size: 8px;
+    }
+
+    .dr-contact-mail,
+    .dr-contact-mail svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .dr-contact-field-icon {
+      flex-basis: 51px;
+    }
+
+    .dr-contact-field-icon svg {
+      width: 21px;
+      height: 21px;
+    }
+
+  }
+
+
+  /* -----------------------------------------
+     REDUCED MOTION
+     ----------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+
+    .dr-contact-trigger,
+    .dr-contact-trigger::before {
+      transition: none !important;
+    }
+
+  }
+
+`;
+
+
+/* APPLY STYLES AFTER ORIGINAL CONTACT CSS */
+
+const drRefinementStyleElement =
+  document.createElement("style");
+
+drRefinementStyleElement.textContent =
+  drRefinementStyles;
+
+document.head.appendChild(
+  drRefinementStyleElement
+);
 })();
