@@ -459,27 +459,32 @@
     }
 
     .dr-contact-field input {
-      width: 100%;
-      min-width: 0;
-      height: 100%;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
 
-      border: 0;
-      outline: 0;
+  border: 0;
+  outline: 0;
 
-      background: transparent;
+  background: transparent;
 
-      padding:
-        0
-        14px
-        0
-        0;
+  padding: 0 14px 0 0;
 
-      font-family: Georgia, serif;
+  font-family:
+    "Avenir Next",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 
-      font-size: 16px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.56;
+  letter-spacing: .01em;
 
-      color: #51463e;
-    }
+  color: #5c524b;
+
+  -webkit-text-fill-color: #5c524b;
+}
 
     .dr-contact-field input::placeholder {
       color: #746c65;
