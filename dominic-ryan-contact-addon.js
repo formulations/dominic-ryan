@@ -2345,8 +2345,15 @@ transition:
 
     void overlay.offsetWidth;
 
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+
     overlay.classList.add(
       "is-open"
+    );
+
+  });
+});
     );
 
     requestAnimationFrame(
