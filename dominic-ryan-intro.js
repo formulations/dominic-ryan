@@ -41,11 +41,12 @@
       pointer-events: none;
     }
 
-    .dr-intro img {
-      display: block;
-      width: min(65vw, 360px);
-      height: auto;
-      object-fit: contain;
+.dr-intro img {
+  display: block;
+  width: min(65vw, 360px);
+  height: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
     }
 
     @media (max-width: 760px) {
