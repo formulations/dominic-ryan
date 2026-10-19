@@ -3235,17 +3235,11 @@ function handleFinalScroll() {
 
   if (revealStarted) return;
 
-  // Require scrolling at least 60% of the viewport height.
-  const minimumScroll = window.innerHeight * 0.60;
-
-  if (window.scrollY < minimumScroll) return;
-
   hasScrolled = true;
 
   initializeFinalObserver();
 
 }
-
 
   window.addEventListener(
     "scroll",
