@@ -733,6 +733,118 @@
     .signature-name{
       margin-top:0 !important;
     }
+    /* =========================================================
+   DOMINIC RYAN — CHAMPAGNE RIBBON
+   5.5-SECOND HORIZONTAL UNFURL
+   ========================================================= */
+
+.final-typewriter {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Ribbon positioned behind the quote */
+
+.dr-quote-ribbon {
+  position: absolute;
+
+  top: -8px;
+  bottom: -8px;
+
+  left: calc(-1 * var(--dr-ribbon-edge-offset, 0px));
+  right: -20px;
+
+  z-index: 0;
+
+  pointer-events: none;
+
+  clip-path: inset(0 100% 0 0);
+}
+
+  z-index: 0;
+
+  pointer-events: none;
+
+  clip-path: inset(0 100% 0 0);
+}
+
+/* Champagne material with one diagonal-cut end */
+
+.dr-quote-ribbon-material {
+  position: absolute;
+  inset: 0;
+
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    calc(100% - 27px) 100%,
+    0 100%
+  );
+
+  background: linear-gradient(
+    180deg,
+    rgba(221, 207, 187, 0.26) 0%,
+    rgba(218, 202, 179, 0.39) 47%,
+    rgba(224, 209, 190, 0.28) 100%
+  );
+
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 -1px rgba(108, 88, 69, 0.11);
+}
+
+/* Subtle material detail */
+
+.dr-quote-ribbon-material::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 1px;
+
+  background: rgba(91, 72, 53, 0.14);
+}
+
+/* Begin unfurling */
+
+.dr-quote-ribbon.dr-ribbon-visible {
+  animation:
+    drRibbonUnfurl
+    5.5s
+    cubic-bezier(.38, .05, .62, .95)
+    forwards;
+}
+
+@keyframes drRibbonUnfurl {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Keep the quote and ornament above the ribbon */
+
+.final-typewriter-text,
+.final-typewriter-ornament {
+  position: relative;
+  z-index: 1;
+}
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  .dr-quote-ribbon.dr-ribbon-visible {
+    animation: none;
+    clip-path: inset(0 0 0 0);
+  }
+}
 /* =========================================================
    FINAL SENTENCE — ELEGANT SIGNATURE-MATCHED REVEAL
    ========================================================= */
@@ -1991,6 +2103,9 @@ transition:
 
 
        <p class="final-typewriter">
+         <span class="dr-quote-ribbon" aria-hidden="true">
+  <span class="dr-quote-ribbon-material"></span>
+</span>
   <span class="final-typewriter-text">𝘼𝙛𝙩𝙚𝙧 𝙖𝙡𝙡, 𝙬𝙚 𝙨𝙥𝙚𝙣𝙙 𝙨𝙤 𝙢𝙪𝙘𝙝 𝙤𝙛 𝙡𝙞𝙛𝙚 𝙡𝙚𝙖𝙧𝙣𝙞𝙣𝙜 𝙝𝙤𝙬 𝙩𝙤 𝙨𝙚𝙚 𝙩𝙝𝙚 𝙬𝙤𝙧𝙡𝙙 ⸺ 𝙥𝙚𝙧𝙝𝙖𝙥𝙨 𝙩𝙝𝙚 𝙜𝙧𝙚𝙖𝙩𝙚𝙧 𝙬𝙞𝙨𝙙𝙤𝙢 𝙡𝙞𝙚𝙨 𝙞𝙣 𝙠𝙣𝙤𝙬𝙞𝙣𝙜 𝙬𝙝𝙚𝙣 𝙩𝙤 𝙨𝙞𝙢𝙥𝙡𝙮 𝙚𝙭𝙥𝙚𝙧𝙞𝙚𝙣𝙘𝙚 𝙞𝙩. </span><span
 class="final-typewriter-ornament"
     style="
@@ -3113,6 +3228,41 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("load", () => {
   window.scrollTo(0, 0);
 });
+    /* =======================================================
+   CHAMPAGNE RIBBON — PAPER EDGE ALIGNMENT
+   ======================================================= */
+
+const drQuote = document.querySelector(".final-typewriter");
+const drRibbon = document.querySelector(".dr-quote-ribbon");
+
+function drAlignRibbon() {
+
+  if (!drQuote || !drRibbon) return;
+
+  const paper = drQuote.closest(".paper");
+
+  if (!paper) return;
+
+  const paperLeft = paper.getBoundingClientRect().left;
+  const quoteLeft = drQuote.getBoundingClientRect().left;
+
+  const offset = quoteLeft - paperLeft;
+
+  drQuote.style.setProperty(
+    "--dr-ribbon-edge-offset",
+    `${offset}px`
+  );
+
+}
+
+window.addEventListener("resize", drAlignRibbon);
+window.addEventListener("load", drAlignRibbon);
+
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(drAlignRibbon);
+}
+
+drAlignRibbon();
 /* =======================================================
    FINAL STATEMENT — ELEGANT SCROLL-TRIGGERED REVEAL
 
@@ -3160,6 +3310,13 @@ if (finalTypewriter) {
 
     // Begin gradual quote reveal
     finalText.classList.add("reveal-visible");
+    // Unfurl champagne ribbon alongside quote
+
+drAlignRibbon();
+
+if (drRibbon) {
+  drRibbon.classList.add("dr-ribbon-visible");
+}
 
     // Reveal ornament
     setTimeout(() => {
