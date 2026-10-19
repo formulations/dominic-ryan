@@ -741,16 +741,17 @@
 
 .final-typewriter-text {
 
-  display: inline;
+  display: inline-block;
 
   opacity: 0;
+
+  transform: translateY(3px);
 
   filter: blur(.6px);
 
   transition:
-
     opacity 3.3s cubic-bezier(.22,.61,.36,1),
-
+    transform 3.3s cubic-bezier(.22,.61,.36,1),
     filter 3.3s cubic-bezier(.22,.61,.36,1);
 
 }
@@ -758,6 +759,8 @@
 .final-typewriter-text.reveal-visible {
 
   opacity: 1;
+
+  transform: translateY(0);
 
   filter: blur(0);
 
