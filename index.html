@@ -3199,28 +3199,26 @@ if (finalTypewriter) {
       return;
     }
 
-    finalRevealObserver = new IntersectionObserver(
+finalRevealObserver = new IntersectionObserver(
 
-      entries => {
+  entries => {
 
-        entries.forEach(entry => {
+    entries.forEach(entry => {
 
-          if (
-            entry.isIntersecting &&
-            entry.intersectionRatio >= 0.25
-          ) {
-            beginFinalReveal();
-          }
-
-        });
-
-      },
-
-      {
-        threshold: 0.25
+      if (entry.isIntersecting) {
+        beginFinalReveal();
       }
 
-    );
+    });
+
+  },
+
+  {
+    threshold: 0,
+    rootMargin: "0px 0px -30% 0px"
+  }
+
+);
 
     finalRevealObserver.observe(finalTypewriter);
 
