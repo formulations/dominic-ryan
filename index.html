@@ -734,23 +734,18 @@
       margin-top:0 !important;
     }
 /* =========================================================
-
    FINAL SENTENCE — ELEGANT SIGNATURE-MATCHED REVEAL
-
    ========================================================= */
 
 .final-typewriter-text {
-
   display: inline;
 
   opacity: 0;
-
-  filter: blur(.4px);
+  filter: blur(.5px);
 
   transition:
-    opacity 4.5s cubic-bezier(.45,0,.55,1),
-    filter 4.5s cubic-bezier(.45,0,.55,1);
-
+    opacity 5.5s cubic-bezier(.65,0,.35,1),
+    filter 5.5s cubic-bezier(.65,0,.35,1);
 }
 
 .final-typewriter-text.reveal-visible {
@@ -761,19 +756,12 @@
 /* ORNAMENT */
 
 .final-typewriter-ornament {
-
   opacity: 0;
-
-  transition:
-
-    opacity 1.2s ease;
-
+  transition: opacity 1.2s ease;
 }
 
 .final-typewriter-ornament.ornament-visible {
-
   opacity: 1;
-
 }
 
     /* =========================================================
@@ -3125,9 +3113,19 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("load", () => {
   window.scrollTo(0, 0);
 });
+/* =======================================================
+   FINAL STATEMENT — ELEGANT SCROLL-TRIGGERED REVEAL
 
-  /* =======================================================
-   FINAL STATEMENT — SCROLL-PACED ELEGANT REVEAL
+   ORIGINAL TYPEWRITER BEHAVIOR:
+   - 2.85-second initial delay
+   - Requires actual user scrolling
+   - Requires 25% paragraph visibility
+
+   REFINED ANIMATION:
+   - Quote fades over 5.5 seconds
+   - Ornament begins after 3.3 seconds
+   - Signature begins after 3.8 seconds
+   - Runs only once
    ======================================================= */
 
 const finalTypewriter =
@@ -3145,6 +3143,14 @@ if (finalTypewriter) {
     document.querySelector(".signature");
 
   let revealStarted = false;
+  let hasScrolled = false;
+  let observerReady = false;
+  let finalRevealObserver = null;
+
+
+  /* =====================================================
+     REVEAL SEQUENCE
+     ===================================================== */
 
   function beginFinalReveal() {
 
@@ -3152,7 +3158,7 @@ if (finalTypewriter) {
 
     revealStarted = true;
 
-    // Gradually reveal the quote
+    // Begin gradual quote reveal
     finalText.classList.add("reveal-visible");
 
     // Reveal ornament
@@ -3165,60 +3171,99 @@ if (finalTypewriter) {
       finalSignature.classList.add("signature-visible");
     }, 3800);
 
+    // Stop observing after reveal begins
+    if (finalRevealObserver) {
+      finalRevealObserver.disconnect();
+    }
+
+    window.removeEventListener(
+      "scroll",
+      handleFinalScroll
+    );
+
   }
 
-  function checkFinalReveal() {
+
+  /* =====================================================
+     ORIGINAL TYPEWRITER VISIBILITY THRESHOLD
+     ===================================================== */
+
+  function initializeFinalObserver() {
+
+    if (
+      finalRevealObserver ||
+      revealStarted ||
+      !observerReady ||
+      !hasScrolled
+    ) {
+      return;
+    }
+
+    finalRevealObserver = new IntersectionObserver(
+
+      entries => {
+
+        entries.forEach(entry => {
+
+          if (
+            entry.isIntersecting &&
+            entry.intersectionRatio >= 0.25
+          ) {
+            beginFinalReveal();
+          }
+
+        });
+
+      },
+
+      {
+        threshold: 0.25
+      }
+
+    );
+
+    finalRevealObserver.observe(finalTypewriter);
+
+  }
+
+
+  /* =====================================================
+     REQUIRE ACTUAL USER SCROLLING
+     ===================================================== */
+
+  function handleFinalScroll() {
 
     if (revealStarted) return;
 
-    const quoteRect =
-      finalTypewriter.getBoundingClientRect();
+    if (window.scrollY <= 0) return;
 
-    const viewportHeight =
-      window.innerHeight;
+    hasScrolled = true;
 
-    /*
-       Require BOTH conditions:
-
-       1. The reader has scrolled at least
-          35% of the viewport height.
-
-       2. The quote has reached approximately
-          75% of the viewport height.
-    */
-
-    const minimumScroll =
-      viewportHeight * 0.35;
-
-    const quotePosition =
-      viewportHeight * 0.75;
-
-    if (
-      window.scrollY >= minimumScroll &&
-      quoteRect.top <= quotePosition
-    ) {
-
-      beginFinalReveal();
-
-    }
+    initializeFinalObserver();
 
   }
 
+
   window.addEventListener(
     "scroll",
-    checkFinalReveal,
+    handleFinalScroll,
     { passive: true }
   );
 
-  window.addEventListener(
-    "resize",
-    checkFinalReveal
-  );
 
-  checkFinalReveal();
+  /* =====================================================
+     ORIGINAL 2.85-SECOND INITIAL DELAY
+     ===================================================== */
+
+  setTimeout(() => {
+
+    observerReady = true;
+
+    initializeFinalObserver();
+
+  }, 2850);
 
 }
-
     </script>
 
 <!-- CONTACT FORM ADDITION -->
