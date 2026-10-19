@@ -859,13 +859,24 @@
   z-index: 1;
 }
 
-/* Accessibility */
+/* Keep champagne ribbon animation on all devices */
 
 @media (prefers-reduced-motion: reduce) {
+
   .dr-quote-ribbon.dr-ribbon-visible {
-    animation: none;
-    clip-path: inset(0 0 0 0);
+
+    animation:
+
+      drRibbonUnfurl
+
+      5.5s
+
+      cubic-bezier(.38, .05, .62, .95)
+
+      forwards !important;
+
   }
+
 }
 /* =========================================================
    FINAL SENTENCE — ELEGANT SIGNATURE-MATCHED REVEAL
