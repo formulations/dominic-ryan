@@ -830,7 +830,35 @@
   position: relative;
   z-index: 1;
 }
+/* =========================================================
+   MOBILE — CHAMPAGNE RIBBON UNFURL
+   ========================================================= */
 
+@media (max-width: 760px) {
+
+  .dr-quote-ribbon {
+    clip-path: none;
+    overflow: hidden;
+    width: 0;
+    right: auto;
+  }
+
+  .dr-quote-ribbon.dr-ribbon-visible {
+    animation: drMobileRibbonUnfurl
+      5.5s cubic-bezier(.38, .05, .62, .95) forwards;
+  }
+
+  @keyframes drMobileRibbonUnfurl {
+    from {
+      width: 0;
+    }
+
+    to {
+      width: var(--dr-mobile-ribbon-width);
+    }
+  }
+
+}
 /* Accessibility */
 
 @media (prefers-reduced-motion: reduce) {
@@ -3246,6 +3274,13 @@ function drAlignRibbon() {
     "--dr-ribbon-edge-offset",
     `${offset}px`
   );
+  const ribbonWidth =
+  drQuote.getBoundingClientRect().width + offset + 20;
+
+drQuote.style.setProperty(
+  "--dr-mobile-ribbon-width",
+  `${ribbonWidth}px`
+);
 
 }
 
