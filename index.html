@@ -734,48 +734,51 @@
       margin-top:0 !important;
     }
 /* =========================================================
-   FINAL SENTENCE TYPEWRITER
+
+   FINAL SENTENCE — ELEGANT SIGNATURE-MATCHED REVEAL
+
    ========================================================= */
 
-.final-typewriter-text.typing::after{
-  content:"";
-  display:inline-block;
-  width:1px;
-  height:.95em;
-  margin-left:3px;
-  vertical-align:-.08em;
-  background:currentColor;
+.final-typewriter-text {
 
-  animation:
-    finalCursorBlink
-    .7s
-    step-end
-    infinite;
-}
+  display: inline;
 
-@keyframes finalCursorBlink{
+  opacity: 0;
 
-  50%{
-    opacity:0;
-  }
-
-}
-
-.final-typewriter-text{
-  visibility:hidden;
-}
-
-.final-typewriter-text.typewriter-ready{
-  visibility:visible;
-}
-
-.final-typewriter-ornament{
-  opacity:0;
+  filter: blur(.6px);
 
   transition:
-    opacity
-    .6s
-    ease;
+
+    opacity 3.3s cubic-bezier(.22,.61,.36,1),
+
+    filter 3.3s cubic-bezier(.22,.61,.36,1);
+
+}
+
+.final-typewriter-text.reveal-visible {
+
+  opacity: 1;
+
+  filter: blur(0);
+
+}
+
+/* ORNAMENT */
+
+.final-typewriter-ornament {
+
+  opacity: 0;
+
+  transition:
+
+    opacity 1.2s ease;
+
+}
+
+.final-typewriter-ornament.ornament-visible {
+
+  opacity: 1;
+
 }
 
     /* =========================================================
