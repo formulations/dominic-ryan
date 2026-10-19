@@ -3231,17 +3231,20 @@ if (finalTypewriter) {
      REQUIRE ACTUAL USER SCROLLING
      ===================================================== */
 
-  function handleFinalScroll() {
+function handleFinalScroll() {
 
-    if (revealStarted) return;
+  if (revealStarted) return;
 
-    if (window.scrollY <= 0) return;
+  // Require scrolling at least 60% of the viewport height.
+  const minimumScroll = window.innerHeight * 0.60;
 
-    hasScrolled = true;
+  if (window.scrollY < minimumScroll) return;
 
-    initializeFinalObserver();
+  hasScrolled = true;
 
-  }
+  initializeFinalObserver();
+
+}
 
 
   window.addEventListener(
