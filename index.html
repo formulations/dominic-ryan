@@ -755,9 +755,9 @@
   right: -20px;
 
   z-index: 0;
-
   pointer-events: none;
 
+  visibility: hidden;
   clip-path: inset(0 100% 0 0);
 }
 /* Champagne material with one diagonal-cut end */
@@ -804,6 +804,8 @@
 /* Begin unfurling */
 
 .dr-quote-ribbon.dr-ribbon-visible {
+  visibility: visible;
+
   animation:
     drRibbonUnfurl
     5.5s
