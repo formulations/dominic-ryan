@@ -745,25 +745,17 @@
 
   opacity: 0;
 
-  transform: translateY(3px);
-
-  filter: blur(.6px);
+  filter: blur(.4px);
 
   transition:
-    opacity 3.3s cubic-bezier(.22,.61,.36,1),
-    transform 3.3s cubic-bezier(.22,.61,.36,1),
-    filter 3.3s cubic-bezier(.22,.61,.36,1);
+    opacity 4.5s cubic-bezier(.45,0,.55,1),
+    filter 4.5s cubic-bezier(.45,0,.55,1);
 
 }
 
 .final-typewriter-text.reveal-visible {
-
   opacity: 1;
-
-  transform: translateY(0);
-
   filter: blur(0);
-
 }
 
 /* ORNAMENT */
@@ -3165,14 +3157,12 @@ if (finalTypewriter) {
 
     // Reveal ornament after 2.65 seconds
     setTimeout(() => {
-      finalOrnament.classList.add("ornament-visible");
-    }, 2650);
+  finalOrnament.classList.add("ornament-visible");
+}, 3600);
 
-    // Reveal signature after 3 seconds
-    setTimeout(() => {
-      finalSignature.classList.add("signature-visible");
-    }, 3000);
-
+setTimeout(() => {
+  finalSignature.classList.add("signature-visible");
+}, 4100);
   }
 
   const finalRevealObserver = new IntersectionObserver(
@@ -3194,10 +3184,12 @@ if (finalTypewriter) {
     },
 
     {
-      threshold: .1,
-      rootMargin: "0px 0px -30% 0px"
-    }
 
+  threshold: 0,
+
+  rootMargin: "0px 0px -10% 0px"
+
+}
   );
 
   finalRevealObserver.observe(finalTypewriter);
