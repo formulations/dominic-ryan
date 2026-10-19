@@ -3127,7 +3127,7 @@ window.addEventListener("load", () => {
 });
 
   /* =======================================================
-   FINAL STATEMENT — ELEGANT REVEAL
+   FINAL STATEMENT — SCROLL-PACED ELEGANT REVEAL
    ======================================================= */
 
 const finalTypewriter =
@@ -3152,47 +3152,70 @@ if (finalTypewriter) {
 
     revealStarted = true;
 
-    // Reveal words immediately
+    // Gradually reveal the quote
     finalText.classList.add("reveal-visible");
 
-    // Reveal ornament after 2.65 seconds
+    // Reveal ornament
     setTimeout(() => {
-  finalOrnament.classList.add("ornament-visible");
-}, 3600);
+      finalOrnament.classList.add("ornament-visible");
+    }, 3300);
 
-setTimeout(() => {
-  finalSignature.classList.add("signature-visible");
-}, 4100);
+    // Reveal signature shortly afterward
+    setTimeout(() => {
+      finalSignature.classList.add("signature-visible");
+    }, 3800);
+
   }
 
-  const finalRevealObserver = new IntersectionObserver(
+  function checkFinalReveal() {
 
-    entries => {
+    if (revealStarted) return;
 
-      entries.forEach(entry => {
+    const quoteRect =
+      finalTypewriter.getBoundingClientRect();
 
-        if (entry.isIntersecting) {
+    const viewportHeight =
+      window.innerHeight;
 
-          beginFinalReveal();
+    /*
+       Require BOTH conditions:
 
-          finalRevealObserver.unobserve(finalTypewriter);
+       1. The reader has scrolled at least
+          35% of the viewport height.
 
-        }
+       2. The quote has reached approximately
+          75% of the viewport height.
+    */
 
-      });
+    const minimumScroll =
+      viewportHeight * 0.35;
 
-    },
+    const quotePosition =
+      viewportHeight * 0.75;
 
-    {
+    if (
+      window.scrollY >= minimumScroll &&
+      quoteRect.top <= quotePosition
+    ) {
 
-  threshold: 0,
+      beginFinalReveal();
 
-  rootMargin: "0px 0px -10% 0px"
+    }
 
-}
+  }
+
+  window.addEventListener(
+    "scroll",
+    checkFinalReveal,
+    { passive: true }
   );
 
-  finalRevealObserver.observe(finalTypewriter);
+  window.addEventListener(
+    "resize",
+    checkFinalReveal
+  );
+
+  checkFinalReveal();
 
 }
 
