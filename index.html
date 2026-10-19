@@ -3134,148 +3134,73 @@ window.addEventListener("load", () => {
   window.scrollTo(0, 0);
 });
 
-    /* =======================================================
-   FINAL SENTENCE TYPEWRITER
+  /* =======================================================
+   FINAL STATEMENT — ELEGANT REVEAL
    ======================================================= */
 
 const finalTypewriter =
-  document.querySelector(
-    ".final-typewriter"
-  );
+  document.querySelector(".final-typewriter");
 
-if(finalTypewriter){
+if (finalTypewriter) {
 
   const finalText =
-    finalTypewriter.querySelector(
-      ".final-typewriter-text"
-    );
+    finalTypewriter.querySelector(".final-typewriter-text");
 
   const finalOrnament =
-    finalTypewriter.querySelector(
-      ".final-typewriter-ornament"
-    );
-const finalSignature =
-  document.querySelector(
-    ".signature"
-  );
-  const originalText =
-    finalText.textContent;
+    finalTypewriter.querySelector(".final-typewriter-ornament");
 
-  const characters =
-    Array.from(originalText);
+  const finalSignature =
+    document.querySelector(".signature");
 
-  let finalTypingStarted =
-    false;
-finalText.textContent = "";
+  let revealStarted = false;
 
-  function beginFinalTypewriter(){
+  function beginFinalReveal() {
 
-    finalTypingStarted =
+    if (revealStarted) return;
 
-  true;
+    revealStarted = true;
 
-finalText.classList.add(
+    // Reveal words immediately
+    finalText.classList.add("reveal-visible");
 
-  "typewriter-ready"
+    // Reveal ornament after 2.65 seconds
+    setTimeout(() => {
+      finalOrnament.classList.add("ornament-visible");
+    }, 2650);
 
-);
-
-finalText.classList.add(
-
-  "typing"
-
-);
-
-    let index =
-      0;
-
-
-    function typeNextCharacter(){
-
-      if(index < characters.length){
-
-        finalText.textContent +=
-          characters[index];
-
-        index++;
-
-        setTimeout(
-          typeNextCharacter,
-          30
-        );
-
-      }
-
-else{
-
-  finalText.classList.remove(
-    "typing"
-  );
-
-  finalOrnament.style.opacity =
-    "1";
-
-  setTimeout(
-    () => {
-
-      if(finalSignature){
-
-        finalSignature.classList.add(
-          "signature-visible"
-        );
-
-      }
-
-    },
-    600
-  );
-
-}
-
-    }
-
-
-    typeNextCharacter();
+    // Reveal signature after 3 seconds
+    setTimeout(() => {
+      finalSignature.classList.add("signature-visible");
+    }, 3000);
 
   }
 
+  const finalRevealObserver = new IntersectionObserver(
 
-  const finalTypewriterObserver =
-    new IntersectionObserver(
+    entries => {
 
-      entries => {
+      entries.forEach(entry => {
 
-        entries.forEach(
-          entry => {
+        if (entry.isIntersecting) {
 
-            if(entry.isIntersecting){
+          beginFinalReveal();
 
-              beginFinalTypewriter();
+          finalRevealObserver.unobserve(finalTypewriter);
 
-              finalTypewriterObserver.unobserve(
-                finalTypewriter
-              );
+        }
 
-            }
+      });
 
-          }
-        );
+    },
 
-      },
-
-{
-  threshold:.15,
-  rootMargin:"0px 0px -35% 0px"
-}
-
-    );
-
-
-   finalTypewriterObserver.observe(
-
-    finalTypewriter
+    {
+      threshold: .1,
+      rootMargin: "0px 0px -30% 0px"
+    }
 
   );
+
+  finalRevealObserver.observe(finalTypewriter);
 
 }
 
