@@ -9,7 +9,9 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
   >
 
-  <!-- KEEP SITE OUT OF SEARCH ENGINES -->
+  <!-- =====================================================
+       SEARCH ENGINE PRIVACY
+       ===================================================== -->
 
   <meta
     name="robots"
@@ -29,7 +31,7 @@
   <title>Formulations | Dominic Ryan</title>
 
   <!-- =====================================================
-       WEBSITE FONTS
+       FONTS
        ===================================================== -->
 
   <link
@@ -57,7 +59,7 @@
   >
 
   <!-- =====================================================
-       SITE ICONS
+       FAVICON
        ===================================================== -->
 
   <link
@@ -90,6 +92,14 @@
       src: url("./AvenirNext-Medium.woff2") format("woff2");
       font-style: normal;
       font-weight: 500;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "DR Avenir Next";
+      src: url("./AvenirNext-DemiBold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 600;
       font-display: swap;
     }
 
@@ -134,8 +144,7 @@
     }
 
     /* =====================================================
-       BACKGROUND DR WATERMARK
-       MATCHES HOMEPAGE
+       BACKGROUND WATERMARK
        ===================================================== */
 
     .background-dr {
@@ -145,7 +154,6 @@
       bottom: clamp(-60px, -3vw, -42px);
 
       width: clamp(285px, 25vw, 520px);
-      height: auto;
 
       z-index: 0;
 
@@ -157,6 +165,7 @@
 
     .background-dr img {
       display: block;
+
       width: 100%;
       height: auto;
 
@@ -165,28 +174,31 @@
       filter: saturate(.65) sepia(.12);
     }
 
+    /* =====================================================
+       PAGE STRUCTURE
+       ===================================================== */
+
     .site-shell {
       position: relative;
       z-index: 1;
 
-      width: 100%;
-      min-height: 100vh;
-
       display: flex;
       flex-direction: column;
+
+      width: 100%;
+      min-height: 100vh;
     }
 
     /* =====================================================
-       HEADER
-       SAME BRANDING AS HOMEPAGE
+       HEADER — MATCHES HOMEPAGE
        ===================================================== */
 
     .header {
-      width: 100%;
-
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+
+      width: 100%;
 
       gap: 40px;
 
@@ -198,16 +210,25 @@
       align-items: flex-start;
 
       gap: 20px;
+
+      min-width: 0;
     }
 
     .brand-mark {
       width: 72px;
+
       height: auto;
+
       flex: none;
+    }
+
+    .brand-mark a {
+      display: block;
     }
 
     .brand-mark img {
       display: block;
+
       width: 100%;
       height: auto;
     }
@@ -266,6 +287,7 @@
 
     /* =====================================================
        PRIMARY NAVIGATION
+       IDENTICAL POSITION ON BOTH PAGES
        ===================================================== */
 
     .collection-navigation {
@@ -290,6 +312,8 @@
       font-size: 10px;
       font-weight: 500;
       letter-spacing: .16em;
+
+      white-space: nowrap;
 
       transition: opacity .25s ease;
     }
@@ -327,19 +351,19 @@
 
       margin: 0 auto;
 
-      padding: 78px 0 105px;
+      padding: 78px 0 0;
 
-      flex: 1;
+      flex: 1 0 auto;
     }
 
     /* =====================================================
-       CLASSICAL EDITORIAL HEADING
+       EDITORIAL HEADING
        ===================================================== */
 
     .collection-heading {
-      text-align: center;
+      margin-bottom: 47px;
 
-      margin-bottom: 57px;
+      text-align: center;
     }
 
     .collection-heading h1 {
@@ -364,27 +388,9 @@
       width: 36px;
       height: 1px;
 
-      margin: 25px auto 20px;
+      margin: 25px auto 0;
 
       background: rgba(81, 70, 62, .25);
-    }
-
-    .collection-heading p {
-      margin: 0;
-
-      font-family:
-        "DR Didot",
-        Didot,
-        Georgia,
-        serif;
-
-      font-size: clamp(13px, 1.35vw, 17px);
-      font-style: italic;
-
-      line-height: 1.65;
-      letter-spacing: .12em;
-
-      color: var(--muted);
     }
 
     /* =====================================================
@@ -396,15 +402,17 @@
       margin: 0 auto;
     }
 
-    /* STORY HIGHLIGHTS */
+    /* =====================================================
+       STORY HIGHLIGHTS
+       ===================================================== */
 
     .instagram-highlights {
+      display: flex;
+      justify-content: center;
+
       width: 100%;
 
       margin: 0 auto 42px;
-
-      display: flex;
-      justify-content: center;
     }
 
     .instagram-highlights
@@ -412,7 +420,9 @@
       width: 100%;
     }
 
-    /* INSTAGRAM GRID */
+    /* =====================================================
+       INSTAGRAM GRID
+       ===================================================== */
 
     .instagram-grid {
       width: 100%;
@@ -420,14 +430,12 @@
     }
 
     /* =====================================================
-       FOOTER NAVIGATION
-       MATCHES HOMEPAGE VISUAL LANGUAGE
+       FOOTER
+       STATIC — NEVER FLOATS OR FOLLOWS SCROLL
        ===================================================== */
 
     .utility-nav {
       position: relative;
-
-      width: 100%;
 
       display: flex;
       flex-direction: row;
@@ -436,9 +444,13 @@
       justify-content: flex-start;
       align-items: center;
 
+      width: 100%;
+
       gap: 18px;
 
-      padding: 30px 30px 28px;
+      margin-top: 80px;
+
+      padding: 0 30px 28px;
 
       font-family:
         "DR Avenir Next",
@@ -447,9 +459,9 @@
         sans-serif;
 
       font-size: 10px;
+      font-weight: 500;
       line-height: 1;
 
-      font-weight: 500;
       letter-spacing: .04em;
 
       color: var(--soft-ink);
@@ -541,11 +553,11 @@
 
       .formulations-main {
         width: 94vw;
-        padding: 64px 0 75px;
+        padding-top: 64px;
       }
 
       .collection-heading {
-        margin-bottom: 40px;
+        margin-bottom: 38px;
       }
 
       .collection-heading h1 {
@@ -553,9 +565,8 @@
         letter-spacing: .12em;
       }
 
-      .collection-heading p {
-        font-size: 12px;
-        letter-spacing: .07em;
+      .collection-heading-rule {
+        margin-top: 22px;
       }
 
       .instagram-highlights {
@@ -563,14 +574,16 @@
       }
 
       .utility-nav {
-        padding:
-          28px
-          14px
-          calc(34px + env(safe-area-inset-bottom));
-
         justify-content: center;
 
         gap: 10px;
+
+        margin-top: 65px;
+
+        padding:
+          0
+          14px
+          calc(34px + env(safe-area-inset-bottom));
 
         font-size: 8px;
         letter-spacing: .025em;
@@ -590,6 +603,11 @@
 
       html {
         scroll-behavior: auto;
+      }
+
+      .collection-navigation a,
+      .utility-nav a {
+        transition: none;
       }
 
     }
@@ -665,7 +683,7 @@
 
 
     <!-- ===================================================
-         PAGE NAVIGATION
+         PRIMARY PAGE NAVIGATION
          =================================================== -->
 
     <nav
@@ -705,10 +723,6 @@
           aria-hidden="true"
         ></div>
 
-        <p>
-          Art · Design · Travel · Objects with a Past
-        </p>
-
       </header>
 
 
@@ -730,7 +744,6 @@
 
         <!-- ===============================================
              ELFSIGHT INSTAGRAM GRID
-             DISTINCT FROM HOMEPAGE WIDGET
              =============================================== -->
 
         <div class="instagram-grid">
@@ -748,33 +761,29 @@
 
 
     <!-- ===================================================
-         FOOTER NAVIGATION
+         FOOTER — SAME FOUR LINKS AS HOMEPAGE
          =================================================== -->
 
     <nav
       class="utility-nav"
+      id="utility-nav"
       aria-label="Site links"
     >
 
-      <a href="./index.html">
+      <a
+        class="nav-home"
+        href="./index.html"
+      >
         DOMINIC RYAN
       </a>
 
       <span
-        class="utility-rule"
-        aria-hidden="true"
-      ></span>
-
-      <a href="./formulations.html">
-        EXPLORE THE COLLECTION
-      </a>
-
-      <span
-        class="utility-rule"
+        class="utility-rule nav-rule-one"
         aria-hidden="true"
       ></span>
 
       <a
+        class="nav-instagram"
         href="https://www.instagram.com/formulations/"
         target="_blank"
         rel="noopener noreferrer"
@@ -783,11 +792,12 @@
       </a>
 
       <span
-        class="utility-rule"
+        class="utility-rule nav-rule-two"
         aria-hidden="true"
       ></span>
 
       <a
+        class="nav-linkedin"
         href="https://www.linkedin.com/in/itsdominicryan"
         target="_blank"
         rel="noopener noreferrer"
@@ -796,11 +806,12 @@
       </a>
 
       <span
-        class="utility-rule"
+        class="utility-rule nav-rule-three"
         aria-hidden="true"
       ></span>
 
       <a
+        class="nav-contact"
         href="#contact"
         data-dr-contact-open
       >
@@ -813,13 +824,18 @@
 
 
   <!-- =====================================================
-       INSTAGRAM WIDGET SCRIPTS
+       SOCIABLEKIT STORY HIGHLIGHTS
        ===================================================== -->
 
   <script
     src="https://widgets.sociablekit.com/instagram-story-highlights/widget.js"
     defer
   ></script>
+
+
+  <!-- =====================================================
+       ELFSIGHT INSTAGRAM GRID
+       ===================================================== -->
 
   <script
     src="https://elfsightcdn.com/platform.js"
@@ -829,7 +845,6 @@
 
   <!-- =====================================================
        CONTACT FORM
-       SAME AS HOMEPAGE
        ===================================================== -->
 
   <script
