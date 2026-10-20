@@ -449,7 +449,11 @@
     event => {
       const viewer = getViewer();
 
-      if (!isViewerVisible(viewer)) return;
+      /* Allow clicks outside the widget to close the Story. */
+if (!viewer.contains(target)) {
+  closeViewer();
+  return;
+}
 
       const target = event.target;
 
