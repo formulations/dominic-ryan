@@ -1,960 +1,746 @@
 /* =========================================================
-   DOMINIC RYAN — INSTAGRAM STORY EXPERIENCE
-   SociableKIT Instagram Story Highlights
+   DOMINIC RYAN — FORMULATIONS
+   INSTAGRAM STORY HIGHLIGHTS
 
    CONSOLIDATED EDITION / OCTOBER 2026
 
-   Features:
-   - Automatic Story progression
-   - Five-second image duration
-   - Video playback with audio when permitted
-   - No video looping
-   - Automatic closure after final Story
-   - Miniature Highlight navigation
-   - Immediate audio cleanup
-   - Warm-stone background click-to-close
-   - Lighter website background click-to-close
-   - Native carousel navigation preserved
-   - Responsive desktop and mobile support
+   Design objectives:
+   - Centered circular Highlights
+   - Compact editorial presentation
+   - Clean portrait Story viewer
+   - No profile photograph in Story viewer
+   - No Story header/title
+   - Functional carousel navigation
+   - Responsive desktop and mobile layouts
+   - Remove SociableKIT branding
    ========================================================= */
 
-(() => {
-  "use strict";
 
-  /* =====================================================
-     01 / CONFIGURATION
-     ===================================================== */
+/* =========================================================
+   01 / DESIGN VARIABLES
+   ========================================================= */
 
-  const CONFIG = {
-    widget:
-      '.sk-ww-instagram-story-highlights[data-embed-id="25723348"]',
+.sk-ww-instagram-story-highlights {
+  --dr-highlight-size: 112px;
+  --dr-highlight-gap: 14px;
 
-    viewer: ".sk-story-viewer-layout",
+  --dr-story-width: 390px;
 
-    slide: ".sk-carousel-track > .sk-carousel-item",
+  --dr-ink: #292621;
+  --dr-accent: #9D8873;
 
-    activeProgress: ".sk-story-progress-seg.is-active",
+  width: 100% !important;
+  max-width: 100% !important;
 
-    next: ".sk-carousel-next",
+  margin: 0 auto !important;
+  padding: 0 !important;
 
-    close: ".sk-story-close",
+  background: transparent !important;
 
-    imageDuration: 5000,
-
-    navigationDelay: 220,
-
-    highlightSwitchDelay: 150
-  };
-
-  /* =====================================================
-     02 / STATE
-     ===================================================== */
-
-  let widget = null;
-  let observer = null;
-
-  let activeMedia = null;
-  let activeIndex = -1;
-
-  let imageTimer = null;
-
-  let playbackGeneration = 0;
-
-  let syncQueued = false;
-  let pendingAdvance = false;
-
-  let viewerWasOpen = false;
-  let switchingHighlight = false;
-
-  let closingViewer = false;
-
-  /* =====================================================
-     03 / VIEWER HELPERS
-     ===================================================== */
-
-  function getViewer() {
-    return widget?.querySelector(CONFIG.viewer) || null;
-  }
-
-function isViewerVisible(viewer = getViewer()) {
-  if (!viewer || !viewer.isConnected) {
-    return false;
-  }
-
-  const style = window.getComputedStyle(viewer);
-
-  if (
-    style.display === "none" ||
-    style.visibility === "hidden"
-  ) {
-    return false;
-  }
-
-  return viewer.getClientRects().length > 0;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
-    const style = window.getComputedStyle(viewer);
 
-    if (
-      style.display === "none" ||
-      style.visibility === "hidden"
-    ) {
-      return false;
-    }
+/* =========================================================
+   02 / REMOVE MAIN WIDGET HEADER
 
-    if (viewer.getClientRects().length === 0) {
-      return false;
-    }
+   Does not affect Story navigation.
+   ========================================================= */
 
-    /*
-     Check whether an ancestor is hiding the viewer.
-     */
+.sk-ww-instagram-story-highlights
+.sk-posts-header,
 
-    let ancestor = viewer.parentElement;
+.sk-ww-instagram-story-highlights
+.sk-header-follow-btn,
 
-    while (ancestor && ancestor !== document.body) {
-      const ancestorStyle =
-        window.getComputedStyle(ancestor);
+.sk-ww-instagram-story-highlights
+.sk-button-follow-instagram {
+  display: none !important;
+}
 
-      if (
-        ancestorStyle.display === "none" ||
-        ancestorStyle.visibility === "hidden"
-      ) {
-        return false;
-      }
 
-      ancestor = ancestor.parentElement;
-    }
+/* =========================================================
+   03 / WIDGET BODY
+   ========================================================= */
 
-    return true;
-  }
+.sk-ww-instagram-story-highlights
+.sk-posts-body {
+  box-sizing: border-box !important;
 
-  function getSlides() {
-    const viewer = getViewer();
+  width: 100% !important;
+  max-width: 100% !important;
 
-    if (!viewer) {
-      return [];
-    }
+  margin: 0 !important;
+  padding: 0 !important;
 
-    return [
-      ...viewer.querySelectorAll(CONFIG.slide)
-    ];
-  }
+  background: transparent !important;
+}
 
-  function getActiveIndex() {
-    const viewer = getViewer();
 
-    if (!viewer) {
-      return -1;
-    }
+/* =========================================================
+   04 / HIGHLIGHTS STRIP
+   ========================================================= */
 
-    const active = viewer.querySelector(
-      CONFIG.activeProgress
-    );
+.sk-ww-instagram-story-highlights
+.sk-highlights-strip-wrap {
+  display: flex !important;
 
-    if (!active) {
-      return -1;
-    }
+  justify-content: center !important;
+  align-items: center !important;
 
-    const index = Number(active.dataset.index);
+  width: 100% !important;
 
-    return Number.isInteger(index)
-      ? index
-      : -1;
-  }
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
 
-  function clearImageTimer() {
-    if (imageTimer !== null) {
-      clearTimeout(imageTimer);
 
-      imageTimer = null;
-    }
-  }
+/* =========================================================
+   05 / HIGHLIGHTS VIEWPORT
+   ========================================================= */
 
-  /* =====================================================
-     04 / AUDIO MANAGEMENT
-     ===================================================== */
+.sk-ww-instagram-story-highlights
+.sk-highlights-strip-viewport {
+  width: 100% !important;
+  max-width: 100% !important;
 
-  function stopAllVideos(except = null) {
-    if (!widget) {
-      return;
-    }
+  margin: 0 auto !important;
+  padding: 0 !important;
 
-    widget.querySelectorAll("video").forEach(video => {
-      if (video === except) {
-        return;
-      }
+  overflow: hidden !important;
+}
 
-      try {
-        video.pause();
 
-        video.muted = true;
+/* =========================================================
+   06 / HIGHLIGHTS TRACK
 
-        video.autoplay = false;
-      } catch (_) {
-        // Ignore unavailable media states.
-      }
-    });
-  }
+   Scoped to the thumbnail strip.
+   ========================================================= */
 
-  function invalidatePlayback() {
-    clearImageTimer();
+.sk-ww-instagram-story-highlights
+.sk-highlights-strip-viewport
+.sk-posts-stories {
+  display: flex !important;
 
-    playbackGeneration++;
+  justify-content: center !important;
+  align-items: flex-start !important;
 
-    stopAllVideos();
+  flex-wrap: nowrap !important;
 
-    activeMedia = null;
-    activeIndex = -1;
-  }
+  gap: var(--dr-highlight-gap) !important;
 
-  /* =====================================================
-     05 / PREVENT VIDEO LOOPING
-     ===================================================== */
+  width: 100% !important;
 
-  function disableLooping() {
-    if (!widget) {
-      return;
-    }
+  margin: 0 auto !important;
+  padding: 0 !important;
 
-    widget.querySelectorAll("video").forEach(video => {
-      video.loop = false;
+  transform: none !important;
+}
 
-      video.removeAttribute("loop");
 
-      video.playsInline = true;
-    });
-  }
+/* =========================================================
+   07 / HIGHLIGHT ITEMS
+   ========================================================= */
 
-  /* =====================================================
-     06 / CLOSE STORY VIEWER
-     ===================================================== */
+.sk-ww-instagram-story-highlights
+.sk-highlights-strip-viewport
+.sk-posts-story-item {
+  box-sizing: border-box !important;
 
-  function closeViewer() {
-    if (closingViewer) {
-      return;
-    }
+  flex: 0 0 var(--dr-highlight-size) !important;
 
-    const viewer = getViewer();
+  width: var(--dr-highlight-size) !important;
+  min-width: var(--dr-highlight-size) !important;
+  max-width: var(--dr-highlight-size) !important;
 
-    if (!viewer || !isViewerVisible(viewer)) {
-      stopAllVideos();
-      return;
-    }
+  margin: 0 !important;
+  padding: 0 !important;
 
-    closingViewer = true;
+  background: transparent !important;
+  border: none !important;
 
-    invalidatePlayback();
+  text-align: center !important;
+}
 
-    pendingAdvance = false;
 
-    const closeButton = viewer.querySelector(
-      CONFIG.close
-    );
+/* =========================================================
+   08 / CIRCULAR THUMBNAIL WRAPPERS
+   ========================================================= */
 
-    if (closeButton) {
-      closeButton.click();
-    }
+.sk-ww-instagram-story-highlights
+.sk-highlights-strip-viewport
+.sk-story-thumb-wrap {
+  display: block !important;
 
-    viewerWasOpen = false;
+  position: relative !important;
 
-    requestAnimationFrame(() => {
-      stopAllVideos();
-    });
+  box-sizing: border-box !important;
 
-    setTimeout(() => {
-      stopAllVideos();
+  width: var(--dr-highlight-size) !important;
+  height: var(--dr-highlight-size) !important;
 
-      closingViewer = false;
+  min-width: var(--dr-highlight-size) !important;
+  min-height: var(--dr-highlight-size) !important;
 
-      scheduleSync();
-    }, 180);
-  }
+  max-width: var(--dr-highlight-size) !important;
+  max-height: var(--dr-highlight-size) !important;
 
-  /* =====================================================
-     07 / ADVANCE STORY
-     ===================================================== */
+  aspect-ratio: 1 / 1 !important;
 
-  function advanceStory() {
-    if (
-      pendingAdvance ||
-      switchingHighlight ||
-      closingViewer
-    ) {
-      return;
-    }
+  margin: 0 auto !important;
+  padding: 0 !important;
 
-    const viewer = getViewer();
+  overflow: hidden !important;
 
-if (!viewer || !viewer.isConnected) {
+  border-radius: 50% !important;
 
-  return;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+
+/* =========================================================
+   09 / CIRCULAR THUMBNAIL IMAGES
+
+   Applies ONLY to Highlights thumbnails.
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-highlights-strip-viewport
+.sk-story-thumb-wrap img {
+  display: block !important;
+
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  aspect-ratio: 1 / 1 !important;
+
+  object-fit: cover !important;
+  object-position: center center !important;
+
+  border-radius: 50% !important;
+
+  transform: none !important;
+  filter: none !important;
+
+  opacity: 1 !important;
+
+  image-rendering: auto !important;
+
+  transition: opacity 350ms ease !important;
+}
+
+
+/* =========================================================
+   10 / HIGHLIGHT LABELS
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-highlights-strip-viewport
+.sk-story-highlight-title {
+  display: block !important;
+
+  width: 100% !important;
+
+  margin: 9px 0 0 !important;
+  padding: 0 !important;
+
+  font-family: Georgia, "Times New Roman", serif !important;
+
+  font-size: 12px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.4 !important;
+
+  color: var(--dr-ink) !important;
+
+  text-align: center !important;
+}
+
+
+/* =========================================================
+   11 / HIDE HIGHLIGHTS STRIP ARROWS
+
+   Does not hide Story navigation.
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-highlights-strip-nav {
+  display: none !important;
+}
+
+
+/* =========================================================
+
+   12 / STORY VIEWER LAYOUT
+
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+
+.sk-story-viewer-layout {
+
+  justify-content: center !important;
+
+  align-items: flex-start !important;
+
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+
+  max-width: 100% !important;
+
+  margin: 0 auto !important;
+
+  padding: 0 !important;
 
 }
 
-    const index = getActiveIndex();
 
-    const slides = getSlides();
+/* =========================================================
+   13 / STORY FRAME
 
-    if (
-      index < 0 ||
-      slides.length === 0 ||
-      index >= slides.length
-    ) {
-      return;
-    }
+   Prevent the oversized black rectangle.
+   ========================================================= */
 
-    /*
-     Close after the final Story.
-     Do not intentionally advance into another Highlight.
-     */
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-frame {
+  position: relative !important;
 
-    if (index === slides.length - 1) {
-      closeViewer();
-      return;
-    }
+  box-sizing: border-box !important;
 
-    const nextButton = viewer.querySelector(
-      CONFIG.next
-    );
+  width: min(
+    var(--dr-story-width),
+    100%
+  ) !important;
 
-    if (!nextButton) {
-      return;
-    }
+  max-width: var(--dr-story-width) !important;
 
-    pendingAdvance = true;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
 
-    invalidatePlayback();
 
-    nextButton.click();
+/* =========================================================
+   14 / STORY STAGE ROW
 
-    setTimeout(() => {
-      pendingAdvance = false;
+   Keep navigation aligned with the Story.
+   ========================================================= */
 
-      scheduleSync();
-    }, CONFIG.navigationDelay);
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-stage-row {
+  position: relative !important;
+
+  display: flex !important;
+
+  justify-content: center !important;
+  align-items: center !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  margin: 0 auto !important;
+}
+
+
+/* =========================================================
+   15 / STORY MAIN COLUMN
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-main-column {
+  position: relative !important;
+
+  box-sizing: border-box !important;
+
+  flex: 1 1 auto !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+
+/* =========================================================
+   16 / STORY STAGE WRAPPERS
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-stage-wrap,
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-stage {
+  position: relative !important;
+
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+
+/* =========================================================
+   17 / STORY CAROUSEL
+
+   Preserve native carousel track movement.
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-posts-carousel.sk-carousel-story {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  overflow: hidden !important;
+}
+
+
+/* =========================================================
+   18 / STORY CAROUSEL TRACK
+
+   Do not override transforms or navigation logic.
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-carousel-track {
+  display: flex !important;
+
+  align-items: stretch !important;
+}
+
+
+/* =========================================================
+   19 / STORY SLIDE DIMENSIONS
+
+   Prevent 0px carousel items.
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-carousel-story
+.sk-carousel-track
+.sk-carousel-item {
+  box-sizing: border-box !important;
+
+  flex: 0 0 100% !important;
+
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+
+/* =========================================================
+   20 / STORY MEDIA CONTAINER
+
+   Never apply circular thumbnail styling here.
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-slide-media {
+  position: relative !important;
+
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  overflow: hidden !important;
+
+  border-radius: 0 !important;
+}
+
+
+/* =========================================================
+   21 / STORY IMAGES
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-slide-media img {
+  display: block !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+  object-position: center center !important;
+
+  aspect-ratio: auto !important;
+
+  border-radius: 0 !important;
+
+  transform: none !important;
+  filter: none !important;
+}
+
+
+/* =========================================================
+   22 / STORY VIDEOS
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-slide-media video {
+  display: block !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+  object-position: center center !important;
+
+  border-radius: 0 !important;
+}
+
+
+/* =========================================================
+   23 / REMOVE STORY PROFILE HEADER
+
+   Confirmed SociableKIT selector.
+
+   Removes:
+   - Profile photograph
+   - Story title / username
+
+   Preserves:
+   - Story progress indicators
+   - Close button
+   - Previous / next navigation
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-topbar {
+  display: none !important;
+}
+
+
+/* =========================================================
+   24 / STORY PROGRESS INDICATORS
+
+   Preserve native progress functionality.
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-progress {
+  max-width: 100% !important;
+}
+
+
+/* =========================================================
+   25 / STORY CLOSE BUTTON
+
+   Keep the close button near the viewer.
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-close {
+  position: absolute !important;
+
+  top: 0 !important;
+  right: 0 !important;
+
+  z-index: 20 !important;
+
+  cursor: pointer !important;
+}
+
+
+/* =========================================================
+   26 / STORY NAVIGATION
+
+   Preserve previous / next functionality.
+   ========================================================= */
+
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout
+.sk-story-nav-btn {
+  flex-shrink: 0 !important;
+
+  cursor: pointer !important;
+}
+
+
+/* =========================================================
+   27 / HOVER INTERACTION
+   ========================================================= */
+
+@media (hover: hover) and (pointer: fine) {
+
+  .sk-ww-instagram-story-highlights
+  .sk-highlights-strip-viewport
+  .sk-posts-story-item:hover
+  .sk-story-thumb-wrap img {
+    opacity: 0.85 !important;
   }
 
-  /* =====================================================
-     08 / VIDEO PLAYBACK
-     ===================================================== */
+}
 
-  async function playVideo(video, generation) {
-    if (!video) {
-      return;
-    }
 
-    stopAllVideos(video);
+/* =========================================================
+   28 / TABLET
+   ========================================================= */
 
-    video.loop = false;
+@media screen and (max-width: 1024px) {
 
-    video.removeAttribute("loop");
+  .sk-ww-instagram-story-highlights {
+    --dr-highlight-size: 100px;
+    --dr-highlight-gap: 12px;
 
-    video.playsInline = true;
-
-    video.autoplay = true;
-
-    video.volume = 1;
-
-    video.muted = false;
-
-    try {
-      await video.play();
-    } catch (_) {
-      /*
-       Browsers may prohibit unmuted autoplay.
-       Fall back to muted playback.
-       */
-
-      if (
-        generation !== playbackGeneration ||
-        video !== activeMedia
-      ) {
-        video.pause();
-
-        video.muted = true;
-
-        return;
-      }
-
-      video.muted = true;
-
-      try {
-        await video.play();
-      } catch (_) {
-        // Playback may require user interaction.
-      }
-    }
-
-    /*
-     Stop playback if navigation occurred while
-     the asynchronous play request was pending.
-     */
-
-    if (
-      generation !== playbackGeneration ||
-      video !== activeMedia ||
-      !isViewerVisible()
-    ) {
-      video.pause();
-
-      video.muted = true;
-    }
+    --dr-story-width: 360px;
   }
 
-  /* =====================================================
-     09 / ACTIVATE CURRENT STORY
-     ===================================================== */
+}
 
-  function activateStory() {
-    if (
-      pendingAdvance ||
-      switchingHighlight ||
-      closingViewer
-    ) {
-      return;
-    }
 
-    const viewer = getViewer();
+/* =========================================================
+   29 / MOBILE
+   ========================================================= */
 
-    if (!isViewerVisible(viewer)) {
-      return;
-    }
+@media screen and (max-width: 767px) {
 
-    disableLooping();
+  .sk-ww-instagram-story-highlights {
+    --dr-highlight-size: 76px;
+    --dr-highlight-gap: 12px;
 
-    const index = getActiveIndex();
-
-    const slides = getSlides();
-
-    const slide = slides[index];
-
-    if (index < 0 || !slide) {
-      return;
-    }
-
-    const media = slide.querySelector(
-      ".sk-story-slide-media video, " +
-      ".sk-story-slide-media img"
-    );
-
-    if (!media) {
-      return;
-    }
-
-    /*
-     Avoid restarting the same Story.
-     */
-
-    if (
-      index === activeIndex &&
-      media === activeMedia
-    ) {
-      return;
-    }
-
-    clearImageTimer();
-
-    playbackGeneration++;
-
-    const generation = playbackGeneration;
-
-    activeIndex = index;
-
-    activeMedia = media;
-
-    const isVideo =
-      media instanceof HTMLVideoElement;
-
-    stopAllVideos(isVideo ? media : null);
-
-    if (isVideo) {
-      try {
-        media.currentTime = 0;
-      } catch (_) {
-        // Metadata may not yet be available.
-      }
-
-      playVideo(media, generation);
-
-      return;
-    }
-
-    /*
-     Images remain visible for five seconds.
-     */
-
-    imageTimer = setTimeout(() => {
-      if (
-        generation !== playbackGeneration ||
-        closingViewer
-      ) {
-        return;
-      }
-
-      advanceStory();
-    }, CONFIG.imageDuration);
+    --dr-story-width: 100%;
   }
 
-  /* =====================================================
-     10 / VIDEO COMPLETION
-     ===================================================== */
+  .sk-ww-instagram-story-highlights
+  .sk-highlights-strip-viewport {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
 
-  document.addEventListener(
-    "ended",
-    event => {
-      const video = event.target;
-
-      if (!(video instanceof HTMLVideoElement)) {
-        return;
-      }
-
-      if (!widget?.contains(video)) {
-        return;
-      }
-
-      if (video !== activeMedia) {
-        return;
-      }
-
-      advanceStory();
-    },
-    true
-  );
-
-  /* =====================================================
-     11 / DISCOVER ORIGINAL HIGHLIGHTS
-     ===================================================== */
-
-  function getHighlightCandidates() {
-    if (!widget) {
-      return [];
-    }
-
-    const items = widget.querySelectorAll(
-      ".sk-highlights-strip-viewport " +
-      ".sk-posts-story-item"
-    );
-
-    return [...items]
-      .map(item => {
-        const image = item.querySelector(
-          ".sk-story-thumb-wrap img"
-        );
-
-        if (!image) {
-          return null;
-        }
-
-        const label =
-          item.querySelector(
-            ".sk-story-highlight-title"
-          )?.textContent?.trim() ||
-          "View Highlight";
-
-        return {
-          item,
-          image,
-          label
-        };
-      })
-      .filter(Boolean);
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* =====================================================
-     12 / REMOVE MINIATURE NAVIGATION
-     ===================================================== */
+  .sk-ww-instagram-story-highlights
+  .sk-highlights-strip-viewport
+  .sk-posts-stories {
+    justify-content: flex-start !important;
 
-  function removeMiniNavigation() {
-    widget
-      ?.querySelectorAll(".dr-mini-highlights")
-      .forEach(element => {
-        element.remove();
-      });
+    width: max-content !important;
+    min-width: 100% !important;
   }
 
-  /* =====================================================
-     13 / BUILD MINIATURE NAVIGATION
-     ===================================================== */
-
-  function buildMiniNavigation() {
-    const viewer = getViewer();
-
-    if (!viewer) {
-      return;
-    }
-
-    removeMiniNavigation();
-
-    const highlights = getHighlightCandidates();
-
-    if (highlights.length < 2) {
-      return;
-    }
-
-    const navigation = document.createElement("nav");
-
-    navigation.className = "dr-mini-highlights";
-
-    navigation.setAttribute(
-      "aria-label",
-      "Explore other Story Highlights"
-    );
-
-    highlights.forEach(highlight => {
-      const button = document.createElement("button");
-
-      button.type = "button";
-
-      button.className = "dr-mini-highlight";
-
-      button.setAttribute(
-        "aria-label",
-        highlight.label
-      );
-
-      const image = document.createElement("img");
-
-      image.src =
-        highlight.image.currentSrc ||
-        highlight.image.src;
-
-      image.alt = "";
-
-      button.appendChild(image);
-
-      button.addEventListener("click", event => {
-        event.stopPropagation();
-
-        if (switchingHighlight) {
-          return;
-        }
-
-        switchingHighlight = true;
-
-        const target = highlight.item;
-
-        closeViewer();
-
-        setTimeout(() => {
-          if (document.contains(target)) {
-            target.click();
-          }
-
-          viewerWasOpen = false;
-
-          switchingHighlight = false;
-
-          scheduleSync();
-        }, CONFIG.highlightSwitchDelay);
-      });
-
-      navigation.appendChild(button);
-    });
-
-    const frame = viewer.querySelector(
-      ".sk-story-frame"
-    );
-
-    if (frame) {
-      frame.appendChild(navigation);
-    }
+  .sk-ww-instagram-story-highlights
+  .sk-story-viewer-layout
+  .sk-story-frame {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
-  /* =====================================================
-     14 / BACKGROUND CLICK TO CLOSE
+}
 
-     Handles:
-     - Warm-stone SociableKIT background
-     - Lighter website background
-     - Empty viewer areas
 
-     Preserves:
-     - Story images and videos
-     - Previous/next controls
-     - Close button
-     - Progress indicators
-     - Miniature Highlight navigation
-     ===================================================== */
+/* =========================================================
+   30 / ACCESSIBILITY
+   ========================================================= */
 
-  document.addEventListener(
-    "pointerdown",
-    event => {
-      const viewer = getViewer();
+@media (prefers-reduced-motion: reduce) {
 
-      /*
-       Only process background clicks while
-       the Story viewer is open.
-       */
-
-      if (!isViewerVisible(viewer)) {
-        return;
-      }
-
-      if (
-        closingViewer ||
-        switchingHighlight
-      ) {
-        return;
-      }
-
-      const target = event.target;
-
-      if (!(target instanceof Element)) {
-        return;
-      }
-
-      /*
-       OUTSIDE VIEWER
-
-       Includes the lighter background of
-       the Formulations webpage.
-       */
-
-      if (!viewer.contains(target)) {
-        /*
-         Allow clicks on original Highlight
-         thumbnails to open their own Stories.
-         */
-
-        if (
-          target.closest(
-            ".sk-highlights-strip-viewport " +
-            ".sk-posts-story-item"
-          )
-        ) {
-          invalidatePlayback();
-
-          return;
-        }
-
-        closeViewer();
-
-        return;
-      }
-
-      /*
-       INSIDE VIEWER
-
-       Preserve native controls and miniature
-       Highlight navigation.
-       */
-
-      if (
-        target.closest(
-          ".sk-story-nav-btn, " +
-          ".sk-story-close, " +
-          ".dr-mini-highlights, " +
-          ".sk-story-progress"
-        )
-      ) {
-        return;
-      }
-
-      /*
-       Preserve interactions within the actual
-       Story image/video rectangle.
-       */
-
-      const slide = getSlides()[getActiveIndex()];
-
-      const media = slide?.querySelector(
-        ".sk-story-slide-media video, " +
-        ".sk-story-slide-media img"
-      );
-
-      if (media) {
-        const rect = media.getBoundingClientRect();
-
-        const insideMedia =
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom;
-
-        if (insideMedia) {
-          return;
-        }
-      }
-
-      /*
-       All remaining clicks inside the viewer
-       are treated as background clicks.
-       */
-
-      closeViewer();
-    },
-    true
-  );
-
-  /* =====================================================
-     15 / NATIVE SOCIABLEKIT INTERACTIONS
-     ===================================================== */
-
-  document.addEventListener(
-    "click",
-    event => {
-      const target = event.target;
-
-      if (!(target instanceof Element)) {
-        return;
-      }
-
-      if (!widget?.contains(target)) {
-        return;
-      }
-
-      const control = target.closest(
-        ".sk-story-nav-btn, .sk-story-close"
-      );
-
-      if (control) {
-        invalidatePlayback();
-      }
-
-      /*
-       Allow SociableKIT to update its carousel
-       before synchronizing custom playback.
-       */
-
-      setTimeout(scheduleSync, 60);
-
-      setTimeout(scheduleSync, 220);
-
-      setTimeout(scheduleSync, 450);
-    },
-    true
-  );
-
-  /* =====================================================
-     16 / VIEWER SYNCHRONIZATION
-     ===================================================== */
-
-  function syncViewer() {
-    syncQueued = false;
-
-    const viewer = getViewer();
-
-    if (
-      !isViewerVisible(viewer) ||
-      document.hidden
-    ) {
-      invalidatePlayback();
-
-      viewerWasOpen = false;
-
-      removeMiniNavigation();
-
-      return;
-    }
-
-    if (closingViewer) {
-      return;
-    }
-
-    disableLooping();
-
-    /*
-     Build miniature Highlight navigation
-     when the viewer first opens.
-     */
-
-    if (!viewerWasOpen) {
-      viewerWasOpen = true;
-
-      buildMiniNavigation();
-    }
-
-    if (!switchingHighlight) {
-      activateStory();
-    }
+  .sk-ww-instagram-story-highlights
+  .sk-highlights-strip-viewport
+  .sk-story-thumb-wrap img {
+    transition: none !important;
   }
 
-  function scheduleSync() {
-    if (syncQueued) {
-      return;
-    }
+}
 
-    syncQueued = true;
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(syncViewer);
-    });
-  }
+/* =========================================================
+   31 / REMOVE SOCIABLEKIT BRANDING
 
-  /* =====================================================
-     17 / PAGE VISIBILITY
+   Targets the branding container outside the widget.
 
-     Stop audio when the user leaves the page
-     or switches browser tabs.
-     ===================================================== */
+   Includes preview and published implementations.
+   ========================================================= */
 
-  document.addEventListener(
-    "visibilitychange",
-    () => {
-      if (document.hidden) {
-        invalidatePlayback();
+.sk_branding,
+.sk-widget-preview-host .sk_branding {
+  display: none !important;
+  visibility: hidden !important;
+}
+/* =====================================================
+   DOMINIC RYAN — STORY VIEWER COLORS
+   ===================================================== */
 
-        return;
-      }
+/* Unified warm stone background */
 
-      activeMedia = null;
+.sk-highlight-story-shell,
+.sk-story-viewer-layout,
+.sk-story-frame,
+.sk-story-stage-row,
+.sk-story-stage-wrap,
+.sk-story-stage {
+  background-color: #E5DED6 !important;
+}
 
-      activeIndex = -1;
+/* Remove contrasting borders and shadows */
 
-      scheduleSync();
-    }
-  );
+.sk-highlight-story-shell,
+.sk-story-viewer-layout,
+.sk-story-frame {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
 
-  window.addEventListener(
-    "pagehide",
-    () => {
-      invalidatePlayback();
-    }
-  );
+/* Navigation buttons */
 
-  /* =====================================================
-     18 / INITIALIZATION
-     ===================================================== */
+.sk-story-nav-btn {
+  background-color: #84776D !important;
+  color: #FBF8F2 !important;
+  border-color: transparent !important;
+}
 
-  function initialize() {
-    widget = document.querySelector(
-      CONFIG.widget
-    );
+/* Navigation hover */
 
-    if (!widget) {
-      setTimeout(initialize, 400);
+.sk-story-nav-btn:hover {
+  background-color: #51463E !important;
+}
 
-      return;
-    }
+/* =====================================================
+   DOMINIC RYAN — STORY BACKGROUND CLICK SUPPORT
+   ===================================================== */
 
-    observer = new MutationObserver(() => {
-      scheduleSync();
-    });
+/* Identify the Story viewer's surrounding background */
 
-    observer.observe(widget, {
-      childList: true,
+.sk-ww-instagram-story-highlights
+.sk-story-viewer-layout {
+  position: relative !important;
+}
 
-      subtree: true,
+/* Preserve normal click behavior on the viewer background */
 
-      attributes: true,
-
-      attributeFilter: [
-        "class",
-        "style"
-      ]
-    });
-
-    scheduleSync();
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      initialize
-    );
-  } else {
-    initialize();
-  }
-
-})();
+.sk-ww-instagram-story-highlights
+.sk-story-frame,
+.sk-ww-instagram-story-highlights
+.sk-story-stage-row,
+.sk-ww-instagram-story-highlights
+.sk-story-stage-wrap {
+  pointer-events: auto !important;
+}
