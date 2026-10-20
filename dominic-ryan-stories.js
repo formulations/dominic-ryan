@@ -489,62 +489,53 @@
       ? "block"
       : "none";
   }
-  /* =====================================================
-     BACKGROUND CLICK TO CLOSE
-     ===================================================== */
+/* =====================================================
+   BACKGROUND CLICK TO CLOSE
+   ===================================================== */
 
-  document.addEventListener(
-    "pointerdown",
-    event => {
-      const viewer = getViewer();
+document.addEventListener(
+  "pointerdown",
+  event => {
+    const viewer = getViewer();
 
-      if (!isViewerVisible(viewer)) return;
+    if (!isViewerVisible(viewer)) return;
 
-      const target = event.target;
+    const target = event.target;
 
-      if (!(target instanceof Element)) return;
+    if (!(target instanceof Element)) return;
 
-      if (!viewer.contains(target)) return;
+    // Preserve all interactions with Story controls.
+    if (
+      target.closest(
+        ".sk-story-nav-btn, " +
+        ".sk-carousel-next, " +
+        ".sk-carousel-prev, " +
+        ".sk-story-close, " +
+        ".dr-mini-highlights, " +
+        ".sk-story-progress"
+      )
+    ) {
+      return;
+    }
 
-      // Preserve navigation and controls.
-if (
-  target.closest(
-    ".sk-story-nav-btn, " +
-    ".sk-carousel-next, " +
-    ".sk-carousel-prev, " +
-    ".sk-story-close, " +
-    ".dr-mini-highlights, " +
-    ".sk-story-progress, " +
-    ".sk-story-frame"
-  )
-) {
-  return;
-}
+    // Only handle clicks originating inside the viewer.
+    if (!viewer.contains(target)) return;
 
-      // Preserve clicks within the actual media rectangle.
-      const slide = getSlides()[getActiveIndex()];
+    // Preserve everything within the Story frame.
+    if (target.closest(".sk-story-frame")) {
+      return;
+    }
 
-      const media = slide?.querySelector(
-        ".sk-story-slide-media video, " +
-        ".sk-story-slide-media img"
-      );
-
-      if (media) {
-        const rect = media.getBoundingClientRect();
-
-        const insideMedia =
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom;
-
-        if (insideMedia) return;
-      }
-
+    // Close only when clicking the viewer's background.
+    if (
+      target === viewer ||
+      target.classList.contains("sk-story-viewer-backdrop")
+    ) {
       closeViewer();
-    },
-    true
-  );
+    }
+  },
+  true
+);
 
   /* =====================================================
      NATIVE SOCIABLEKIT CONTROLS
