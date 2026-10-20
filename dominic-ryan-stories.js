@@ -463,7 +463,7 @@
       width: "100vw",
       height: "100vh",
       background: "transparent",
-      zIndex: "9998",
+      zIndex: "1",
       display: "none",
       pointerEvents: "auto"
     });
