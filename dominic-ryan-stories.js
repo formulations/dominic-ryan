@@ -514,7 +514,8 @@ if (
     ".sk-carousel-prev, " +
     ".sk-story-close, " +
     ".dr-mini-highlights, " +
-    ".sk-story-progress"
+    ".sk-story-progress, " +
+    ".sk-story-frame"
   )
 ) {
   return;
