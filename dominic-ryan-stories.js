@@ -468,12 +468,32 @@
       pointerEvents: "auto"
     });
 
-    websiteBackdrop.addEventListener("pointerdown", event => {
-      event.preventDefault();
-      event.stopPropagation();
+ websiteBackdrop.addEventListener("pointerdown", event => {
+  const viewer = getViewer();
 
-      closeViewer();
-    });
+  if (!isViewerVisible(viewer)) return;
+
+  const frame = viewer.querySelector(".sk-story-frame");
+
+  if (frame) {
+    const rect = frame.getBoundingClientRect();
+
+    const insideFrame =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+
+    if (insideFrame) {
+      return;
+    }
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  closeViewer();
+});
 
     document.body.appendChild(websiteBackdrop);
   }
