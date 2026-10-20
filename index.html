@@ -325,11 +325,22 @@
 
   white-space: nowrap;
 
-  transition: opacity .25s ease;
+  /* Inactive navigation */
+  opacity: .55;
+
+  transition: opacity .3s ease;
 }
 
-.collection-navigation a:hover {
-  opacity: .65;
+/* Active navigation — fully visible */
+
+.collection-navigation a.active {
+  opacity: 1;
+}
+
+/* Inactive navigation — hover */
+
+.collection-navigation a:not(.active):hover {
+  opacity: .8;
 }
 
 .collection-navigation a::after {
