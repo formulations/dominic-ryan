@@ -1,23 +1,54 @@
 /* =========================================================
    DOMINIC RYAN — INSTAGRAM STORY EXPERIENCE
    SociableKIT Instagram Story Highlights
-   October 2026
+
+   CONSOLIDATED EDITION / OCTOBER 2026
+
+   Features:
+   - Automatic Story progression
+   - Five-second image duration
+   - Video playback with audio when permitted
+   - No video looping
+   - Automatic closure after final Story
+   - Miniature Highlight navigation
+   - Immediate audio cleanup
+   - Warm-stone background click-to-close
+   - Lighter website background click-to-close
+   - Native carousel navigation preserved
+   - Responsive desktop and mobile support
    ========================================================= */
 
 (() => {
   "use strict";
 
+  /* =====================================================
+     01 / CONFIGURATION
+     ===================================================== */
+
   const CONFIG = {
-    widget: ".sk-ww-instagram-story-highlights",
+    widget:
+      '.sk-ww-instagram-story-highlights[data-embed-id="25723348"]',
+
     viewer: ".sk-story-viewer-layout",
+
     slide: ".sk-carousel-track > .sk-carousel-item",
+
     activeProgress: ".sk-story-progress-seg.is-active",
+
     next: ".sk-carousel-next",
+
     close: ".sk-story-close",
 
     imageDuration: 5000,
-    navigationDelay: 220
+
+    navigationDelay: 220,
+
+    highlightSwitchDelay: 150
   };
+
+  /* =====================================================
+     02 / STATE
+     ===================================================== */
 
   let widget = null;
   let observer = null;
@@ -26,15 +57,19 @@
   let activeIndex = -1;
 
   let imageTimer = null;
+
   let playbackGeneration = 0;
 
   let syncQueued = false;
   let pendingAdvance = false;
+
   let viewerWasOpen = false;
   let switchingHighlight = false;
 
+  let closingViewer = false;
+
   /* =====================================================
-     VIEWER HELPERS
+     03 / VIEWER HELPERS
      ===================================================== */
 
   function getViewer() {
@@ -42,9 +77,11 @@
   }
 
   function isViewerVisible(viewer = getViewer()) {
-    if (!viewer || !viewer.isConnected) return false;
+    if (!viewer || !viewer.isConnected) {
+      return false;
+    }
 
-    const style = getComputedStyle(viewer);
+    const style = window.getComputedStyle(viewer);
 
     if (
       style.display === "none" ||
@@ -53,51 +90,98 @@
       return false;
     }
 
-    return viewer.getClientRects().length > 0;
+    if (viewer.getClientRects().length === 0) {
+      return false;
+    }
+
+    /*
+     Check whether an ancestor is hiding the viewer.
+     */
+
+    let ancestor = viewer.parentElement;
+
+    while (ancestor && ancestor !== document.body) {
+      const ancestorStyle =
+        window.getComputedStyle(ancestor);
+
+      if (
+        ancestorStyle.display === "none" ||
+        ancestorStyle.visibility === "hidden"
+      ) {
+        return false;
+      }
+
+      ancestor = ancestor.parentElement;
+    }
+
+    return true;
   }
 
   function getSlides() {
     const viewer = getViewer();
 
-    return viewer
-      ? [...viewer.querySelectorAll(CONFIG.slide)]
-      : [];
+    if (!viewer) {
+      return [];
+    }
+
+    return [
+      ...viewer.querySelectorAll(CONFIG.slide)
+    ];
   }
 
   function getActiveIndex() {
     const viewer = getViewer();
 
-    const active = viewer?.querySelector(
+    if (!viewer) {
+      return -1;
+    }
+
+    const active = viewer.querySelector(
       CONFIG.activeProgress
     );
 
-    if (!active) return -1;
+    if (!active) {
+      return -1;
+    }
 
     const index = Number(active.dataset.index);
 
-    return Number.isInteger(index) ? index : -1;
+    return Number.isInteger(index)
+      ? index
+      : -1;
   }
 
   function clearImageTimer() {
     if (imageTimer !== null) {
       clearTimeout(imageTimer);
+
       imageTimer = null;
     }
   }
 
   /* =====================================================
-     AUDIO MANAGEMENT
+     04 / AUDIO MANAGEMENT
      ===================================================== */
 
   function stopAllVideos(except = null) {
-    if (!widget) return;
+    if (!widget) {
+      return;
+    }
 
     widget.querySelectorAll("video").forEach(video => {
-      if (video === except) return;
+      if (video === except) {
+        return;
+      }
 
-      video.pause();
-      video.muted = true;
-      video.autoplay = false;
+      try {
+        video.pause();
+
+        video.muted = true;
+
+        video.autoplay = false;
+      } catch (_) {
+        // Ignore unavailable media states.
+      }
     });
   }
 
@@ -110,32 +194,49 @@
 
     activeMedia = null;
     activeIndex = -1;
-
-    pendingAdvance = false;
   }
 
   /* =====================================================
-     VIDEO LOOP PREVENTION
+     05 / PREVENT VIDEO LOOPING
      ===================================================== */
 
   function disableLooping() {
-    widget?.querySelectorAll("video").forEach(video => {
+    if (!widget) {
+      return;
+    }
+
+    widget.querySelectorAll("video").forEach(video => {
       video.loop = false;
+
       video.removeAttribute("loop");
+
       video.playsInline = true;
     });
   }
 
   /* =====================================================
-     CLOSE VIEWER
+     06 / CLOSE STORY VIEWER
      ===================================================== */
 
   function closeViewer() {
-    invalidatePlayback();
+    if (closingViewer) {
+      return;
+    }
 
     const viewer = getViewer();
 
-    const closeButton = viewer?.querySelector(
+    if (!viewer || !isViewerVisible(viewer)) {
+      stopAllVideos();
+      return;
+    }
+
+    closingViewer = true;
+
+    invalidatePlayback();
+
+    pendingAdvance = false;
+
+    const closeButton = viewer.querySelector(
       CONFIG.close
     );
 
@@ -145,35 +246,54 @@
 
     viewerWasOpen = false;
 
-    requestAnimationFrame(stopAllVideos);
+    requestAnimationFrame(() => {
+      stopAllVideos();
+    });
 
     setTimeout(() => {
       stopAllVideos();
+
+      closingViewer = false;
+
       scheduleSync();
-    }, 150);
+    }, 180);
   }
 
   /* =====================================================
-     STORY ADVANCEMENT
+     07 / ADVANCE STORY
      ===================================================== */
 
   function advanceStory() {
-    if (pendingAdvance || switchingHighlight) return;
+    if (
+      pendingAdvance ||
+      switchingHighlight ||
+      closingViewer
+    ) {
+      return;
+    }
 
     const viewer = getViewer();
 
-    if (!isViewerVisible(viewer)) return;
+    if (!isViewerVisible(viewer)) {
+      return;
+    }
 
     const index = getActiveIndex();
+
     const slides = getSlides();
 
     if (
       index < 0 ||
-      !slides.length ||
+      slides.length === 0 ||
       index >= slides.length
     ) {
       return;
     }
+
+    /*
+     Close after the final Story.
+     Do not intentionally advance into another Highlight.
+     */
 
     if (index === slides.length - 1) {
       closeViewer();
@@ -184,49 +304,62 @@
       CONFIG.next
     );
 
-    if (!nextButton) return;
+    if (!nextButton) {
+      return;
+    }
 
     pendingAdvance = true;
 
     invalidatePlayback();
 
-    pendingAdvance = true;
-
     nextButton.click();
 
     setTimeout(() => {
       pendingAdvance = false;
+
       scheduleSync();
     }, CONFIG.navigationDelay);
   }
 
   /* =====================================================
-     VIDEO PLAYBACK
+     08 / VIDEO PLAYBACK
      ===================================================== */
 
   async function playVideo(video, generation) {
-    if (!video) return;
+    if (!video) {
+      return;
+    }
 
     stopAllVideos(video);
 
     video.loop = false;
+
     video.removeAttribute("loop");
 
     video.playsInline = true;
+
     video.autoplay = true;
 
     video.volume = 1;
+
     video.muted = false;
 
     try {
       await video.play();
     } catch (_) {
+      /*
+       Browsers may prohibit unmuted autoplay.
+       Fall back to muted playback.
+       */
+
       if (
         generation !== playbackGeneration ||
         video !== activeMedia
       ) {
         video.pause();
+
         video.muted = true;
+
         return;
       }
 
@@ -235,9 +368,14 @@
       try {
         await video.play();
       } catch (_) {
-        // User interaction may be required.
+        // Playback may require user interaction.
       }
     }
+
+    /*
+     Stop playback if navigation occurred while
+     the asynchronous play request was pending.
+     */
 
     if (
       generation !== playbackGeneration ||
@@ -245,31 +383,54 @@
       !isViewerVisible()
     ) {
       video.pause();
+
       video.muted = true;
     }
   }
 
   /* =====================================================
-     ACTIVATE STORY
+     09 / ACTIVATE CURRENT STORY
      ===================================================== */
 
   function activateStory() {
+    if (
+      pendingAdvance ||
+      switchingHighlight ||
+      closingViewer
+    ) {
+      return;
+    }
+
     const viewer = getViewer();
 
-    if (!isViewerVisible(viewer)) return;
+    if (!isViewerVisible(viewer)) {
+      return;
+    }
 
     disableLooping();
 
     const index = getActiveIndex();
+
     const slides = getSlides();
 
     const slide = slides[index];
 
-    if (index < 0 || !slide) return;
+    if (index < 0 || !slide) {
+      return;
+    }
 
-    const media = slide.querySelector("video, img");
+    const media = slide.querySelector(
+      ".sk-story-slide-media video, " +
+      ".sk-story-slide-media img"
+    );
 
-    if (!media) return;
+    if (!media) {
+      return;
+    }
+
+    /*
+     Avoid restarting the same Story.
+     */
 
     if (
       index === activeIndex &&
@@ -285,43 +446,62 @@
     const generation = playbackGeneration;
 
     activeIndex = index;
+
     activeMedia = media;
 
-    stopAllVideos(
-      media instanceof HTMLVideoElement
-        ? media
-        : null
-    );
+    const isVideo =
+      media instanceof HTMLVideoElement;
 
-    if (media instanceof HTMLVideoElement) {
+    stopAllVideos(isVideo ? media : null);
+
+    if (isVideo) {
       try {
         media.currentTime = 0;
-      } catch (_) {}
+      } catch (_) {
+        // Metadata may not yet be available.
+      }
 
       playVideo(media, generation);
+
       return;
     }
 
+    /*
+     Images remain visible for five seconds.
+     */
+
     imageTimer = setTimeout(() => {
-      if (generation !== playbackGeneration) return;
+      if (
+        generation !== playbackGeneration ||
+        closingViewer
+      ) {
+        return;
+      }
 
       advanceStory();
     }, CONFIG.imageDuration);
   }
 
   /* =====================================================
-     VIDEO COMPLETION
+     10 / VIDEO COMPLETION
      ===================================================== */
 
   document.addEventListener(
     "ended",
     event => {
-      if (!(event.target instanceof HTMLVideoElement)) {
+      const video = event.target;
+
+      if (!(video instanceof HTMLVideoElement)) {
         return;
       }
 
-      if (!widget?.contains(event.target)) return;
-      if (event.target !== activeMedia) return;
+      if (!widget?.contains(video)) {
+        return;
+      }
+
+      if (video !== activeMedia) {
+        return;
+      }
 
       advanceStory();
     },
@@ -329,23 +509,28 @@
   );
 
   /* =====================================================
-     MINIATURE HIGHLIGHT DISCOVERY
+     11 / DISCOVER ORIGINAL HIGHLIGHTS
      ===================================================== */
 
   function getHighlightCandidates() {
-    if (!widget) return [];
+    if (!widget) {
+      return [];
+    }
 
-    return [
-      ...widget.querySelectorAll(
-        ".sk-highlights-strip-viewport .sk-posts-story-item"
-      )
-    ]
+    const items = widget.querySelectorAll(
+      ".sk-highlights-strip-viewport " +
+      ".sk-posts-story-item"
+    );
+
+    return [...items]
       .map(item => {
         const image = item.querySelector(
           ".sk-story-thumb-wrap img"
         );
 
-        if (!image) return null;
+        if (!image) {
+          return null;
+        }
 
         const label =
           item.querySelector(
@@ -362,22 +547,36 @@
       .filter(Boolean);
   }
 
+  /* =====================================================
+     12 / REMOVE MINIATURE NAVIGATION
+     ===================================================== */
+
   function removeMiniNavigation() {
     widget
       ?.querySelectorAll(".dr-mini-highlights")
-      .forEach(element => element.remove());
+      .forEach(element => {
+        element.remove();
+      });
   }
+
+  /* =====================================================
+     13 / BUILD MINIATURE NAVIGATION
+     ===================================================== */
 
   function buildMiniNavigation() {
     const viewer = getViewer();
 
-    if (!viewer) return;
+    if (!viewer) {
+      return;
+    }
 
     removeMiniNavigation();
 
     const highlights = getHighlightCandidates();
 
-    if (highlights.length < 2) return;
+    if (highlights.length < 2) {
+      return;
+    }
 
     const navigation = document.createElement("nav");
 
@@ -392,6 +591,7 @@
       const button = document.createElement("button");
 
       button.type = "button";
+
       button.className = "dr-mini-highlight";
 
       button.setAttribute(
@@ -412,6 +612,10 @@
       button.addEventListener("click", event => {
         event.stopPropagation();
 
+        if (switchingHighlight) {
+          return;
+        }
+
         switchingHighlight = true;
 
         const target = highlight.item;
@@ -424,10 +628,11 @@
           }
 
           viewerWasOpen = false;
+
           switchingHighlight = false;
 
           scheduleSync();
-        }, 150);
+        }, CONFIG.highlightSwitchDelay);
       });
 
       navigation.appendChild(button);
@@ -437,11 +642,25 @@
       ".sk-story-frame"
     );
 
-    frame?.appendChild(navigation);
+    if (frame) {
+      frame.appendChild(navigation);
+    }
   }
 
   /* =====================================================
-     BACKGROUND CLICK TO CLOSE
+     14 / BACKGROUND CLICK TO CLOSE
+
+     Handles:
+     - Warm-stone SociableKIT background
+     - Lighter website background
+     - Empty viewer areas
+
+     Preserves:
+     - Story images and videos
+     - Previous/next controls
+     - Close button
+     - Progress indicators
+     - Miniature Highlight navigation
      ===================================================== */
 
   document.addEventListener(
@@ -449,19 +668,64 @@
     event => {
       const viewer = getViewer();
 
-      /* Allow clicks outside the widget to close the Story. */
-if (!viewer.contains(target)) {
-  closeViewer();
-  return;
-}
+      /*
+       Only process background clicks while
+       the Story viewer is open.
+       */
+
+      if (!isViewerVisible(viewer)) {
+        return;
+      }
+
+      if (
+        closingViewer ||
+        switchingHighlight
+      ) {
+        return;
+      }
 
       const target = event.target;
 
-      if (!(target instanceof Element)) return;
+      if (!(target instanceof Element)) {
+        return;
+      }
 
-      if (!viewer.contains(target)) return;
+      /*
+       OUTSIDE VIEWER
 
-      // Preserve navigation and controls.
+       Includes the lighter background of
+       the Formulations webpage.
+       */
+
+      if (!viewer.contains(target)) {
+        /*
+         Allow clicks on original Highlight
+         thumbnails to open their own Stories.
+         */
+
+        if (
+          target.closest(
+            ".sk-highlights-strip-viewport " +
+            ".sk-posts-story-item"
+          )
+        ) {
+          invalidatePlayback();
+
+          return;
+        }
+
+        closeViewer();
+
+        return;
+      }
+
+      /*
+       INSIDE VIEWER
+
+       Preserve native controls and miniature
+       Highlight navigation.
+       */
+
       if (
         target.closest(
           ".sk-story-nav-btn, " +
@@ -473,7 +737,11 @@ if (!viewer.contains(target)) {
         return;
       }
 
-      // Preserve clicks within the actual media rectangle.
+      /*
+       Preserve interactions within the actual
+       Story image/video rectangle.
+       */
+
       const slide = getSlides()[getActiveIndex()];
 
       const media = slide?.querySelector(
@@ -490,8 +758,15 @@ if (!viewer.contains(target)) {
           event.clientY >= rect.top &&
           event.clientY <= rect.bottom;
 
-        if (insideMedia) return;
+        if (insideMedia) {
+          return;
+        }
       }
+
+      /*
+       All remaining clicks inside the viewer
+       are treated as background clicks.
+       */
 
       closeViewer();
     },
@@ -499,7 +774,7 @@ if (!viewer.contains(target)) {
   );
 
   /* =====================================================
-     NATIVE SOCIABLEKIT CONTROLS
+     15 / NATIVE SOCIABLEKIT INTERACTIONS
      ===================================================== */
 
   document.addEventListener(
@@ -507,8 +782,13 @@ if (!viewer.contains(target)) {
     event => {
       const target = event.target;
 
-      if (!(target instanceof Element)) return;
-      if (!widget?.contains(target)) return;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      if (!widget?.contains(target)) {
+        return;
+      }
 
       const control = target.closest(
         ".sk-story-nav-btn, .sk-story-close"
@@ -518,15 +798,22 @@ if (!viewer.contains(target)) {
         invalidatePlayback();
       }
 
+      /*
+       Allow SociableKIT to update its carousel
+       before synchronizing custom playback.
+       */
+
       setTimeout(scheduleSync, 60);
+
       setTimeout(scheduleSync, 220);
+
       setTimeout(scheduleSync, 450);
     },
     true
   );
 
   /* =====================================================
-     VIEWER SYNCHRONIZATION
+     16 / VIEWER SYNCHRONIZATION
      ===================================================== */
 
   function syncViewer() {
@@ -534,19 +821,33 @@ if (!viewer.contains(target)) {
 
     const viewer = getViewer();
 
-    if (!isViewerVisible(viewer) || document.hidden) {
+    if (
+      !isViewerVisible(viewer) ||
+      document.hidden
+    ) {
       invalidatePlayback();
 
       viewerWasOpen = false;
 
       removeMiniNavigation();
+
+      return;
+    }
+
+    if (closingViewer) {
       return;
     }
 
     disableLooping();
 
+    /*
+     Build miniature Highlight navigation
+     when the viewer first opens.
+     */
+
     if (!viewerWasOpen) {
       viewerWasOpen = true;
+
       buildMiniNavigation();
     }
 
@@ -556,7 +857,9 @@ if (!viewer.contains(target)) {
   }
 
   function scheduleSync() {
-    if (syncQueued) return;
+    if (syncQueued) {
+      return;
+    }
 
     syncQueued = true;
 
@@ -566,7 +869,10 @@ if (!viewer.contains(target)) {
   }
 
   /* =====================================================
-     PAGE VISIBILITY
+     17 / PAGE VISIBILITY
+
+     Stop audio when the user leaves the page
+     or switches browser tabs.
      ===================================================== */
 
   document.addEventListener(
@@ -574,38 +880,51 @@ if (!viewer.contains(target)) {
     () => {
       if (document.hidden) {
         invalidatePlayback();
-      } else {
-        activeMedia = null;
-        activeIndex = -1;
 
-        scheduleSync();
+        return;
       }
+
+      activeMedia = null;
+
+      activeIndex = -1;
+
+      scheduleSync();
     }
   );
 
   window.addEventListener(
     "pagehide",
-    invalidatePlayback
+    () => {
+      invalidatePlayback();
+    }
   );
 
   /* =====================================================
-     INITIALIZATION
+     18 / INITIALIZATION
      ===================================================== */
 
   function initialize() {
-    widget = document.querySelector(CONFIG.widget);
+    widget = document.querySelector(
+      CONFIG.widget
+    );
 
     if (!widget) {
       setTimeout(initialize, 400);
+
       return;
     }
 
-    observer = new MutationObserver(scheduleSync);
+    observer = new MutationObserver(() => {
+      scheduleSync();
+    });
 
     observer.observe(widget, {
       childList: true,
+
       subtree: true,
+
       attributes: true,
+
       attributeFilter: [
         "class",
         "style"
