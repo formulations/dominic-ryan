@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <meta
+    name="robots"
+    content="noindex, nofollow, noarchive, nosnippet"
+  >
+
+  <title>Formulations | Dominic Ryan</title>
+
+  <!-- WEBSITE FONTS -->
+
+  <link
+    rel="preload"
+    href="./AvenirNext-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  >
+
+  <link
+    rel="preload"
+    href="./Didot.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  >
+
+  <!-- SITE ICON -->
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="./dr-reveals-removebg-preview.png"
+  >
+
+  <style>
+
+    /* =====================================================
+       DOMINIC RYAN — FORMULATIONS
+       EDITORIAL INSTAGRAM COLLECTION
+       ===================================================== */
+
+    @font-face {
+      font-family: "DR Didot";
+      src: url("./Didot.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "DR Avenir Next";
+      src: url("./AvenirNext-Regular.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    :root {
+      --bg: #f2ede6;
+      --ink: #51463e;
+      --muted: #84776d;
+      --accent: #9D8873;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "DR Avenir Next", sans-serif;
+    }
+
+    /* =====================================================
+       SITE NAVIGATION
+       ===================================================== */
+
+    .dr-site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      width: 100%;
+
+      padding: 35px 5% 0;
+    }
+
+    .dr-site-brand {
+      font-family: "DR Didot", Georgia, serif;
+      font-size: 20px;
+      letter-spacing: .24em;
+
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .dr-site-nav {
+      display: flex;
+      align-items: center;
+      gap: 34px;
+    }
+
+    .dr-site-nav a {
+      font-size: 10px;
+      letter-spacing: .18em;
+
+      color: var(--ink);
+      text-decoration: none;
+
+      padding-bottom: 6px;
+
+      border-bottom: 1px solid transparent;
+
+      transition:
+        opacity .25s ease,
+        border-color .25s ease;
+    }
+
+    .dr-site-nav a:hover {
+      opacity: .65;
+    }
+
+    .dr-site-nav a.active {
+      border-bottom-color: var(--ink);
+    }
+
+    /* =====================================================
+       PAGE COMPOSITION
+       ===================================================== */
+
+    .dr-formulations {
+      width: min(1200px, 92%);
+      margin: 0 auto;
+      padding: 82px 0 110px;
+    }
+
+    /* =====================================================
+       EDITORIAL INTRODUCTION
+       ===================================================== */
+
+    .dr-formulations-header {
+      text-align: center;
+      margin-bottom: 55px;
+    }
+
+    .dr-formulations-header h1 {
+      margin: 0;
+
+      font-family: "DR Didot", Georgia, serif;
+      font-size: clamp(35px, 5vw, 58px);
+      font-weight: 400;
+
+      letter-spacing: .20em;
+      line-height: 1.2;
+    }
+
+    .dr-formulations-rule {
+      width: 35px;
+      height: 1px;
+
+      margin: 23px auto 20px;
+
+      background: rgba(81,70,62,.16);
+    }
+
+    .dr-formulations-subtitle {
+      margin: 0;
+
+      font-family: "DR Didot", Georgia, serif;
+      font-size: clamp(12px, 1.4vw, 17px);
+      font-style: italic;
+
+      letter-spacing: .18em;
+      line-height: 1.7;
+
+      color: var(--muted);
+    }
+
+    /* =====================================================
+       INSTAGRAM COLLECTION
+       ===================================================== */
+
+    .dr-instagram-profile {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* STORY HIGHLIGHTS */
+
+    .dr-instagram-highlights {
+      width: 100%;
+
+      margin: 0 auto 45px;
+
+      display: flex;
+      justify-content: center;
+    }
+
+    .dr-instagram-highlights
+    .sk-ww-instagram-story-highlights {
+      width: 100%;
+    }
+
+    /* INSTAGRAM GRID */
+
+    .dr-instagram-grid {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+
+    .dr-site-footer {
+      padding: 0 5% 35px;
+
+      text-align: center;
+
+      font-size: 10px;
+      letter-spacing: .12em;
+
+      color: var(--muted);
+    }
+
+    /* =====================================================
+       MOBILE
+       ===================================================== */
+
+    @media (max-width: 767px) {
+
+      .dr-site-header {
+        padding: 25px 5% 0;
+        gap: 15px;
+      }
+
+      .dr-site-brand {
+        font-size: 13px;
+        letter-spacing: .14em;
+      }
+
+      .dr-site-nav {
+        gap: 15px;
+      }
+
+      .dr-site-nav a {
+        font-size: 9px;
+        letter-spacing: .08em;
+      }
+
+      .dr-formulations {
+        width: 94%;
+        padding: 65px 0 75px;
+      }
+
+      .dr-formulations-header {
+        margin-bottom: 38px;
+      }
+
+      .dr-formulations-header h1 {
+        font-size: clamp(29px, 8vw, 40px);
+        letter-spacing: .12em;
+      }
+
+      .dr-formulations-subtitle {
+        font-size: 12px;
+        letter-spacing: .08em;
+      }
+
+      .dr-instagram-highlights {
+        margin-bottom: 30px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- ===================================================
+       SITE HEADER
+       =================================================== -->
+
+  <header class="dr-site-header">
+
+    <a
+      class="dr-site-brand"
+      href="./index.html"
+    >
+      DOMINIC RYAN
+    </a>
+
+    <nav
+      class="dr-site-nav"
+      aria-label="Main navigation"
+    >
+
+      <a href="./index.html">
+        ABOUT
+      </a>
+
+      <a
+        href="./formulations.html"
+        class="active"
+        aria-current="page"
+      >
+        FORMULATIONS
+      </a>
+
+    </nav>
+
+  </header>
+
+
+  <!-- ===================================================
+       FORMULATIONS
+       =================================================== -->
+
+  <main class="dr-formulations">
+
+    <header class="dr-formulations-header">
+
+      <h1>
+        FORMULATIONS
+      </h1>
+
+      <div
+        class="dr-formulations-rule"
+        aria-hidden="true"
+      ></div>
+
+      <p class="dr-formulations-subtitle">
+        Art · Design · Travel · Objects with a Past
+      </p>
+
+    </header>
+
+
+    <div class="dr-instagram-profile">
+
+      <!-- INSTAGRAM STORY HIGHLIGHTS -->
+
+      <div class="dr-instagram-highlights">
+
+        <div
+          class="sk-ww-instagram-story-highlights"
+          data-embed-id="25723348"
+        ></div>
+
+      </div>
+
+
+      <!-- INSTAGRAM GRID -->
+
+      <div class="dr-instagram-grid">
+
+        <div
+          class="elfsight-app-149e3c46-7ba9-47e5-b87f-8d51c5619fc4"
+          data-elfsight-app-lazy
+        ></div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- ===================================================
+       FOOTER
+       =================================================== -->
+
+  <footer class="dr-site-footer">
+    DOMINIC RYAN · FORMULATIONS
+  </footer>
+
+
+  <!-- ===================================================
+       WIDGET SCRIPTS
+       =================================================== -->
+
+  <script
+    src="https://widgets.sociablekit.com/instagram-story-highlights/widget.js"
+    defer
+  ></script>
+
+  <script
+    src="https://elfsightcdn.com/platform.js"
+    async
+  ></script>
+
+</body>
+
+</html>
