@@ -163,7 +163,45 @@
       scheduleSync();
     }
   });
+  /* =========================================================
+     CLOSE STORY WHEN CLICKING OUTSIDE
+     ========================================================= */
 
+  document.addEventListener("click", event => {
+
+    const widget = getWidget();
+    if (!widget) return;
+
+    const viewer = widget.querySelector(VIEWER);
+    if (!viewer) return;
+
+    const story = viewer.querySelector(
+      ".sk-story-main-column"
+    );
+
+    if (!story) return;
+
+    // Keep clicks inside the story working normally.
+    if (story.contains(event.target)) return;
+
+    // Preserve previous/next navigation.
+    if (event.target.closest(".sk-story-nav-btn")) {
+      return;
+    }
+
+    // Only close when clicking the surrounding viewer.
+    if (!viewer.contains(event.target)) return;
+
+    const closeButton = viewer.querySelector(
+      ".sk-story-close"
+    );
+
+    if (closeButton) {
+      closeButton.click();
+      scheduleSync();
+    }
+
+  });
   /* =========================================================
      PAGE VISIBILITY
      ========================================================= */
