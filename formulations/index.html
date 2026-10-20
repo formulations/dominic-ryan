@@ -1120,6 +1120,85 @@
      ===================================================== -->
 
 <script src="./dominic-ryan-stories.js" defer></script>
+
+<!-- =====================================================
+     DOMINIC RYAN — BACK TO TOP FUNCTIONALITY
+     ===================================================== -->
+
+<script>
+(() => {
+  "use strict";
+
+  const backToTop =
+    document.getElementById("dr-back-to-top");
+
+  if (!backToTop) return;
+
+  const SCROLL_THRESHOLD = 500;
+
+  let ticking = false;
+
+  function updateBackToTop() {
+
+    ticking = false;
+
+    const shouldShow =
+      window.scrollY > SCROLL_THRESHOLD;
+
+    backToTop.classList.toggle(
+      "is-visible",
+      shouldShow
+    );
+
+  }
+
+  function requestBackToTopUpdate() {
+
+    if (ticking) return;
+
+    ticking = true;
+
+    window.requestAnimationFrame(
+      updateBackToTop
+    );
+
+  }
+
+  window.addEventListener(
+    "scroll",
+    requestBackToTopUpdate,
+    { passive: true }
+  );
+
+  window.addEventListener(
+    "resize",
+    requestBackToTopUpdate
+  );
+
+  backToTop.addEventListener(
+    "click",
+    () => {
+
+      const reducedMotion =
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+      window.scrollTo({
+        top: 0,
+        behavior: reducedMotion
+          ? "instant"
+          : "smooth"
+      });
+
+    }
+  );
+
+  updateBackToTop();
+
+})();
+</script>
+
 </body>
 
 </html>
