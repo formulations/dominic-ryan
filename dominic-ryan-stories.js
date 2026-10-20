@@ -465,7 +465,7 @@
       background: "transparent",
       zIndex: "1",
       display: "none",
-      pointerEvents: "auto"
+      pointerEvents: "none"
     });
 
  websiteBackdrop.addEventListener("pointerdown", event => {
