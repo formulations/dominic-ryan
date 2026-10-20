@@ -851,7 +851,14 @@
     src="./dominic-ryan-contact-addon.js"
     defer
   ></script>
+<!-- =====================================================
+     INSTAGRAM STORY AUDIO MANAGEMENT
+     ===================================================== -->
 
+<script
+  src="./dominic-ryan-stories.js"
+  defer
+></script>
 </body>
 
 </html>
