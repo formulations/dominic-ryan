@@ -76,10 +76,22 @@
     return widget?.querySelector(CONFIG.viewer) || null;
   }
 
-  function isViewerVisible(viewer = getViewer()) {
-    if (!viewer || !viewer.isConnected) {
-      return false;
-    }
+function isViewerVisible(viewer = getViewer()) {
+  if (!viewer || !viewer.isConnected) {
+    return false;
+  }
+
+  const style = window.getComputedStyle(viewer);
+
+  if (
+    style.display === "none" ||
+    style.visibility === "hidden"
+  ) {
+    return false;
+  }
+
+  return viewer.getClientRects().length > 0;
+}
 
     const style = window.getComputedStyle(viewer);
 
@@ -274,9 +286,11 @@
 
     const viewer = getViewer();
 
-    if (!isViewerVisible(viewer)) {
-      return;
-    }
+if (!viewer || !viewer.isConnected) {
+
+  return;
+
+}
 
     const index = getActiveIndex();
 
