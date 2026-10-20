@@ -13,7 +13,7 @@
    - Native previous/next arrow support
    - Miniature Highlight collection navigation
    - Direct switching between Highlights
-   - Click outside the Story to close
+   - Click surrounding viewer background to close
    - Playback stops when leaving the page
    ========================================================= */
 
@@ -43,6 +43,7 @@
   let observer = null;
   let syncQueued = false;
   let viewerWasOpen = false;
+  let switchingHighlight = false;
 
   /* =====================================================
      HELPERS
@@ -56,13 +57,30 @@
     return widget?.querySelector(CONFIG.viewer) || null;
   }
 
+  function isViewerVisible(viewer = getViewer()) {
+    if (!viewer || !viewer.isConnected) return false;
+
+    const style = window.getComputedStyle(viewer);
+
+    if (
+      style.display === "none" ||
+      style.visibility === "hidden"
+    ) {
+      return false;
+    }
+
+    return viewer.getClientRects().length > 0;
+  }
+
   function getSlides() {
     const viewer = getViewer();
 
     return viewer
-      ? [...viewer.querySelectorAll(
-          ".sk-carousel-track > .sk-carousel-item"
-        )]
+      ? [
+          ...viewer.querySelectorAll(
+            ".sk-carousel-track > .sk-carousel-item"
+          )
+        ]
       : [];
   }
 
@@ -75,7 +93,9 @@
 
     if (!active) return -1;
 
-    return Number(active.dataset.index);
+    const index = Number(active.dataset.index);
+
+    return Number.isInteger(index) ? index : -1;
   }
 
   function getActiveSlide() {
@@ -91,13 +111,32 @@
     }
   }
 
+  /* =====================================================
+     AUDIO AND VIDEO CLEANUP
+     ===================================================== */
+
   function stopAllVideos(except = null) {
-    widget?.querySelectorAll("video").forEach(video => {
+    if (!widget) return;
+
+    widget.querySelectorAll("video").forEach(video => {
       if (video === except) return;
 
       video.pause();
       video.muted = true;
+      video.autoplay = false;
     });
+  }
+
+  function invalidatePlayback() {
+    clearImageTimer();
+
+    playbackGeneration++;
+    pendingAdvance = false;
+
+    stopAllVideos();
+
+    activeMedia = null;
+    activeIndex = -1;
   }
 
   /* =====================================================
@@ -119,19 +158,29 @@
      ===================================================== */
 
   function closeViewer() {
-    clearImageTimer();
+    invalidatePlayback();
 
-    playbackGeneration++;
-    pendingAdvance = false;
+    const viewer = getViewer();
 
-    stopAllVideos();
+    const closeButton = viewer?.querySelector(
+      CONFIG.close
+    );
 
-    activeMedia = null;
-    activeIndex = -1;
+    if (closeButton) {
+      closeButton.click();
+    }
 
-    getViewer()
-      ?.querySelector(CONFIG.close)
-      ?.click();
+    viewerWasOpen = false;
+
+    // Catch playback restarted during SociableKIT cleanup.
+    requestAnimationFrame(() => {
+      stopAllVideos();
+    });
+
+    setTimeout(() => {
+      stopAllVideos();
+      scheduleSync();
+    }, 150);
   }
 
   /* =====================================================
@@ -139,16 +188,22 @@
      ===================================================== */
 
   function advanceStory() {
-    if (pendingAdvance) return;
+    if (pendingAdvance || switchingHighlight) return;
 
     const viewer = getViewer();
-    if (!viewer) return;
+
+    if (!isViewerVisible(viewer)) return;
 
     const index = getActiveIndex();
-
     const slides = getSlides();
 
-    if (index < 0 || !slides.length) return;
+    if (
+      index < 0 ||
+      !slides.length ||
+      index >= slides.length
+    ) {
+      return;
+    }
 
     pendingAdvance = true;
 
@@ -167,6 +222,10 @@
       pendingAdvance = false;
       return;
     }
+
+    invalidatePlayback();
+
+    pendingAdvance = true;
 
     nextButton.click();
 
@@ -196,19 +255,31 @@
     try {
       await video.play();
     } catch (_) {
-      if (generation !== playbackGeneration) return;
+      if (
+        generation !== playbackGeneration ||
+        video !== activeMedia
+      ) {
+        video.pause();
+        video.muted = true;
+        return;
+      }
 
       video.muted = true;
 
       try {
         await video.play();
       } catch (_) {
-        // Browser requires manual interaction.
+        // Browser requires user interaction.
       }
     }
 
-    if (generation !== playbackGeneration) {
+    if (
+      generation !== playbackGeneration ||
+      video !== activeMedia ||
+      !isViewerVisible()
+    ) {
       video.pause();
+      video.muted = true;
     }
   }
 
@@ -219,12 +290,11 @@
   function activateStory() {
     const viewer = getViewer();
 
-    if (!viewer) return;
+    if (!isViewerVisible(viewer)) return;
 
     disableLooping();
 
     const index = getActiveIndex();
-
     const slide = getActiveSlide();
 
     if (index < 0 || !slide) return;
@@ -256,7 +326,12 @@
     );
 
     if (media.tagName === "VIDEO") {
-      media.currentTime = 0;
+      try {
+        media.currentTime = 0;
+      } catch (_) {
+        // Media may not be ready yet.
+      }
+
       playVideo(media, generation);
       return;
     }
@@ -284,7 +359,6 @@
       }
 
       if (!widget?.contains(video)) return;
-
       if (video !== activeMedia) return;
 
       advanceStory();
@@ -301,12 +375,9 @@
 
     const viewer = getViewer();
 
-    if (!viewer || document.hidden) {
-      clearImageTimer();
-      stopAllVideos();
+    if (!isViewerVisible(viewer) || document.hidden) {
+      invalidatePlayback();
 
-      activeMedia = null;
-      activeIndex = -1;
       viewerWasOpen = false;
 
       removeMiniNavigation();
@@ -320,7 +391,10 @@
       buildMiniNavigation();
     }
 
-    activateStory();
+    if (!switchingHighlight) {
+      activateStory();
+    }
+
     updateMiniNavigation();
   }
 
@@ -425,7 +499,8 @@
 
       const image = document.createElement("img");
 
-      image.src = highlight.image.currentSrc ||
+      image.src =
+        highlight.image.currentSrc ||
         highlight.image.src;
 
       image.alt = "";
@@ -435,13 +510,9 @@
       button.addEventListener("click", event => {
         event.stopPropagation();
 
-        clearImageTimer();
-        stopAllVideos();
+        switchingHighlight = true;
 
-        playbackGeneration++;
-
-        activeMedia = null;
-        activeIndex = -1;
+        invalidatePlayback();
 
         const target = highlight.button;
 
@@ -453,6 +524,8 @@
           }
 
           viewerWasOpen = false;
+          switchingHighlight = false;
+
           scheduleSync();
         }, 120);
       });
@@ -487,54 +560,83 @@
   }
 
   /* =====================================================
-     CLICK OUTSIDE STORY TO CLOSE
+     CLICK SURROUNDING VIEWER BACKGROUND TO CLOSE
      ===================================================== */
 
-  document.addEventListener("click", event => {
-    const viewer = getViewer();
+  document.addEventListener(
+    "pointerdown",
+    event => {
+      const viewer = getViewer();
 
-    if (!viewer) return;
+      if (!isViewerVisible(viewer)) return;
 
-    if (
-      event.target.closest(
-        ".dr-mini-highlights"
-      )
-    ) {
-      return;
-    }
+      const target = event.target;
 
-    if (
-      event.target.closest(
-        ".sk-story-nav-btn"
-      )
-    ) {
-      return;
-    }
+      if (!(target instanceof Element)) return;
 
-    const mainColumn = viewer.querySelector(
-      ".sk-story-main-column"
-    );
+      // Only handle clicks inside the Story viewer.
+      if (!viewer.contains(target)) return;
 
-    if (
-      mainColumn &&
-      !mainColumn.contains(event.target) &&
-      viewer.contains(event.target)
-    ) {
+      // Preserve actual Story media.
+      if (
+        target.closest(
+          ".sk-story-slide-media video, " +
+          ".sk-story-slide-media img"
+        )
+      ) {
+        return;
+      }
+
+      // Preserve native navigation and close controls.
+      if (
+        target.closest(
+          ".sk-story-nav-btn, " +
+          ".sk-story-close, " +
+          ".dr-mini-highlights"
+        )
+      ) {
+        return;
+      }
+
+      // Preserve progress bar interactions.
+      if (
+        target.closest(".sk-story-progress")
+      ) {
+        return;
+      }
+
+      // Everything else inside the viewer is dismissible.
       closeViewer();
-    }
-  });
+    },
+    true
+  );
 
   /* =====================================================
      SOCIABLEKIT INTERACTIONS
      ===================================================== */
 
-  document.addEventListener("click", event => {
-    if (!widget?.contains(event.target)) return;
+  document.addEventListener(
+    "click",
+    event => {
+      const target = event.target;
 
-    setTimeout(scheduleSync, 60);
-    setTimeout(scheduleSync, 220);
-    setTimeout(scheduleSync, 450);
-  });
+      if (!(target instanceof Element)) return;
+      if (!widget?.contains(target)) return;
+
+      const control = target.closest(
+        ".sk-story-nav-btn, .sk-story-close"
+      );
+
+      if (control) {
+        invalidatePlayback();
+      }
+
+      setTimeout(scheduleSync, 60);
+      setTimeout(scheduleSync, 220);
+      setTimeout(scheduleSync, 450);
+    },
+    true
+  );
 
   /* =====================================================
      PAGE VISIBILITY
@@ -544,8 +646,7 @@
     "visibilitychange",
     () => {
       if (document.hidden) {
-        clearImageTimer();
-        stopAllVideos();
+        invalidatePlayback();
       } else {
         activeMedia = null;
         activeIndex = -1;
@@ -555,8 +656,7 @@
   );
 
   window.addEventListener("pagehide", () => {
-    clearImageTimer();
-    stopAllVideos();
+    invalidatePlayback();
   });
 
   /* =====================================================
