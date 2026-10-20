@@ -1,234 +1,415 @@
 /* =========================================================
-   DOMINIC RYAN — INSTAGRAM STORY AUDIO MANAGEMENT
-   SociableKIT Story Highlights
+   DOMINIC RYAN — INSTAGRAM STORY PLAYBACK MANAGEMENT
 
-   PURPOSE:
-   - Enable sound on the active video when permitted
-   - Prevent overlapping story audio
-   - Stop inactive story videos
-   - Stop playback when leaving the page
+   SociableKIT Instagram Story Highlights
+
+   FEATURES:
+   - Automatically plays opened stories
+   - Attempts playback with sound
+   - Falls back to muted autoplay when necessary
+   - Stops previous videos when changing stories
+   - Stops playback when closing the viewer
+   - Pauses playback when leaving the page
+   - Supports dynamically loaded stories
    ========================================================= */
 
 (() => {
   "use strict";
 
+  /* =====================================================
+     CONFIGURATION
+     ===================================================== */
+
   const WIDGET = ".sk-ww-instagram-story-highlights";
+
   const VIEWER = ".sk-story-viewer-layout";
 
+  const SLIDE = ".sk-carousel-item";
+
+  const VIDEO = ".sk-story-slide-media video";
+
+  const TRACK = ".sk-carousel-track";
+
   let activeVideo = null;
+
+  let syncScheduled = false;
+
   let syncTimer = null;
 
-  /* =========================================================
-     FIND STORY VIDEOS
-     ========================================================= */
+  /* =====================================================
+     ELEMENT HELPERS
+     ===================================================== */
 
   function getWidget() {
     return document.querySelector(WIDGET);
+  }
+
+  function getViewer() {
+    const widget = getWidget();
+
+    return widget
+      ? widget.querySelector(VIEWER)
+      : null;
   }
 
   function getVideos() {
     const widget = getWidget();
 
     return widget
-      ? [...widget.querySelectorAll("video")]
+      ? [...widget.querySelectorAll(VIDEO)]
       : [];
   }
 
-  /* =========================================================
-     IDENTIFY THE ACTIVE STORY
-     ========================================================= */
+  /* =====================================================
+     IDENTIFY THE VISIBLE STORY
+     ===================================================== */
 
   function getActiveVideo() {
-    const widget = getWidget();
 
-    if (!widget) return null;
-
-    const viewer = widget.querySelector(VIEWER);
+    const viewer = getViewer();
 
     if (!viewer) return null;
 
     const videos = getVideos();
 
+    if (!videos.length) return null;
+
+    const track = viewer.querySelector(TRACK);
+
+    if (!track) return null;
+
+    const trackRect = track.getBoundingClientRect();
+
     const viewerRect = viewer.getBoundingClientRect();
+
+    const visibleSlides = videos
+      .map(video => {
+
+        const slide = video.closest(SLIDE);
+
+        if (!slide) return null;
+
+        const rect = slide.getBoundingClientRect();
+
+        const visibleWidth = Math.max(
+          0,
+          Math.min(rect.right, viewerRect.right) -
+          Math.max(rect.left, viewerRect.left)
+        );
+
+        return {
+          video,
+          rect,
+          visibleWidth
+        };
+
+      })
+      .filter(Boolean);
+
+    if (!visibleSlides.length) return null;
 
     const viewerCenter =
       (viewerRect.left + viewerRect.right) / 2;
 
-    let closestVideo = null;
-    let closestDistance = Infinity;
+    visibleSlides.sort((a, b) => {
 
-    videos.forEach(video => {
-      const rect = video.getBoundingClientRect();
+      const aCenter =
+        (a.rect.left + a.rect.right) / 2;
 
-      if (
-        rect.width === 0 ||
-        rect.height === 0
-      ) {
-        return;
-      }
+      const bCenter =
+        (b.rect.left + b.rect.right) / 2;
 
-      const videoCenter =
-        (rect.left + rect.right) / 2;
+      return (
+        Math.abs(aCenter - viewerCenter) -
+        Math.abs(bCenter - viewerCenter)
+      );
 
-      const distance =
-        Math.abs(videoCenter - viewerCenter);
-
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestVideo = video;
-      }
     });
 
-    return closestVideo;
+    return visibleSlides[0]?.video || null;
+
   }
 
-  /* =========================================================
-     MANAGE PLAYBACK
-     ========================================================= */
+  /* =====================================================
+     STOP ALL OTHER VIDEOS
+     ===================================================== */
 
-  function syncStoryAudio() {
-    const videos = getVideos();
-    const nextVideo = getActiveVideo();
+  function stopOtherVideos(except = null) {
 
-    videos.forEach(video => {
-      if (video !== nextVideo) {
-        video.pause();
-        video.muted = true;
-      }
+    getVideos().forEach(video => {
+
+      if (video === except) return;
+
+      video.pause();
+
+      video.muted = true;
+
     });
 
-    if (!nextVideo) {
-      activeVideo = null;
+  }
+
+  /* =====================================================
+     PLAY ACTIVE VIDEO
+     ===================================================== */
+
+  async function playStory(video) {
+
+    if (!video) return;
+
+    stopOtherVideos(video);
+
+    activeVideo = video;
+
+    video.volume = 1;
+
+    video.muted = false;
+
+    video.autoplay = true;
+
+    video.playsInline = true;
+
+    try {
+
+      await video.play();
+
+    } catch (_) {
+
+      /*
+         Browser blocked playback with sound.
+
+         Try muted autoplay instead.
+      */
+
+      if (activeVideo !== video) return;
+
+      video.muted = true;
+
+      try {
+
+        await video.play();
+
+      } catch (_) {
+
+        /*
+           Playback is still restricted.
+
+           The visitor can manually start it.
+        */
+
+      }
+
+    }
+
+  }
+
+  /* =====================================================
+     SYNCHRONIZE STORY PLAYBACK
+     ===================================================== */
+
+  function syncPlayback() {
+
+    syncScheduled = false;
+
+    if (document.hidden) {
+
+      stopOtherVideos();
+
+      if (activeVideo) {
+        activeVideo.pause();
+      }
+
       return;
+
+    }
+
+    const viewer = getViewer();
+
+    if (!viewer) {
+
+      stopOtherVideos();
+
+      activeVideo = null;
+
+      return;
+
+    }
+
+    const nextVideo = getActiveVideo();
+
+    if (!nextVideo) {
+
+      stopOtherVideos();
+
+      activeVideo = null;
+
+      return;
+
     }
 
     if (nextVideo !== activeVideo) {
-      activeVideo = nextVideo;
 
-      nextVideo.muted = false;
-      nextVideo.volume = 1;
+      playStory(nextVideo);
 
-      const attempt = nextVideo.play();
+      return;
 
-      if (
-        attempt &&
-        typeof attempt.catch === "function"
-      ) {
-        attempt.catch(() => {
-          // Browser may restrict playback with sound.
-        });
-      }
     }
+
+    stopOtherVideos(nextVideo);
+
+    /*
+       If SociableKIT paused the current video
+       while navigating, restart it.
+    */
+
+    if (nextVideo.paused) {
+
+      playStory(nextVideo);
+
+    }
+
   }
 
-  /* =========================================================
-     SCHEDULE UPDATES
-     ========================================================= */
+  /* =====================================================
+     SCHEDULE PLAYBACK CHECK
+     ===================================================== */
 
   function scheduleSync() {
-    clearTimeout(syncTimer);
 
-    syncTimer = setTimeout(
-      syncStoryAudio,
-      100
-    );
+    if (syncScheduled) return;
+
+    syncScheduled = true;
+
+    requestAnimationFrame(() => {
+
+      requestAnimationFrame(syncPlayback);
+
+    });
+
   }
 
-  /* =========================================================
-     OBSERVE STORY CHANGES
-     ========================================================= */
+  /* =====================================================
+     OBSERVE SOCIABLEKIT
+     ===================================================== */
 
-  const observer = new MutationObserver(scheduleSync);
+  function initializeObserver() {
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: [
-      "class",
-      "style"
-    ]
-  });
+    const widget = getWidget();
 
-  /* =========================================================
-     STORY NAVIGATION
-     ========================================================= */
+    if (!widget) {
 
-  document.addEventListener("click", event => {
-    if (
-      event.target.closest(
-        ".sk-story-nav-btn, .sk-story-close"
-      )
-    ) {
-      scheduleSync();
+      setTimeout(initializeObserver, 500);
+
+      return;
+
     }
-  });
-  /* =========================================================
-     CLOSE STORY WHEN CLICKING OUTSIDE
-     ========================================================= */
+
+    const observer = new MutationObserver(() => {
+
+      scheduleSync();
+
+    });
+
+    observer.observe(widget, {
+
+      childList: true,
+
+      subtree: true,
+
+      attributes: true,
+
+      attributeFilter: [
+        "style",
+        "class"
+      ]
+
+    });
+
+    scheduleSync();
+
+  }
+
+  /* =====================================================
+     USER INTERACTIONS
+     ===================================================== */
 
   document.addEventListener("click", event => {
 
     const widget = getWidget();
-    if (!widget) return;
 
-    const viewer = widget.querySelector(VIEWER);
-    if (!viewer) return;
-
-    const story = viewer.querySelector(
-      ".sk-story-main-column"
-    );
-
-    if (!story) return;
-
-    // Keep clicks inside the story working normally.
-    if (story.contains(event.target)) return;
-
-    // Preserve previous/next navigation.
-    if (event.target.closest(".sk-story-nav-btn")) {
+    if (!widget || !widget.contains(event.target)) {
       return;
     }
 
-    // Only close when clicking the surrounding viewer.
-    if (!viewer.contains(event.target)) return;
+    /*
+       Allow SociableKIT to finish opening
+       or transitioning between stories.
+    */
 
-    const closeButton = viewer.querySelector(
-      ".sk-story-close"
-    );
+    scheduleSync();
 
-    if (closeButton) {
-      closeButton.click();
+    setTimeout(scheduleSync, 100);
+
+    setTimeout(scheduleSync, 350);
+
+    setTimeout(scheduleSync, 650);
+
+  });
+
+  /* =====================================================
+     PAGE VISIBILITY
+     ===================================================== */
+
+  document.addEventListener("visibilitychange", () => {
+
+    if (document.hidden) {
+
+      getVideos().forEach(video => {
+        video.pause();
+      });
+
+    } else {
+
+      activeVideo = null;
+
       scheduleSync();
+
     }
 
   });
-  /* =========================================================
-     PAGE VISIBILITY
-     ========================================================= */
 
-  document.addEventListener(
-    "visibilitychange",
-    () => {
-      if (document.hidden) {
-        getVideos().forEach(video => {
-          video.pause();
-        });
-      } else {
-        scheduleSync();
-      }
-    }
-  );
+  /* =====================================================
+     PAGE EXIT
+     ===================================================== */
 
   window.addEventListener("pagehide", () => {
+
     getVideos().forEach(video => {
+
       video.pause();
+
+      video.muted = true;
+
     });
+
+    activeVideo = null;
+
   });
 
-  /* =========================================================
-     INITIALIZE
-     ========================================================= */
+  /* =====================================================
+     INITIALIZATION
+     ===================================================== */
 
-  scheduleSync();
+  if (document.readyState === "loading") {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeObserver
+    );
+
+  } else {
+
+    initializeObserver();
+
+  }
 
 })();
