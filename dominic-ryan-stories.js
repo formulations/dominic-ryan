@@ -507,16 +507,18 @@
       if (!viewer.contains(target)) return;
 
       // Preserve navigation and controls.
-      if (
-        target.closest(
-          ".sk-story-nav-btn, " +
-          ".sk-story-close, " +
-          ".dr-mini-highlights, " +
-          ".sk-story-progress"
-        )
-      ) {
-        return;
-      }
+if (
+  target.closest(
+    ".sk-story-nav-btn, " +
+    ".sk-carousel-next, " +
+    ".sk-carousel-prev, " +
+    ".sk-story-close, " +
+    ".dr-mini-highlights, " +
+    ".sk-story-progress"
+  )
+) {
+  return;
+}
 
       // Preserve clicks within the actual media rectangle.
       const slide = getSlides()[getActiveIndex()];
