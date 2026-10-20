@@ -439,7 +439,56 @@
 
     frame?.appendChild(navigation);
   }
+  /* =====================================================
+     LIGHT WEBSITE BACKGROUND — CLICK TO CLOSE
 
+     Independent of the existing warm-stone
+     background click functionality.
+     ===================================================== */
+
+  let websiteBackdrop = null;
+
+  function createWebsiteBackdrop() {
+    if (websiteBackdrop) return;
+
+    websiteBackdrop = document.createElement("div");
+
+    websiteBackdrop.id = "dr-story-website-backdrop";
+
+    websiteBackdrop.setAttribute("aria-hidden", "true");
+
+    Object.assign(websiteBackdrop.style, {
+      position: "fixed",
+      inset: "0",
+      width: "100vw",
+      height: "100vh",
+      background: "transparent",
+      zIndex: "9998",
+      display: "none",
+      pointerEvents: "auto"
+    });
+
+    websiteBackdrop.addEventListener("pointerdown", event => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      closeViewer();
+    });
+
+    document.body.appendChild(websiteBackdrop);
+  }
+
+  function updateWebsiteBackdrop() {
+    if (!websiteBackdrop) return;
+
+    const viewer = getViewer();
+
+    const isOpen = isViewerVisible(viewer);
+
+    websiteBackdrop.style.display = isOpen
+      ? "block"
+      : "none";
+  }
   /* =====================================================
      BACKGROUND CLICK TO CLOSE
      ===================================================== */
@@ -529,6 +578,7 @@
     syncQueued = false;
 
     const viewer = getViewer();
+         updateWebsiteBackdrop();
 
     if (!isViewerVisible(viewer) || document.hidden) {
       invalidatePlayback();
@@ -595,7 +645,7 @@
       setTimeout(initialize, 400);
       return;
     }
-
+    createWebsiteBackdrop();
     observer = new MutationObserver(scheduleSync);
 
     observer.observe(widget, {
