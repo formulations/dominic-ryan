@@ -1,20 +1,7 @@
 /* =========================================================
    DOMINIC RYAN — INSTAGRAM STORY EXPERIENCE
    SociableKIT Instagram Story Highlights
-
-   FEATURES
-   - Automatic video playback
-   - Audio enabled when browser permits
-   - Sequential playback within each Highlight
-   - Automatic progression through images
-   - Automatic closing after the final Story
-   - No video looping
-   - No overlapping audio
-   - Native previous/next arrow support
-   - Miniature Highlight collection navigation
-   - Direct switching between Highlights
-   - Click surrounding viewer background to close
-   - Playback stops when leaving the page
+   October 2026
    ========================================================= */
 
 (() => {
@@ -23,35 +10,32 @@
   const CONFIG = {
     widget: ".sk-ww-instagram-story-highlights",
     viewer: ".sk-story-viewer-layout",
-    slide: ".sk-carousel-item",
-    progress: ".sk-story-progress-seg",
+    slide: ".sk-carousel-track > .sk-carousel-item",
     activeProgress: ".sk-story-progress-seg.is-active",
     next: ".sk-carousel-next",
     close: ".sk-story-close",
 
     imageDuration: 5000,
-    navigationDelay: 180,
-    thumbnailSize: 34
+    navigationDelay: 220
   };
 
   let widget = null;
+  let observer = null;
+
   let activeMedia = null;
   let activeIndex = -1;
+
   let imageTimer = null;
   let playbackGeneration = 0;
-  let pendingAdvance = false;
-  let observer = null;
+
   let syncQueued = false;
+  let pendingAdvance = false;
   let viewerWasOpen = false;
   let switchingHighlight = false;
 
   /* =====================================================
-     HELPERS
+     VIEWER HELPERS
      ===================================================== */
-
-  function getWidget() {
-    return document.querySelector(CONFIG.widget);
-  }
 
   function getViewer() {
     return widget?.querySelector(CONFIG.viewer) || null;
@@ -60,7 +44,7 @@
   function isViewerVisible(viewer = getViewer()) {
     if (!viewer || !viewer.isConnected) return false;
 
-    const style = window.getComputedStyle(viewer);
+    const style = getComputedStyle(viewer);
 
     if (
       style.display === "none" ||
@@ -76,11 +60,7 @@
     const viewer = getViewer();
 
     return viewer
-      ? [
-          ...viewer.querySelectorAll(
-            ".sk-carousel-track > .sk-carousel-item"
-          )
-        ]
+      ? [...viewer.querySelectorAll(CONFIG.slide)]
       : [];
   }
 
@@ -98,12 +78,6 @@
     return Number.isInteger(index) ? index : -1;
   }
 
-  function getActiveSlide() {
-    const index = getActiveIndex();
-
-    return getSlides()[index] || null;
-  }
-
   function clearImageTimer() {
     if (imageTimer !== null) {
       clearTimeout(imageTimer);
@@ -112,7 +86,7 @@
   }
 
   /* =====================================================
-     AUDIO AND VIDEO CLEANUP
+     AUDIO MANAGEMENT
      ===================================================== */
 
   function stopAllVideos(except = null) {
@@ -131,22 +105,21 @@
     clearImageTimer();
 
     playbackGeneration++;
-    pendingAdvance = false;
 
     stopAllVideos();
 
     activeMedia = null;
     activeIndex = -1;
+
+    pendingAdvance = false;
   }
 
   /* =====================================================
-     DISABLE VIDEO LOOPING
+     VIDEO LOOP PREVENTION
      ===================================================== */
 
   function disableLooping() {
-    widget?.querySelectorAll(
-      ".sk-story-slide-media video"
-    ).forEach(video => {
+    widget?.querySelectorAll("video").forEach(video => {
       video.loop = false;
       video.removeAttribute("loop");
       video.playsInline = true;
@@ -172,10 +145,7 @@
 
     viewerWasOpen = false;
 
-    // Catch playback restarted during SociableKIT cleanup.
-    requestAnimationFrame(() => {
-      stopAllVideos();
-    });
+    requestAnimationFrame(stopAllVideos);
 
     setTimeout(() => {
       stopAllVideos();
@@ -184,7 +154,7 @@
   }
 
   /* =====================================================
-     ADVANCE STORY
+     STORY ADVANCEMENT
      ===================================================== */
 
   function advanceStory() {
@@ -205,11 +175,7 @@
       return;
     }
 
-    pendingAdvance = true;
-
-    clearImageTimer();
-
-    if (index >= slides.length - 1) {
+    if (index === slides.length - 1) {
       closeViewer();
       return;
     }
@@ -218,10 +184,9 @@
       CONFIG.next
     );
 
-    if (!nextButton) {
-      pendingAdvance = false;
-      return;
-    }
+    if (!nextButton) return;
+
+    pendingAdvance = true;
 
     invalidatePlayback();
 
@@ -236,7 +201,7 @@
   }
 
   /* =====================================================
-     PLAY VIDEO
+     VIDEO PLAYBACK
      ===================================================== */
 
   async function playVideo(video, generation) {
@@ -247,8 +212,9 @@
     video.loop = false;
     video.removeAttribute("loop");
 
-    video.autoplay = true;
     video.playsInline = true;
+    video.autoplay = true;
+
     video.volume = 1;
     video.muted = false;
 
@@ -269,7 +235,7 @@
       try {
         await video.play();
       } catch (_) {
-        // Browser requires user interaction.
+        // User interaction may be required.
       }
     }
 
@@ -284,7 +250,7 @@
   }
 
   /* =====================================================
-     ACTIVATE CURRENT STORY
+     ACTIVATE STORY
      ===================================================== */
 
   function activateStory() {
@@ -295,13 +261,13 @@
     disableLooping();
 
     const index = getActiveIndex();
-    const slide = getActiveSlide();
+    const slides = getSlides();
+
+    const slide = slides[index];
 
     if (index < 0 || !slide) return;
 
-    const media = slide.querySelector(
-      "video, img"
-    );
+    const media = slide.querySelector("video, img");
 
     if (!media) return;
 
@@ -322,44 +288,40 @@
     activeMedia = media;
 
     stopAllVideos(
-      media.tagName === "VIDEO" ? media : null
+      media instanceof HTMLVideoElement
+        ? media
+        : null
     );
 
-    if (media.tagName === "VIDEO") {
+    if (media instanceof HTMLVideoElement) {
       try {
         media.currentTime = 0;
-      } catch (_) {
-        // Media may not be ready yet.
-      }
+      } catch (_) {}
 
       playVideo(media, generation);
       return;
     }
 
-    if (media.tagName === "IMG") {
-      imageTimer = setTimeout(() => {
-        if (generation !== playbackGeneration) return;
+    imageTimer = setTimeout(() => {
+      if (generation !== playbackGeneration) return;
 
-        advanceStory();
-      }, CONFIG.imageDuration);
-    }
+      advanceStory();
+    }, CONFIG.imageDuration);
   }
 
   /* =====================================================
-     VIDEO ENDED
+     VIDEO COMPLETION
      ===================================================== */
 
   document.addEventListener(
     "ended",
     event => {
-      const video = event.target;
-
-      if (!(video instanceof HTMLVideoElement)) {
+      if (!(event.target instanceof HTMLVideoElement)) {
         return;
       }
 
-      if (!widget?.contains(video)) return;
-      if (video !== activeMedia) return;
+      if (!widget?.contains(event.target)) return;
+      if (event.target !== activeMedia) return;
 
       advanceStory();
     },
@@ -367,92 +329,34 @@
   );
 
   /* =====================================================
-     SYNCHRONIZE VIEWER
-     ===================================================== */
-
-  function syncViewer() {
-    syncQueued = false;
-
-    const viewer = getViewer();
-
-    if (!isViewerVisible(viewer) || document.hidden) {
-      invalidatePlayback();
-
-      viewerWasOpen = false;
-
-      removeMiniNavigation();
-      return;
-    }
-
-    disableLooping();
-
-    if (!viewerWasOpen) {
-      viewerWasOpen = true;
-      buildMiniNavigation();
-    }
-
-    if (!switchingHighlight) {
-      activateStory();
-    }
-
-    updateMiniNavigation();
-  }
-
-  function scheduleSync() {
-    if (syncQueued) return;
-
-    syncQueued = true;
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(syncViewer);
-    });
-  }
-
-  /* =====================================================
-     MINIATURE HIGHLIGHT NAVIGATION
+     MINIATURE HIGHLIGHT DISCOVERY
      ===================================================== */
 
   function getHighlightCandidates() {
     if (!widget) return [];
 
-    const viewer = getViewer();
-
-    const images = [
-      ...widget.querySelectorAll("img")
-    ].filter(img => {
-      if (viewer?.contains(img)) return false;
-
-      if (img.closest(".dr-mini-highlights")) {
-        return false;
-      }
-
-      return Boolean(
-        img.closest("button, a, [role='button']")
-      );
-    });
-
-    const unique = new Set();
-
-    return images
-      .map(img => {
-        const button = img.closest(
-          "button, a, [role='button']"
+    return [
+      ...widget.querySelectorAll(
+        ".sk-highlights-strip-viewport .sk-posts-story-item"
+      )
+    ]
+      .map(item => {
+        const image = item.querySelector(
+          ".sk-story-thumb-wrap img"
         );
 
-        if (!button || unique.has(button)) {
-          return null;
-        }
+        if (!image) return null;
 
-        unique.add(button);
+        const label =
+          item.querySelector(
+            ".sk-story-highlight-title"
+          )?.textContent?.trim() ||
+          "View Highlight";
 
         return {
-          button,
-          image: img,
-          label:
-            button.getAttribute("aria-label") ||
-            img.getAttribute("alt") ||
-            button.textContent.trim() ||
-            "View Highlight"
+          item,
+          image,
+          label
         };
       })
       .filter(Boolean);
@@ -484,7 +388,7 @@
       "Explore other Story Highlights"
     );
 
-    highlights.forEach((highlight, index) => {
+    highlights.forEach(highlight => {
       const button = document.createElement("button");
 
       button.type = "button";
@@ -494,8 +398,6 @@
         "aria-label",
         highlight.label
       );
-
-      button.dataset.highlightIndex = index;
 
       const image = document.createElement("img");
 
@@ -512,9 +414,7 @@
 
         switchingHighlight = true;
 
-        invalidatePlayback();
-
-        const target = highlight.button;
+        const target = highlight.item;
 
         closeViewer();
 
@@ -527,7 +427,7 @@
           switchingHighlight = false;
 
           scheduleSync();
-        }, 120);
+        }, 150);
       });
 
       navigation.appendChild(button);
@@ -537,30 +437,11 @@
       ".sk-story-frame"
     );
 
-    if (frame) {
-      frame.appendChild(navigation);
-    }
-  }
-
-  function updateMiniNavigation() {
-    const navigation = widget?.querySelector(
-      ".dr-mini-highlights"
-    );
-
-    if (!navigation) return;
-
-    navigation.querySelectorAll(
-      ".dr-mini-highlight"
-    ).forEach(button => {
-      button.setAttribute(
-        "aria-pressed",
-        "false"
-      );
-    });
+    frame?.appendChild(navigation);
   }
 
   /* =====================================================
-     CLICK SURROUNDING VIEWER BACKGROUND TO CLOSE
+     BACKGROUND CLICK TO CLOSE
      ===================================================== */
 
   document.addEventListener(
@@ -574,45 +455,47 @@
 
       if (!(target instanceof Element)) return;
 
-      // Only handle clicks inside the Story viewer.
       if (!viewer.contains(target)) return;
 
-      // Preserve actual Story media.
-      if (
-        target.closest(
-          ".sk-story-slide-media video, " +
-          ".sk-story-slide-media img"
-        )
-      ) {
-        return;
-      }
-
-      // Preserve native navigation and close controls.
+      // Preserve navigation and controls.
       if (
         target.closest(
           ".sk-story-nav-btn, " +
           ".sk-story-close, " +
-          ".dr-mini-highlights"
+          ".dr-mini-highlights, " +
+          ".sk-story-progress"
         )
       ) {
         return;
       }
 
-      // Preserve progress bar interactions.
-      if (
-        target.closest(".sk-story-progress")
-      ) {
-        return;
+      // Preserve clicks within the actual media rectangle.
+      const slide = getSlides()[getActiveIndex()];
+
+      const media = slide?.querySelector(
+        ".sk-story-slide-media video, " +
+        ".sk-story-slide-media img"
+      );
+
+      if (media) {
+        const rect = media.getBoundingClientRect();
+
+        const insideMedia =
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom;
+
+        if (insideMedia) return;
       }
 
-      // Everything else inside the viewer is dismissible.
       closeViewer();
     },
     true
   );
 
   /* =====================================================
-     SOCIABLEKIT INTERACTIONS
+     NATIVE SOCIABLEKIT CONTROLS
      ===================================================== */
 
   document.addEventListener(
@@ -639,6 +522,46 @@
   );
 
   /* =====================================================
+     VIEWER SYNCHRONIZATION
+     ===================================================== */
+
+  function syncViewer() {
+    syncQueued = false;
+
+    const viewer = getViewer();
+
+    if (!isViewerVisible(viewer) || document.hidden) {
+      invalidatePlayback();
+
+      viewerWasOpen = false;
+
+      removeMiniNavigation();
+      return;
+    }
+
+    disableLooping();
+
+    if (!viewerWasOpen) {
+      viewerWasOpen = true;
+      buildMiniNavigation();
+    }
+
+    if (!switchingHighlight) {
+      activateStory();
+    }
+  }
+
+  function scheduleSync() {
+    if (syncQueued) return;
+
+    syncQueued = true;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(syncViewer);
+    });
+  }
+
+  /* =====================================================
      PAGE VISIBILITY
      ===================================================== */
 
@@ -650,21 +573,23 @@
       } else {
         activeMedia = null;
         activeIndex = -1;
+
         scheduleSync();
       }
     }
   );
 
-  window.addEventListener("pagehide", () => {
-    invalidatePlayback();
-  });
+  window.addEventListener(
+    "pagehide",
+    invalidatePlayback
+  );
 
   /* =====================================================
-     INITIALIZE
+     INITIALIZATION
      ===================================================== */
 
   function initialize() {
-    widget = getWidget();
+    widget = document.querySelector(CONFIG.widget);
 
     if (!widget) {
       setTimeout(initialize, 400);
