@@ -358,11 +358,12 @@
 
   .collection-navigation {
     margin-top: 45px;
-    gap: 22px;
+    gap: clamp(10px, 4vw, 22px);
+    padding: 0 12px;
   }
 
   .collection-navigation a {
-    font-size: 9px;
+    font-size: clamp(8px, 2.3vw, 9px);
     letter-spacing: .08em;
   }
 
