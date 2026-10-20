@@ -2,10 +2,6 @@
    DOMINIC RYAN — INSTAGRAM STORY EXPERIENCE
    SociableKIT Instagram Story Highlights
    October 2026
-
-   RESTORED VERSION
-   - Original viewer background click behavior
-   - No website-background click handling
    ========================================================= */
 
 (() => {
@@ -446,11 +442,6 @@
 
   /* =====================================================
      BACKGROUND CLICK TO CLOSE
-
-     Only clicks within the SociableKIT Story viewer
-     are handled.
-
-     The lighter website background is excluded.
      ===================================================== */
 
   document.addEventListener(
@@ -464,16 +455,9 @@
 
       if (!(target instanceof Element)) return;
 
-      /*
-       Ignore clicks outside the Story viewer.
-       */
-
       if (!viewer.contains(target)) return;
 
-      /*
-       Preserve native navigation and controls.
-       */
-
+      // Preserve navigation and controls.
       if (
         target.closest(
           ".sk-story-nav-btn, " +
@@ -485,10 +469,7 @@
         return;
       }
 
-      /*
-       Preserve clicks within the actual media rectangle.
-       */
-
+      // Preserve clicks within the actual media rectangle.
       const slide = getSlides()[getActiveIndex()];
 
       const media = slide?.querySelector(
@@ -507,11 +488,6 @@
 
         if (insideMedia) return;
       }
-
-      /*
-       Clicking the surrounding warm-stone area
-       closes the Story.
-       */
 
       closeViewer();
     },
