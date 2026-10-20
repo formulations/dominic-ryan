@@ -302,26 +302,37 @@
       padding: 0 20px;
     }
 
-    .collection-navigation a {
-      position: relative;
+.collection-navigation a {
+  position: relative;
 
-      padding-bottom: 9px;
+  padding-bottom: 9px;
 
-      color: var(--soft-ink);
-      text-decoration: none;
+  color: var(--soft-ink);
+  text-decoration: none;
 
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: .16em;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .16em;
 
-      white-space: nowrap;
+  white-space: nowrap;
 
-      transition: opacity .25s ease;
-    }
+  /* Inactive navigation */
+  opacity: .55;
 
-    .collection-navigation a:hover {
-      opacity: .65;
-    }
+  transition: opacity .3s ease;
+}
+
+/* Active navigation — fully visible */
+
+.collection-navigation a.active {
+  opacity: 1;
+}
+
+/* Inactive navigation — hover */
+
+.collection-navigation a:not(.active):hover {
+  opacity: .8;
+}
 
     .collection-navigation a::after {
       content: "";
