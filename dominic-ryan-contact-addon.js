@@ -3084,24 +3084,49 @@
     discardMessage
   );
 
-  /* =========================================================
-     CLICK OUTSIDE TO CLOSE
-     ========================================================= */
+ /* =====================================================
+   CLICK OUTSIDE STORY TO CLOSE
+   ===================================================== */
 
-  overlay.addEventListener(
-    "click",
-    event => {
+document.addEventListener("click", event => {
 
-      if (
-        event.target === overlay
-      ) {
+  const viewer = getViewer();
 
-        requestContactClose();
+  if (!viewer) return;
 
-      }
+  const target = event.target;
 
-    }
-  );
+  if (!(target instanceof Element)) return;
+
+  /* Preserve miniature Highlight navigation */
+
+  if (target.closest(".dr-mini-highlights")) {
+    return;
+  }
+
+  /* Preserve SociableKIT navigation arrows */
+
+  if (target.closest(".sk-story-nav-btn")) {
+    return;
+  }
+
+  /* Preserve the existing close button */
+
+  if (target.closest(".sk-story-close")) {
+    return;
+  }
+
+  /* Clicking inside the video should not close it */
+
+  if (target.closest(".sk-story-stage-wrap")) {
+    return;
+  }
+
+  /* Clicking the surrounding area closes the viewer */
+
+  closeViewer();
+
+});
 
   /* =========================================================
      KEYBOARD SUPPORT
