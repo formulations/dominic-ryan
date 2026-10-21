@@ -2560,65 +2560,7 @@ class="final-typewriter-ornament"
 
     /* Static footer: no collision engine required. */
 
-    /* =======================================================
-       MUSIC
-       ======================================================= */
-
-    const soundAction = document.getElementById("sound-action");
-    let pausedByVisibility = false;
-
-    // The text describes the action, not the state:
-    // OFF when audible; ON when muted, paused, or blocked.
-    function updateSoundLabel(){
-      const audible = !audio.paused && !audio.ended && !audio.muted;
-      soundAction.textContent = audible ? "OFF" : "ON";
-      const action = audible ? "Turn music off" : "Turn music on";
-      soundToggle.setAttribute("aria-label", action);
-      soundToggle.setAttribute("title", action);
-    }
-
-    async function playAudio(restart = false){
-      if (restart || audio.ended) audio.currentTime = 0;
-      audio.muted = false;
-      try { await audio.play(); }
-      catch (_) { /* Browser may require a direct user gesture. */ }
-      updateSoundLabel();
-    }
-
-    soundToggle.addEventListener("click", async () => {
-      const audible = !audio.paused && !audio.ended && !audio.muted;
-      if (audible) {
-        audio.muted = true;
-      } else if (audio.paused || audio.ended) {
-        await playAudio(audio.ended);
-      } else {
-        audio.muted = false;
-      }
-      updateSoundLabel();
-    });
-
-    ["play", "playing", "pause", "ended", "volumechange", "emptied"].forEach(event => {
-      audio.addEventListener(event, updateSoundLabel);
-    });
-
-    // Preserve autoplay attempts; display ON if the browser blocks them.
-    updateSoundLabel();
-    playAudio(true);
-
-    // Preserve pause/resume while the page is backgrounded.
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        if (!audio.paused && !audio.muted) {
-          pausedByVisibility = true;
-          audio.pause();
-        }
-      } else if (pausedByVisibility) {
-        pausedByVisibility = false;
-        playAudio();
-      }
-      updateSoundLabel();
-    });
-
+  
 /* =======================================================
    MUSIC — DEFAULT ON WITH AUTOPLAY RECOVERY
    ======================================================= */
