@@ -1976,6 +1976,68 @@ transition:
 @media(max-width:420px){.name{font-size:18px;letter-spacing:.17em;}}
 @media(prefers-reduced-motion:reduce){.dr-back-to-top{transition:none;}}
 
+
+/* =========================================================
+   FLOATING MUSIC CONTROL — NOTE ABOVE ACTION LABEL
+   ========================================================= */
+.sound-toggle {
+  position:fixed;
+  right:calc(20px + env(safe-area-inset-right, 0px));
+  bottom:calc(20px + env(safe-area-inset-bottom, 0px));
+  width:44px;
+  height:44px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:rgba(112,94,79,.78);
+  border:1px solid rgba(251,248,242,.32);
+  color:#fbf8f2;
+  box-shadow:0 3px 13px rgba(70,57,47,.13);
+  backdrop-filter:blur(9px);
+  -webkit-backdrop-filter:blur(9px);
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .2s ease,box-shadow .2s ease;
+}
+.sound-toggle-content {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  width:100%;
+  line-height:1;
+  pointer-events:none;
+}
+.sound-note {display:block;width:19px;height:19px;flex:none;}
+.sound-action {
+  display:block;
+  margin-top:1px;
+  font-family:"DR Avenir Next","Avenir Next",Arial,sans-serif;
+  font-size:8px;
+  font-weight:600;
+  line-height:1.1;
+  letter-spacing:.08em;
+  text-indent:.08em;
+  color:inherit;
+}
+.sound-toggle:hover {background:rgba(112,94,79,.9);}
+.sound-toggle:focus-visible {outline:2px solid #51463e;outline-offset:3px;}
+@media(max-width:760px){
+  .sound-toggle {
+    width:46px;
+    height:46px;
+    right:calc(16px + env(safe-area-inset-right, 0px));
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+  .sound-note {width:20px;height:20px;}
+}
+@media(hover:none){.sound-toggle:hover{background:rgba(112,94,79,.78);}}
+@media(prefers-reduced-motion:reduce){.sound-toggle{transition:none;}}
+
   </style>
 
 </head>
@@ -2309,11 +2371,14 @@ class="final-typewriter-ornament"
   type="button"
   aria-label="Mute music"
 >
-  <img
-    id="sound-icon"
-    src="soundon.png"
-    alt=""
-  >
+  <span class="sound-toggle-content" aria-hidden="true">
+    <svg class="sound-note" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <path d="M10 17.1V5.4l9-2v11.1" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="7.2" cy="17.5" rx="3.2" ry="2.1" transform="rotate(-18 7.2 17.5)" fill="currentColor"/>
+      <ellipse cx="16.2" cy="14.9" rx="3.2" ry="2.1" transform="rotate(-18 16.2 14.9)" fill="currentColor"/>
+    </svg>
+    <span class="sound-action" id="sound-action">ON</span>
+  </span>
 </button>
 
 
@@ -2534,221 +2599,61 @@ class="final-typewriter-ornament"
        MUSIC
        ======================================================= */
 
+    const soundAction = document.getElementById("sound-action");
+    let pausedByVisibility = false;
+
+    // The text describes the action, not the state:
+    // OFF when audible; ON when muted, paused, or blocked.
     function updateSoundLabel(){
+      const audible = !audio.paused && !audio.ended && !audio.muted;
+      soundAction.textContent = audible ? "OFF" : "ON";
+      const action = audible ? "Turn music off" : "Turn music on";
+      soundToggle.setAttribute("aria-label", action);
+      soundToggle.setAttribute("title", action);
+    }
 
-  const soundIcon =
-
-    document.getElementById("sound-icon");
-
-  if(audio.ended || audio.muted){
-
-    soundIcon.src =
-
-      "soundoff.png";
-
-    soundToggle.setAttribute(
-
-      "aria-label",
-
-      "Play music"
-
-    );
-
-  }
-
-  else{
-
-    soundIcon.src =
-
-      "soundon.png";
-
-    soundToggle.setAttribute(
-
-      "aria-label",
-
-      "Mute music"
-
-    );
-
-  }
-
-}
-
-    function startAudio(){
-
-      audio.currentTime = 0;
-
+    async function playAudio(restart = false){
+      if (restart || audio.ended) audio.currentTime = 0;
       audio.muted = false;
-
-
-      const attempt =
-        audio.play();
-
-
-      if(
-        attempt !==
-        undefined
-      ){
-
-        attempt
-
-          .then(
-            () => {
-
-              updateSoundLabel();
-
-            }
-          )
-
-          .catch(
-            () => {
-
-
-              const beginOnInteraction =
-                () => {
-
-
-                  audio.currentTime = 0;
-
-                  audio.muted = false;
-
-
-                  audio
-                    .play()
-
-                    .then(
-                      updateSoundLabel
-                    )
-
-                    .catch(
-                      () => {}
-                    );
-
-                };
-
-
-              document.addEventListener(
-                "pointerdown",
-                beginOnInteraction,
-                {
-                  once:true
-                }
-              );
-
-
-              document.addEventListener(
-                "keydown",
-                beginOnInteraction,
-                {
-                  once:true
-                }
-              );
-
-
-              document.addEventListener(
-                "touchstart",
-                beginOnInteraction,
-                {
-                  once:true
-                }
-              );
-
-            }
-          );
-
-      }
-
+      try { await audio.play(); }
+      catch (_) { /* Browser may require a direct user gesture. */ }
+      updateSoundLabel();
     }
 
+    soundToggle.addEventListener("click", async () => {
+      const audible = !audio.paused && !audio.ended && !audio.muted;
+      if (audible) {
+        audio.muted = true;
+      } else if (audio.paused || audio.ended) {
+        await playAudio(audio.ended);
+      } else {
+        audio.muted = false;
+      }
+      updateSoundLabel();
+    });
 
-    soundToggle.addEventListener(
-      "click",
-      () => {
+    ["play", "playing", "pause", "ended", "volumechange", "emptied"].forEach(event => {
+      audio.addEventListener(event, updateSoundLabel);
+    });
 
+    // Preserve autoplay attempts; display ON if the browser blocks them.
+    updateSoundLabel();
+    playAudio(true);
 
-        if(audio.ended){
-
-          audio.currentTime = 0;
-
-          audio.muted = false;
-
-
-          audio
-            .play()
-
-            .catch(
-              () => {}
-            );
-
+    // Preserve pause/resume while the page is backgrounded.
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        if (!audio.paused && !audio.muted) {
+          pausedByVisibility = true;
+          audio.pause();
         }
-
-        else{
-
-          audio.muted =
-            !audio.muted;
-
-        }
-
-
-        updateSoundLabel();
-
+      } else if (pausedByVisibility) {
+        pausedByVisibility = false;
+        playAudio();
       }
-    );
+      updateSoundLabel();
+    });
 
-
-    audio.addEventListener(
-      "ended",
-      updateSoundLabel
-    );
-
-
-    startAudio();
-
-
-
-
-/* =======================================================
-
-   PAUSE MUSIC WHEN SITE IS NOT ACTIVE
-
-   ======================================================= */
-
-let pausedByVisibility = false;
-
-document.addEventListener(
-
-  "visibilitychange",
-
-  () => {
-
-    if(document.hidden){
-
-      if(!audio.paused && !audio.muted){
-
-        audio.pause();
-
-        pausedByVisibility = true;
-
-      }
-
-    }
-
-    else if(pausedByVisibility){
-
-      audio
-
-        .play()
-
-        .catch(() => {});
-
-      pausedByVisibility = false;
-
-    }
-
-  }
-
-);
-    
 /* MOBILE LETTER FADE TRIGGER */
 
 if (window.matchMedia("(max-width: 760px)").matches) {
