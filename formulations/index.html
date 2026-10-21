@@ -55,22 +55,13 @@
     .sk-ww-instagram-story-highlights .dr-mini-highlight:focus-visible{outline:2px solid #51463e;outline-offset:3px}
     .sk-ww-instagram-story-highlights{position:relative;z-index:9999}
     .sk-ww-instagram-story-highlights .sk-highlight-story-shell,.sk-ww-instagram-story-highlights .sk-story-viewer-layout,.sk-ww-instagram-story-highlights .sk-story-frame{margin-bottom:0!important;padding-bottom:0!important}
-    /* Unified static editorial footer, same as Personal Message */
-    .dr-unified-footer{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#f2ede6;border-top:1px solid #e0d5c8;padding:72px 24px 66px;min-height:0;font-family:"DR Avenir Next","Avenir Next",Arial,sans-serif;margin-top:80px}
-    .dr-footer-end-mark{display:flex;flex-direction:column;align-items:center;gap:19px}
-    .dr-footer-end-mark img{display:block;width:clamp(54px,5.5vw,86px);height:100px;object-fit:contain}
-    .dr-footer-end-mark span{font-size:9px;font-weight:400;letter-spacing:.3em;color:#51463e}
-    .dr-footer-rule{height:1px;background:#b19b814a;width:min(360px,75vw);margin:28px auto 0}
-    .dr-footer-tagline{font:400 10px/1.8 "DR Avenir Next","Avenir Next",Arial,sans-serif;color:#84776d;letter-spacing:.07em;text-align:center;padding:0 24px;margin:16px 0 0}
-    .dr-footer-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(16px,3vw,35px);margin-top:35px;padding:0 20px;font:500 9px/1.8 "DR Avenir Next","Avenir Next",Arial,sans-serif;letter-spacing:.15em}
-    .dr-footer-nav a{color:#655d56;text-decoration:none;opacity:.75;transition:opacity .25s ease}.dr-footer-nav a:hover{opacity:1}
-    .dr-footer-return{margin-top:25px;background:none;border:0;border-bottom:1px solid #9d8873;color:var(--ink);padding:10px 0;cursor:pointer;font:400 8px/1.4 "DR Avenir Next","Avenir Next",Arial,sans-serif;letter-spacing:.2em;opacity:.6}.dr-footer-return:hover{opacity:1}
+    
     /* Original floating back-to-top control */
     .dr-back-to-top{position:fixed;right:19px;bottom:72px;z-index:9998;display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;background:rgba(251,248,242,.92);border:1px solid rgba(81,70,62,.25);border-radius:50%;color:#51463e;box-shadow:0 3px 12px rgba(70,57,47,.08);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease,visibility .35s ease,background .2s ease}
     .dr-back-to-top.is-visible{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0)}.dr-back-to-top:hover{background:#fbf8f2}
     .dr-back-to-top svg{display:block;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.dr-back-to-top:focus-visible{outline:2px solid #51463e;outline-offset:4px}
     @media(max-width:1050px){.header{padding:27px 30px 0}.brand-mark{width:61px}.formulations-main{padding-top:65px}}
-    @media(max-width:760px){.background-dr{right:-58px;bottom:-34px;width:clamp(230px,54vw,340px);opacity:.06}.header{padding:25px 22px 0;gap:18px}.brand{gap:13px}.brand-mark{width:54px}.location{font-size:9px}.collection-navigation{margin-top:45px;gap:clamp(10px,4vw,22px);padding:0 12px}.collection-navigation a{font-size:clamp(8px,2.3vw,9px);letter-spacing:.08em}.formulations-main{width:94vw;padding-top:64px}.collection-heading{margin-bottom:38px}.collection-heading h1{font-size:clamp(29px,8vw,40px);letter-spacing:.12em}.collection-heading-rule{margin-top:22px}.instagram-highlights{margin-bottom:30px}.sk-ww-instagram-story-highlights .dr-mini-highlights{gap:10px;padding:14px 12px 17px}.sk-ww-instagram-story-highlights .dr-mini-highlight{width:32px;height:32px}.dr-unified-footer{padding:62px 20px calc(65px + env(safe-area-inset-bottom))}.dr-footer-nav{gap:14px}.dr-footer-return{margin-top:22px}.dr-back-to-top{right:29px;bottom:82px}}
+    @media(max-width:760px){.background-dr{right:-58px;bottom:-34px;width:clamp(230px,54vw,340px);opacity:.06}.header{padding:25px 22px 0;gap:18px}.brand{gap:13px}.brand-mark{width:54px}.location{font-size:9px}.collection-navigation{margin-top:45px;gap:clamp(10px,4vw,22px);padding:0 12px}.collection-navigation a{font-size:clamp(8px,2.3vw,9px);letter-spacing:.08em}.formulations-main{width:94vw;padding-top:64px}.collection-heading{margin-bottom:38px}.collection-heading h1{font-size:clamp(29px,8vw,40px);letter-spacing:.12em}.collection-heading-rule{margin-top:22px}.instagram-highlights{margin-bottom:30px}.sk-ww-instagram-story-highlights .dr-mini-highlights{gap:10px;padding:14px 12px 17px}.sk-ww-instagram-story-highlights .dr-mini-highlight{width:32px;height:32px}.dr-back-to-top{right:29px;bottom:82px}}
     @media(max-width:420px){.name{font-size:18px;letter-spacing:.17em}}
     
   </style>
@@ -101,20 +92,118 @@
         <div class="instagram-grid"><div class="elfsight-app-149e3c46-7ba9-47e5-b87f-8d51c5619fc4" data-elfsight-app-lazy></div></div>
       </div>
     </main>
-    <footer class="dr-unified-footer" aria-label="Site footer">
-      <div class="dr-footer-end-mark"><img src="/dr-reveals-removebg-preview.png" alt="DR monogram"><span>EXPLORE THE COLLECTION</span></div>
-      <div class="dr-footer-rule" aria-hidden="true"></div>
-      <p class="dr-footer-tagline">Formulations of Art · Design · Travel · Objects with a Past</p>
-      <nav class="dr-footer-nav" aria-label="Footer navigation">
-        <a href="/">A PERSONAL MESSAGE</a>
-        <a href="/maison/">THE MAISON</a>
-        <a href="/formulations/">EXPLORE THE COLLECTION</a>
-        <a href="https://www.instagram.com/formulations/" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
-        <a href="https://www.linkedin.com/in/itsdominicryan" target="_blank" rel="noopener noreferrer">LINKEDIN</a>
-        <a href="#contact" data-dr-contact-open>CONTACT</a>
-      </nav>
-      <button class="dr-footer-return" type="button" id="dr-footer-return">RETURN TO THE TOP ↑</button>
-    </footer>
+ <!-- =========================================================
+     DOMINIC RYAN — UNIFIED EDITORIAL FOOTER
+     EXPLORE THE COLLECTION
+     ========================================================= -->
+
+<footer class="dr-unified-footer" aria-label="Site footer">
+
+  <!-- MONOGRAM AND PAGE IDENTIFIER -->
+
+  <div class="dr-footer-end-mark">
+
+    <button
+      class="dr-footer-monogram"
+      type="button"
+      aria-label="Return to the top of Explore the Collection"
+      onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+    >
+      <img
+        src="/dr-reveals-removebg-preview.png"
+        alt=""
+      >
+    </button>
+
+    <span class="dr-footer-page-title">
+      EXPLORE THE COLLECTION
+    </span>
+
+  </div>
+
+  <!-- EDITORIAL DIVIDER -->
+
+  <div
+    class="dr-footer-rule"
+    aria-hidden="true"
+  ></div>
+
+  <!-- BRAND STATEMENT -->
+
+  <p class="dr-footer-tagline">
+    Formulations of Art · Design · Travel · Objects with a Past
+  </p>
+
+  <!-- FOOTER NAVIGATION -->
+
+  <nav
+    class="dr-footer-nav"
+    aria-label="Footer navigation"
+  >
+
+    <!-- SITE PAGES -->
+
+    <div class="dr-footer-nav-group dr-footer-nav-pages">
+
+      <a href="/">
+        A PERSONAL MESSAGE
+      </a>
+
+      <a href="/maison/">
+        THE MAISON
+      </a>
+
+      <span
+        class="dr-footer-current"
+        aria-current="page"
+      >
+        EXPLORE THE COLLECTION
+      </span>
+
+    </div>
+
+    <!-- SOCIAL AND CONTACT -->
+
+    <div class="dr-footer-nav-group dr-footer-nav-social">
+
+      <a
+        href="https://www.instagram.com/formulations/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        INSTAGRAM
+      </a>
+
+      <a
+        href="https://www.linkedin.com/in/itsdominicryan"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        LINKEDIN
+      </a>
+
+      <a
+        href="#contact"
+        data-dr-contact-open
+      >
+        CONTACT
+      </a>
+
+    </div>
+
+  </nav>
+
+  <!-- RETURN TO TOP -->
+
+  <button
+    class="dr-footer-return"
+    id="dr-footer-return"
+    type="button"
+  >
+    RETURN TO THE TOP ↑
+  </button>
+
+</footer>
   </div>
   <button class="dr-back-to-top" id="dr-back-to-top" type="button" aria-label="Back to top" title="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"></path><path d="M5 12L12 5L19 12"></path></svg></button>
   <script src="https://widgets.sociablekit.com/instagram-story-highlights/widget.js" defer></script>
