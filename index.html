@@ -837,6 +837,7 @@
   z-index: 1;
 }
 
+
 /* =========================================================
    FINAL SENTENCE — ELEGANT SIGNATURE-MATCHED REVEAL
    ========================================================= */
@@ -1868,35 +1869,7 @@ transition:
 }
     }
 
-    /* =========================================================
-       ACCESSIBILITY
-       ========================================================= */
 
-    @media(
-      prefers-reduced-motion:
-      reduce
-    ){
-
-      *,
-      *::before,
-      *::after{
-
-        animation-duration:
-          .01ms !important;
-
-        animation-iteration-count:
-          1 !important;
-
-        scroll-behavior:
-          auto !important;
-      }
-
-            :root{
-        --photo-shift:
-          0px !important;
-      }
-
-    }
 
 
     /* =========================================================
@@ -1966,7 +1939,7 @@ transition:
 .dr-back-to-top svg {display:block;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
 @media(max-width:760px){.collection-navigation{margin-top:45px;gap:clamp(10px,4vw,22px);padding:0 12px;}.collection-navigation a{font-size:clamp(8px,2.3vw,9px);letter-spacing:.08em;}.dr-unified-footer{padding:62px 20px calc(65px + env(safe-area-inset-bottom));}.dr-footer-nav{gap:14px;}.dr-footer-return{margin-top:22px;}.dr-back-to-top{right:29px;bottom:82px;}}
 @media(max-width:420px){.name{font-size:18px;letter-spacing:.17em;}}
-@media(prefers-reduced-motion:reduce){.dr-back-to-top{transition:none;}}
+
 
 
 /* =========================================================
@@ -2028,7 +2001,7 @@ transition:
   .sound-note {width:20px;height:20px;}
 }
 @media(hover:none){.sound-toggle:hover{background:rgba(112,94,79,.78);}}
-@media(prefers-reduced-motion:reduce){.sound-toggle{transition:none;}}
+
 
   </style>
 
@@ -2885,7 +2858,7 @@ function handleFinalScroll() {
   "use strict";
   const backToTop = document.getElementById("dr-back-to-top");
   const footerReturn = document.getElementById("dr-footer-return");
-  const scrollUp = () => window.scrollTo({top:0,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+  const scrollUp = () => window.scrollTo({top:0,behavior:"smooth"});
   if (footerReturn) footerReturn.addEventListener("click",scrollUp);
   if (!backToTop) return;
   let ticking=false;
