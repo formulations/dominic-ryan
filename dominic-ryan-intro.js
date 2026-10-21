@@ -73,13 +73,6 @@
   }
 }
 
-    /* REDUCED MOTION */
-
-    @media (prefers-reduced-motion: reduce) {
-      .dr-intro {
-        transition: none;
-      }
-    }
   `;
 
   document.head.appendChild(style);
