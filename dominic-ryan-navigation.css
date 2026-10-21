@@ -1,23 +1,15 @@
 /* =========================================================
-   DOMINIC RYAN — SHARED NAVIGATION
-   =========================================================
+   DOMINIC RYAN — SHARED NAVIGATION & EDITORIAL FOOTER
 
    Applies to:
    1. A Personal Message
    2. The Maison
    3. Explore the Collection
-
-   Design:
-   - Existing editorial typography preserved
-   - Existing navigation spacing preserved
-   - Active page remains visibly underlined
-   - Refined underline animation on hover
-   - Consistent behavior across desktop and mobile
    ========================================================= */
 
 
 /* =========================================================
-   SHARED NAVIGATION CONTAINER
+   01 — PRIMARY NAVIGATION
    ========================================================= */
 
 .collection-navigation,
@@ -33,14 +25,11 @@
 }
 
 
-/* =========================================================
-   NAVIGATION LINKS
-   ========================================================= */
+/* NAVIGATION LINKS */
 
 .collection-navigation a,
 .maison-primary-nav a {
   position: relative;
-
   display: inline-block;
 
   padding-bottom: 9px;
@@ -61,20 +50,17 @@
   text-decoration: none;
 
   white-space: nowrap;
-
   opacity: .55;
 
   transition:
-    opacity .3s ease,
-    color .3s ease;
+    opacity 300ms ease,
+    color 300ms ease;
 
   -webkit-tap-highlight-color: transparent;
 }
 
 
-/* =========================================================
-   ACTIVE PAGE
-   ========================================================= */
+/* ACTIVE PAGE */
 
 .collection-navigation a.active,
 .collection-navigation a[aria-current="page"],
@@ -85,9 +71,7 @@
 }
 
 
-/* =========================================================
-   UNDERLINE — DEFAULT STATE
-   ========================================================= */
+/* UNDERLINE — DEFAULT */
 
 .collection-navigation a::after,
 .maison-primary-nav a::after {
@@ -109,16 +93,14 @@
   opacity: 0;
 
   transition:
-    transform .55s cubic-bezier(.22, .61, .36, 1),
-    opacity .35s ease;
+    transform 550ms cubic-bezier(.22, .61, .36, 1),
+    opacity 350ms ease;
 
   pointer-events: none;
 }
 
 
-/* =========================================================
-   ACTIVE PAGE — PERMANENT UNDERLINE
-   ========================================================= */
+/* ACTIVE PAGE — PERMANENT UNDERLINE */
 
 .collection-navigation a.active::after,
 .collection-navigation a[aria-current="page"]::after,
@@ -129,9 +111,7 @@
 }
 
 
-/* =========================================================
-   DESKTOP — HOVER INTERACTION
-   ========================================================= */
+/* DESKTOP HOVER */
 
 @media (hover: hover) and (pointer: fine) {
 
@@ -149,9 +129,7 @@
 }
 
 
-/* =========================================================
-   KEYBOARD ACCESSIBILITY
-   ========================================================= */
+/* KEYBOARD FOCUS */
 
 .collection-navigation a:focus-visible,
 .maison-primary-nav a:focus-visible {
@@ -160,9 +138,7 @@
 }
 
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
+/* MOBILE PRIMARY NAVIGATION */
 
 @media (max-width: 760px) {
 
@@ -185,41 +161,47 @@
 }
 
 
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
+/* MOBILE TAP FEEDBACK */
 
-@media (prefers-reduced-motion: reduce) {
+@media (hover: none) {
 
-  .collection-navigation a,
-  .maison-primary-nav a,
-  .collection-navigation a::after,
-  .maison-primary-nav a::after {
-    transition: none;
+  .collection-navigation a:not(.active):not([aria-current="page"]):active,
+  .maison-primary-nav a:not(.active):not([aria-current="page"]):active {
+    opacity: 1;
+  }
+
+  .collection-navigation a:not(.active):not([aria-current="page"]):active::after,
+  .maison-primary-nav a:not(.active):not([aria-current="page"]):active::after {
+    opacity: .65;
+    transform: scaleX(1);
   }
 
 }
-/* =========================================================
-   DOMINIC RYAN — REFINED EDITORIAL FOOTER
-   ========================================================= */
 
 
 /* =========================================================
-   INTERACTIVE DR MONOGRAM
+   02 — FOOTER MONOGRAM
+
+   Transparent, borderless, discreet.
    ========================================================= */
 
 .dr-footer-monogram {
   display: block;
 
   width: clamp(54px, 5.5vw, 86px);
-
   height: 100px;
 
   padding: 0;
   margin: 0;
 
   background: transparent;
-  border: 0;
+  border: none;
+  border-radius: 0;
+
+  box-shadow: none;
+
+  appearance: none;
+  -webkit-appearance: none;
 
   cursor: pointer;
 
@@ -235,7 +217,15 @@
   height: 100%;
 
   object-fit: contain;
+
+  border: 0;
+  background: transparent;
+
+  pointer-events: none;
 }
+
+
+/* MONOGRAM HOVER */
 
 @media (hover: hover) and (pointer: fine) {
 
@@ -246,6 +236,9 @@
 
 }
 
+
+/* MONOGRAM KEYBOARD FOCUS */
+
 .dr-footer-monogram:focus-visible {
   outline: 1px solid #51463e;
   outline-offset: 6px;
@@ -253,10 +246,14 @@
 
 
 /* =========================================================
-   EDITORIAL PAGE IDENTIFIER
+   03 — FOOTER PAGE IDENTIFIER
+
+   Editorial title, not a navigation link.
    ========================================================= */
 
 .dr-footer-page-title {
+  display: block;
+
   font-family:
     "DR Didot",
     Didot,
@@ -272,11 +269,13 @@
   letter-spacing: .16em;
 
   color: #51463e;
+
+  text-align: center;
 }
 
 
 /* =========================================================
-   ITALICIZED BRAND STATEMENT
+   04 — ITALICIZED BRAND STATEMENT
    ========================================================= */
 
 .dr-footer-tagline {
@@ -300,7 +299,10 @@
 
 
 /* =========================================================
-   FOOTER NAVIGATION STRUCTURE
+   05 — FOOTER NAVIGATION
+
+   Desktop: balanced horizontal navigation.
+   Mobile: two intentional navigation rows.
    ========================================================= */
 
 .dr-footer-nav {
@@ -315,6 +317,9 @@
   gap: clamp(16px, 3vw, 35px);
 }
 
+
+/* OPTIONAL NAVIGATION GROUPS */
+
 .dr-footer-nav-group {
   display: flex;
 
@@ -328,9 +333,7 @@
 }
 
 
-/* =========================================================
-   FOOTER NAVIGATION LINKS
-   ========================================================= */
+/* FOOTER LINKS */
 
 .dr-footer-nav a {
   position: relative;
@@ -351,7 +354,7 @@
 }
 
 
-/* CURRENT PAGE — SUBTLE EMPHASIS */
+/* CURRENT PAGE */
 
 .dr-footer-nav a[aria-current="page"] {
   color: #51463e;
@@ -359,9 +362,7 @@
 }
 
 
-/* =========================================================
-   ANIMATED UNDERLINE
-   ========================================================= */
+/* FOOTER UNDERLINE */
 
 .dr-footer-nav a::after {
   content: "";
@@ -389,9 +390,7 @@
 }
 
 
-/* =========================================================
-   DESKTOP HOVER
-   ========================================================= */
+/* DESKTOP FOOTER HOVER */
 
 @media (hover: hover) and (pointer: fine) {
 
@@ -407,16 +406,29 @@
 }
 
 
+/* FOOTER KEYBOARD FOCUS */
+
+.dr-footer-nav a:focus-visible {
+  outline: 1px solid #51463e;
+  outline-offset: 5px;
+}
+
+
 /* =========================================================
-   MOBILE — TWO INTENTIONAL NAVIGATION ROWS
+   06 — MOBILE FOOTER
    ========================================================= */
 
 @media (max-width: 760px) {
+
+  /* EDITORIAL PAGE TITLE */
 
   .dr-footer-page-title {
     font-size: 11px;
     letter-spacing: .14em;
   }
+
+
+  /* ITALIC BRAND STATEMENT */
 
   .dr-footer-tagline {
     font-size: 10.5px;
@@ -425,6 +437,9 @@
 
     padding: 0 12px;
   }
+
+
+  /* NAVIGATION CONTAINER */
 
   .dr-footer-nav {
     flex-direction: column;
@@ -436,13 +451,24 @@
     margin-top: 38px;
   }
 
+
+  /* TWO ORGANIZED ROWS */
+
   .dr-footer-nav-group {
     width: 100%;
 
-    gap: 12px 18px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 
     justify-content: center;
+    align-items: center;
+
+    gap: 12px 18px;
   }
+
+
+  /* MOBILE LINKS */
 
   .dr-footer-nav a {
     font-size: 9px;
@@ -451,7 +477,8 @@
     padding-bottom: 5px;
   }
 
-  /* Subtle tap feedback */
+
+  /* MOBILE TAP FEEDBACK */
 
   .dr-footer-nav a:active {
     opacity: 1;
@@ -461,46 +488,6 @@
   .dr-footer-nav a:active::after {
     opacity: .65;
     transform: scaleX(1);
-  }
-
-}
-
-
-/* =========================================================
-   TOP NAVIGATION — MOBILE TAP FEEDBACK
-   ========================================================= */
-
-@media (hover: none) {
-
-  .collection-navigation a:not(.active):not([aria-current="page"]):active::after,
-  .maison-primary-nav a:not(.active):not([aria-current="page"]):active::after {
-    opacity: .65;
-    transform: scaleX(1);
-  }
-
-  .collection-navigation a:not(.active):not([aria-current="page"]):active,
-  .maison-primary-nav a:not(.active):not([aria-current="page"]):active {
-    opacity: 1;
-  }
-
-}
-
-
-/* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
-
-.dr-footer-nav a:focus-visible {
-  outline: 1px solid #51463e;
-  outline-offset: 5px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-  .dr-footer-monogram,
-  .dr-footer-nav a,
-  .dr-footer-nav a::after {
-    transition: none;
   }
 
 }
