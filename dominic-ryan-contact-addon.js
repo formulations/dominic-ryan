@@ -1416,6 +1416,13 @@
       }
 
     }
+        /* =====================================================
+       HIDE X DURING DISCARD CONFIRMATION
+       ===================================================== */
+
+    .dr-contact-dialog.is-confirming .dr-contact-close {
+      display: none;
+    }
 
     /* =====================================================
        UNIVERSAL TYPOGRAPHY — SELF-HOSTED FONTS
