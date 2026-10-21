@@ -72,7 +72,6 @@
     @media(max-width:1050px){.header{padding:27px 30px 0}.brand-mark{width:61px}.formulations-main{padding-top:65px}}
     @media(max-width:760px){.background-dr{right:-58px;bottom:-34px;width:clamp(230px,54vw,340px);opacity:.06}.header{padding:25px 22px 0;gap:18px}.brand{gap:13px}.brand-mark{width:54px}.location{font-size:9px}.collection-navigation{margin-top:45px;gap:clamp(10px,4vw,22px);padding:0 12px}.collection-navigation a{font-size:clamp(8px,2.3vw,9px);letter-spacing:.08em}.formulations-main{width:94vw;padding-top:64px}.collection-heading{margin-bottom:38px}.collection-heading h1{font-size:clamp(29px,8vw,40px);letter-spacing:.12em}.collection-heading-rule{margin-top:22px}.instagram-highlights{margin-bottom:30px}.sk-ww-instagram-story-highlights .dr-mini-highlights{gap:10px;padding:14px 12px 17px}.sk-ww-instagram-story-highlights .dr-mini-highlight{width:32px;height:32px}.dr-unified-footer{padding:62px 20px calc(65px + env(safe-area-inset-bottom))}.dr-footer-nav{gap:14px}.dr-footer-return{margin-top:22px}.dr-back-to-top{right:29px;bottom:82px}}
     @media(max-width:420px){.name{font-size:18px;letter-spacing:.17em}}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.collection-navigation a,.dr-footer-nav a,.dr-back-to-top{transition:none}}
   </style>
 </head>
 <body id="top">
@@ -121,7 +120,7 @@
   <script src="/dominic-ryan-contact-addon.js" defer></script>
   <script src="/dominic-ryan-stories.js" defer></script>
   <script>
-    (()=>{'use strict';const backToTop=document.getElementById('dr-back-to-top');const footerReturn=document.getElementById('dr-footer-return');const reduced=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;const scrollUp=()=>window.scrollTo({top:0,behavior:reduced()?'auto':'smooth'});if(footerReturn)footerReturn.addEventListener('click',scrollUp);if(!backToTop)return;let ticking=false;function update(){ticking=false;backToTop.classList.toggle('is-visible',window.scrollY>500)}function request(){if(ticking)return;ticking=true;requestAnimationFrame(update)}addEventListener('scroll',request,{passive:true});addEventListener('resize',request);backToTop.addEventListener('click',scrollUp);update()})();
+    (()=>{'use strict';const backToTop=document.getElementById('dr-back-to-top');const footerReturn=document.getElementById('dr-footer-return');const scrollUp=()=>window.scrollTo({top:0,behavior:'smooth'});if(footerReturn)footerReturn.addEventListener('click',scrollUp);if(!backToTop)return;let ticking=false;function update(){ticking=false;backToTop.classList.toggle('is-visible',window.scrollY>500)}function request(){if(ticking)return;ticking=true;requestAnimationFrame(update)}addEventListener('scroll',request,{passive:true});addEventListener('resize',request);backToTop.addEventListener('click',scrollUp);update()})();
   </script>
 </body>
 </html>
