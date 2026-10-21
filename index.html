@@ -2619,6 +2619,137 @@ class="final-typewriter-ornament"
       updateSoundLabel();
     });
 
+/* =======================================================
+   MUSIC — DEFAULT ON WITH AUTOPLAY RECOVERY
+   ======================================================= */
+
+const soundAction = document.getElementById("sound-action");
+
+let pausedByVisibility = false;
+let userTurnedMusicOff = false;
+let autoplayRecoveryNeeded = false;
+
+function updateSoundLabel() {
+  const audible =
+    !audio.paused &&
+    !audio.ended &&
+    !audio.muted;
+
+  soundAction.textContent = audible ? "OFF" : "ON";
+
+  const action = audible
+    ? "Turn music off"
+    : "Turn music on";
+
+  soundToggle.setAttribute("aria-label", action);
+  soundToggle.setAttribute("title", action);
+}
+
+async function playAudio(restart = false) {
+  if (userTurnedMusicOff) return;
+
+  if (restart || audio.ended) {
+    audio.currentTime = 0;
+  }
+
+  audio.muted = false;
+
+  try {
+    await audio.play();
+    autoplayRecoveryNeeded = false;
+  } catch (_) {
+    autoplayRecoveryNeeded = true;
+  }
+
+  updateSoundLabel();
+}
+
+function recoverAutoplay() {
+  if (
+    !autoplayRecoveryNeeded ||
+    userTurnedMusicOff ||
+    document.hidden
+  ) {
+    return;
+  }
+
+  // Call play synchronously during the user interaction.
+  playAudio();
+}
+
+document.addEventListener(
+  "pointerdown",
+  recoverAutoplay,
+  { passive: true }
+);
+
+document.addEventListener(
+  "touchend",
+  recoverAutoplay,
+  { passive: true }
+);
+
+document.addEventListener(
+  "keydown",
+  recoverAutoplay
+);
+
+soundToggle.addEventListener("click", async () => {
+  const audible =
+    !audio.paused &&
+    !audio.ended &&
+    !audio.muted;
+
+  if (audible) {
+    userTurnedMusicOff = true;
+    autoplayRecoveryNeeded = false;
+    audio.muted = true;
+  } else {
+    userTurnedMusicOff = false;
+
+    if (audio.paused || audio.ended) {
+      await playAudio(audio.ended);
+    } else {
+      audio.muted = false;
+    }
+  }
+
+  updateSoundLabel();
+});
+
+[
+  "play",
+  "playing",
+  "pause",
+  "ended",
+  "volumechange",
+  "emptied"
+].forEach(event => {
+  audio.addEventListener(event, updateSoundLabel);
+});
+
+// Attempt music playback on every new page load.
+updateSoundLabel();
+playAudio(true);
+
+// Pause when backgrounded and resume when visible.
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (!audio.paused && !audio.muted) {
+      pausedByVisibility = true;
+      audio.pause();
+    }
+  } else if (pausedByVisibility) {
+    pausedByVisibility = false;
+
+    if (!userTurnedMusicOff) {
+      playAudio();
+    }
+  }
+
+  updateSoundLabel();
+});
+
 /* MOBILE LETTER FADE TRIGGER */
 
 if (window.matchMedia("(max-width: 760px)").matches) {
