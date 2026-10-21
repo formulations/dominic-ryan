@@ -2,9 +2,10 @@
    DOMINIC RYAN — SHARED NAVIGATION & EDITORIAL FOOTER
 
    Applies to:
-   1. A Personal Message
-   2. The Maison
-   3. Explore the Collection
+   - A Personal Message
+   - The Maison
+   - Explore the Collection
+
    ========================================================= */
 
 
@@ -25,7 +26,7 @@
 }
 
 
-/* NAVIGATION LINKS */
+/* PRIMARY NAVIGATION LINKS */
 
 .collection-navigation a,
 .maison-primary-nav a {
@@ -60,7 +61,7 @@
 }
 
 
-/* ACTIVE PAGE */
+/* ACTIVE PRIMARY PAGE */
 
 .collection-navigation a.active,
 .collection-navigation a[aria-current="page"],
@@ -71,7 +72,7 @@
 }
 
 
-/* UNDERLINE — DEFAULT */
+/* PRIMARY UNDERLINE */
 
 .collection-navigation a::after,
 .maison-primary-nav a::after {
@@ -87,10 +88,10 @@
 
   background: #51463e;
 
+  opacity: 0;
+
   transform: scaleX(0);
   transform-origin: center;
-
-  opacity: 0;
 
   transition:
     transform 550ms cubic-bezier(.22, .61, .36, 1),
@@ -100,14 +101,14 @@
 }
 
 
-/* ACTIVE PAGE — PERMANENT UNDERLINE */
+/* ACTIVE UNDERLINE */
 
 .collection-navigation a.active::after,
 .collection-navigation a[aria-current="page"]::after,
 .maison-primary-nav a.active::after,
 .maison-primary-nav a[aria-current="page"]::after {
-  transform: scaleX(1);
   opacity: 1;
+  transform: scaleX(1);
 }
 
 
@@ -122,14 +123,14 @@
 
   .collection-navigation a:not(.active):not([aria-current="page"]):hover::after,
   .maison-primary-nav a:not(.active):not([aria-current="page"]):hover::after {
-    transform: scaleX(1);
     opacity: .65;
+    transform: scaleX(1);
   }
 
 }
 
 
-/* KEYBOARD FOCUS */
+/* PRIMARY NAVIGATION FOCUS */
 
 .collection-navigation a:focus-visible,
 .maison-primary-nav a:focus-visible {
@@ -154,14 +155,13 @@
   .collection-navigation a,
   .maison-primary-nav a {
     font-size: clamp(8px, 2.3vw, 9px);
-
     letter-spacing: .08em;
   }
 
 }
 
 
-/* MOBILE TAP FEEDBACK */
+/* MOBILE PRIMARY NAVIGATION TAP */
 
 @media (hover: none) {
 
@@ -180,10 +180,53 @@
 
 
 /* =========================================================
-   02 — FOOTER MONOGRAM
-
-   Transparent, borderless, discreet.
+   02 — UNIFIED FOOTER CONTAINER
    ========================================================= */
+
+.dr-unified-footer {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  min-height: 0;
+
+  padding: 72px 24px 66px;
+
+  background: #f2ede6;
+
+  border-top: 1px solid #e0d5c8;
+
+  text-align: center;
+
+  font-family:
+    "DR Avenir Next",
+    "Avenir Next",
+    Arial,
+    sans-serif;
+}
+
+
+/* =========================================================
+   03 — FOOTER MONOGRAM & PAGE IDENTIFIER
+   ========================================================= */
+
+.dr-footer-end-mark {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 19px;
+}
+
+
+/* DISCREET MONOGRAM BUTTON */
 
 .dr-footer-monogram {
   display: block;
@@ -194,21 +237,26 @@
   padding: 0;
   margin: 0;
 
-  background: transparent;
-  border: none;
-  border-radius: 0;
-
-  box-shadow: none;
-
   appearance: none;
   -webkit-appearance: none;
 
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+
+  color: inherit;
+
   cursor: pointer;
 
+  -webkit-tap-highlight-color: transparent;
+
   transition:
-    opacity 350ms ease,
-    transform 450ms cubic-bezier(.22, .61, .36, 1);
+    opacity 350ms ease;
 }
+
+
+/* MONOGRAM IMAGE */
 
 .dr-footer-monogram img {
   display: block;
@@ -218,26 +266,25 @@
 
   object-fit: contain;
 
-  border: 0;
+  border: none;
   background: transparent;
 
   pointer-events: none;
 }
 
 
-/* MONOGRAM HOVER */
+/* SUBTLE DESKTOP HOVER */
 
 @media (hover: hover) and (pointer: fine) {
 
   .dr-footer-monogram:hover {
     opacity: .72;
-    transform: translateY(-2px);
   }
 
 }
 
 
-/* MONOGRAM KEYBOARD FOCUS */
+/* KEYBOARD FOCUS */
 
 .dr-footer-monogram:focus-visible {
   outline: 1px solid #51463e;
@@ -245,11 +292,7 @@
 }
 
 
-/* =========================================================
-   03 — FOOTER PAGE IDENTIFIER
-
-   Editorial title, not a navigation link.
-   ========================================================= */
+/* PAGE IDENTIFIER — DIDOT */
 
 .dr-footer-page-title {
   display: block;
@@ -269,16 +312,32 @@
   letter-spacing: .16em;
 
   color: #51463e;
-
-  text-align: center;
 }
 
 
 /* =========================================================
-   04 — ITALICIZED BRAND STATEMENT
+   04 — EDITORIAL DIVIDER
+   ========================================================= */
+
+.dr-footer-rule {
+  width: min(360px, 75vw);
+  height: 1px;
+
+  margin: 28px auto 0;
+
+  background: rgba(177, 155, 129, .29);
+}
+
+
+/* =========================================================
+   05 — ITALICIZED BRAND STATEMENT
    ========================================================= */
 
 .dr-footer-tagline {
+  margin: 16px 0 0;
+
+  padding: 0 24px;
+
   font-family:
     "DR Avenir Next",
     "Avenir Next",
@@ -299,10 +358,7 @@
 
 
 /* =========================================================
-   05 — FOOTER NAVIGATION
-
-   Desktop: balanced horizontal navigation.
-   Mobile: two intentional navigation rows.
+   06 — FOOTER NAVIGATION
    ========================================================= */
 
 .dr-footer-nav {
@@ -315,34 +371,51 @@
   align-items: center;
 
   gap: clamp(16px, 3vw, 35px);
+
+  width: 100%;
+
+  margin-top: 35px;
+  padding: 0 20px;
+
+  font-family:
+    "DR Avenir Next",
+    "Avenir Next",
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 500;
+
+  line-height: 1.8;
+  letter-spacing: .15em;
 }
 
 
-/* OPTIONAL NAVIGATION GROUPS */
+/* DESKTOP: GROUPS SHARE ONE CONTINUOUS ROW */
 
 .dr-footer-nav-group {
-  display: flex;
-
-  flex-direction: row;
-  flex-wrap: wrap;
-
-  justify-content: center;
-  align-items: center;
-
-  gap: clamp(16px, 3vw, 35px);
+  display: contents;
 }
 
 
-/* FOOTER LINKS */
+/* =========================================================
+   07 — FOOTER LINKS
+   ========================================================= */
 
 .dr-footer-nav a {
   position: relative;
+
   display: inline-block;
 
   padding-bottom: 5px;
 
+  font: inherit;
+
   color: #655d56;
+
   text-decoration: none;
+
+  white-space: nowrap;
 
   opacity: .75;
 
@@ -354,15 +427,33 @@
 }
 
 
-/* CURRENT PAGE */
+/* =========================================================
+   08 — CURRENT PAGE
+   BOLD, NON-CLICKABLE, NO UNDERLINE
+   ========================================================= */
 
-.dr-footer-nav a[aria-current="page"] {
+.dr-footer-current {
+  display: inline-block;
+
+  padding-bottom: 5px;
+
+  font: inherit;
+
+  font-weight: 600;
+
   color: #51463e;
+
   opacity: 1;
+
+  white-space: nowrap;
+
+  cursor: default;
 }
 
 
-/* FOOTER UNDERLINE */
+/* =========================================================
+   09 — ANIMATED FOOTER UNDERLINE
+   ========================================================= */
 
 .dr-footer-nav a::after {
   content: "";
@@ -390,7 +481,7 @@
 }
 
 
-/* DESKTOP FOOTER HOVER */
+/* DESKTOP HOVER */
 
 @media (hover: hover) and (pointer: fine) {
 
@@ -406,7 +497,7 @@
 }
 
 
-/* FOOTER KEYBOARD FOCUS */
+/* FOOTER LINK FOCUS */
 
 .dr-footer-nav a:focus-visible {
   outline: 1px solid #51463e;
@@ -415,12 +506,69 @@
 
 
 /* =========================================================
-   06 — MOBILE FOOTER
+   10 — EXPLICIT RETURN TO TOP
+   ========================================================= */
+
+.dr-footer-return {
+  margin-top: 25px;
+
+  padding: 10px 0;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: transparent;
+
+  border: 0;
+  border-bottom: 1px solid #9d8873;
+
+  color: #51463e;
+
+  cursor: pointer;
+
+  font-family:
+    "DR Avenir Next",
+    "Avenir Next",
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+  font-weight: 400;
+
+  line-height: 1.4;
+  letter-spacing: .2em;
+
+  opacity: .6;
+
+  transition: opacity 300ms ease;
+}
+
+.dr-footer-return:hover {
+  opacity: 1;
+}
+
+.dr-footer-return:focus-visible {
+  outline: 1px solid #51463e;
+  outline-offset: 5px;
+}
+
+
+/* =========================================================
+   11 — MOBILE FOOTER
+   TWO DELIBERATE, SINGLE-LINE ROWS
    ========================================================= */
 
 @media (max-width: 760px) {
 
-  /* EDITORIAL PAGE TITLE */
+  .dr-unified-footer {
+    padding:
+      62px
+      12px
+      calc(65px + env(safe-area-inset-bottom));
+  }
+
+
+  /* PAGE IDENTIFIER */
 
   .dr-footer-page-title {
     font-size: 11px;
@@ -428,10 +576,11 @@
   }
 
 
-  /* ITALIC BRAND STATEMENT */
+  /* BRAND STATEMENT */
 
   .dr-footer-tagline {
     font-size: 10.5px;
+
     line-height: 1.8;
     letter-spacing: .01em;
 
@@ -439,42 +588,67 @@
   }
 
 
-  /* NAVIGATION CONTAINER */
+  /* TWO ROWS */
 
   .dr-footer-nav {
+    display: flex;
+
     flex-direction: column;
+    flex-wrap: nowrap;
+
+    align-items: center;
+    justify-content: center;
 
     gap: 17px;
 
     width: 100%;
 
     margin-top: 38px;
+    padding: 0;
   }
 
 
-  /* TWO ORGANIZED ROWS */
+  /* EACH GROUP OCCUPIES ONE ROW */
 
   .dr-footer-nav-group {
-    width: 100%;
-
     display: flex;
+
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 
     justify-content: center;
     align-items: center;
 
-    gap: 12px 18px;
+    width: 100%;
+
+    min-width: 0;
+
+    gap: clamp(7px, 2.5vw, 18px);
   }
 
 
-  /* MOBILE LINKS */
+  /* MOBILE LINK TYPOGRAPHY */
 
-  .dr-footer-nav a {
-    font-size: 9px;
-    letter-spacing: .1em;
+  .dr-footer-nav a,
+  .dr-footer-current {
+    flex: 0 1 auto;
 
-    padding-bottom: 5px;
+    font-size: clamp(7px, 2vw, 9px);
+
+    letter-spacing: clamp(.015em, .15vw, .1em);
+
+    line-height: 1.6;
+
+    padding-bottom: 4px;
+
+    white-space: nowrap;
+  }
+
+
+  /* MOBILE CURRENT PAGE */
+
+  .dr-footer-current {
+    font-weight: 600;
   }
 
 
@@ -488,6 +662,37 @@
   .dr-footer-nav a:active::after {
     opacity: .65;
     transform: scaleX(1);
+  }
+
+
+  /* RETURN CONTROL */
+
+  .dr-footer-return {
+    margin-top: 22px;
+  }
+
+}
+
+
+/* =========================================================
+   12 — EXTRA-NARROW MOBILE
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+  .dr-unified-footer {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .dr-footer-nav-group {
+    gap: 6px;
+  }
+
+  .dr-footer-nav a,
+  .dr-footer-current {
+    font-size: 6.5px;
+    letter-spacing: 0;
   }
 
 }
