@@ -299,6 +299,51 @@ window.addEventListener('pageshow',attemptFilmAutoplay);
 attemptFilmAutoplay();update()})();</script><audio autoplay="" id="maison-soundtrack" loop="" playsinline="" preload="auto">
 <source src="./BTD-song.mp3" type="audio/mpeg"/>
 </audio>
+  <script>
+/* =========================================================
+   DOMINIC RYAN — MAISON MEDIA SESSION
+   iPhone Lock Screen / Control Center Artwork
+   ========================================================= */
+
+(() => {
+  "use strict";
+
+  const music = document.getElementById("maison-soundtrack");
+
+  if (!music || !("mediaSession" in navigator)) {
+    return;
+  }
+
+  /* NOW PLAYING INFORMATION */
+
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: "Dominic Ryan | Formulations",
+    artist: "Dominic Ryan",
+    album: "Formulations",
+    artwork: [
+      {
+        src: "/media-artwork1.png",
+        sizes: "1024x1024",
+        type: "image/png"
+      }
+    ]
+  });
+
+  /* KEEP PLAYBACK STATUS UPDATED */
+
+  const updatePlaybackState = () => {
+    navigator.mediaSession.playbackState =
+      music.paused ? "paused" : "playing";
+  };
+
+  music.addEventListener("play", updatePlaybackState);
+  music.addEventListener("pause", updatePlaybackState);
+  music.addEventListener("ended", updatePlaybackState);
+
+  updatePlaybackState();
+
+})();
+</script>
 <button aria-label="Play background music" aria-pressed="false" class="maison-sound" id="maison-sound-toggle" type="button">SOUND OFF  ◌</button>
 <script>
 /* THE MAISON — one audio controller, same interaction fallback as Personal Message. */
