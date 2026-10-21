@@ -3071,6 +3071,72 @@
   );
 
   /* =========================================================
+     BACKGROUND CLICK — CLOSE CONTACT FORM
+     ========================================================= */
+
+  overlay.addEventListener(
+    "click",
+    event => {
+
+      /*
+        Only respond when the visitor clicks directly
+        on the blurred background.
+
+        Clicks inside the contact form must not
+        trigger the closing behavior.
+      */
+
+      if (event.target !== overlay) {
+        return;
+      }
+
+      /*
+        Do not allow background clicks to dismiss
+        the discard confirmation.
+
+        The visitor must explicitly choose
+        KEEP WRITING or DISCARD MESSAGE.
+      */
+
+      if (confirmationOpen) {
+        return;
+      }
+
+      /*
+        Use the existing close-request function.
+
+        This automatically handles:
+
+        1. Empty form:
+           Close immediately.
+
+        2. Unfinished message:
+           Display discard confirmation.
+
+        3. Successfully submitted message:
+           Close immediately.
+      */
+
+      requestContactClose();
+
+    }
+  );
+
+  /* =========================================================
+     CONFIRMATION BUTTONS
+     ========================================================= */
+
+  keepWritingButton.addEventListener(
+    "click",
+    keepWriting
+  );
+
+  discardMessageButton.addEventListener(
+    "click",
+    discardMessage
+  );
+
+  /* =========================================================
      CONFIRMATION BUTTONS
      ========================================================= */
 
