@@ -696,3 +696,44 @@
   }
 
 }
+/* =========================================================
+   THE MAISON — HEADER LOGO AND NAME ALIGNMENT
+   Matches A Personal Message and Explore the Collection
+   ========================================================= */
+
+.dr-site-header .dr-brand-mark {
+  display: block;
+  width: 72px;
+  height: auto;
+  flex: none;
+}
+
+.dr-site-header .dr-brand-mark img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dr-site-header .dr-brand-name {
+  display: block;
+  margin: 3px 0 0;
+  font-family: "DR Didot", Didot, Georgia, serif;
+  font-size: clamp(18px, 1.7vw, 27px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: .24em;
+  color: #4e443d;
+}
+
+@media (max-width: 760px) {
+  .dr-site-header .dr-brand-mark {
+    width: 54px;
+  }
+}
+
+@media (max-width: 420px) {
+  .dr-site-header .dr-brand-name {
+    font-size: 18px;
+    letter-spacing: .17em;
+  }
+}
