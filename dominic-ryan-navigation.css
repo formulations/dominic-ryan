@@ -1,44 +1,201 @@
 /* =========================================================
-   DOMINIC RYAN — NAVIGATION HOVER UNDERLINE
-   Applies ONLY to unselected navigation links.
-   Preserves the existing active-page underline.
+   DOMINIC RYAN — SHARED NAVIGATION
+   =========================================================
+
+   Applies to:
+   1. A Personal Message
+   2. The Maison
+   3. Explore the Collection
+
+   Design:
+   - Existing editorial typography preserved
+   - Existing navigation spacing preserved
+   - Active page remains visibly underlined
+   - Refined underline animation on hover
+   - Consistent behavior across desktop and mobile
+   ========================================================= */
+
+
+/* =========================================================
+   SHARED NAVIGATION CONTAINER
+   ========================================================= */
+
+.collection-navigation,
+.maison-primary-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 32px;
+
+  margin: 50px auto 0;
+  padding: 0 20px;
+}
+
+
+/* =========================================================
+   NAVIGATION LINKS
+   ========================================================= */
+
+.collection-navigation a,
+.maison-primary-nav a {
+  position: relative;
+
+  display: inline-block;
+
+  padding-bottom: 9px;
+
+  font-family:
+    "DR Avenir Next",
+    "Avenir Next",
+    Arial,
+    sans-serif;
+
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+
+  letter-spacing: .16em;
+
+  color: #655d56;
+  text-decoration: none;
+
+  white-space: nowrap;
+
+  opacity: .55;
+
+  transition:
+    opacity .3s ease,
+    color .3s ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================================
+   ACTIVE PAGE
+   ========================================================= */
+
+.collection-navigation a.active,
+.collection-navigation a[aria-current="page"],
+.maison-primary-nav a.active,
+.maison-primary-nav a[aria-current="page"] {
+  opacity: 1;
+  color: #51463e;
+}
+
+
+/* =========================================================
+   UNDERLINE — DEFAULT STATE
+   ========================================================= */
+
+.collection-navigation a::after,
+.maison-primary-nav a::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 1px;
+
+  background: #51463e;
+
+  transform: scaleX(0);
+  transform-origin: center;
+
+  opacity: 0;
+
+  transition:
+    transform .55s cubic-bezier(.22, .61, .36, 1),
+    opacity .35s ease;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   ACTIVE PAGE — PERMANENT UNDERLINE
+   ========================================================= */
+
+.collection-navigation a.active::after,
+.collection-navigation a[aria-current="page"]::after,
+.maison-primary-nav a.active::after,
+.maison-primary-nav a[aria-current="page"]::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+
+/* =========================================================
+   DESKTOP — HOVER INTERACTION
    ========================================================= */
 
 @media (hover: hover) and (pointer: fine) {
 
-  /* Only target unselected links */
-  .collection-navigation a:not(.active)::after {
-    content: "";
-    position: absolute;
-
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    height: 1px;
-    background: currentColor;
-
-    opacity: 0;
-
-    transform: scaleX(0);
-    transform-origin: center;
-
-    transition:
-      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 220ms ease;
+  .collection-navigation a:not(.active):not([aria-current="page"]):hover,
+  .maison-primary-nav a:not(.active):not([aria-current="page"]):hover {
+    opacity: .85;
   }
 
-  /* Reveal underline on hover */
-  .collection-navigation a:not(.active):hover::after,
-  .collection-navigation a:not(.active):focus-visible::after {
-    opacity: 0.75;
+  .collection-navigation a:not(.active):not([aria-current="page"]):hover::after,
+  .maison-primary-nav a:not(.active):not([aria-current="page"]):hover::after {
     transform: scaleX(1);
+    opacity: .65;
   }
+
 }
 
-/* Respect reduced-motion preferences */
+
+/* =========================================================
+   KEYBOARD ACCESSIBILITY
+   ========================================================= */
+
+.collection-navigation a:focus-visible,
+.maison-primary-nav a:focus-visible {
+  outline: 1px solid #51463e;
+  outline-offset: 5px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .collection-navigation,
+  .maison-primary-nav {
+    margin-top: 45px;
+
+    gap: clamp(10px, 4vw, 22px);
+
+    padding: 0 12px;
+  }
+
+  .collection-navigation a,
+  .maison-primary-nav a {
+    font-size: clamp(8px, 2.3vw, 9px);
+
+    letter-spacing: .08em;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
 @media (prefers-reduced-motion: reduce) {
-  .collection-navigation a:not(.active)::after {
+
+  .collection-navigation a,
+  .maison-primary-nav a,
+  .collection-navigation a::after,
+  .maison-primary-nav a::after {
     transition: none;
   }
+
 }
