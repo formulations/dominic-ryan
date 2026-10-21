@@ -681,17 +681,17 @@
 @media (max-width: 360px) {
 
   .dr-unified-footer {
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 
   .dr-footer-nav-group {
-    gap: 6px;
+    gap: 4px;
   }
 
   .dr-footer-nav a,
   .dr-footer-current {
-    font-size: 6.5px;
+    font-size: clamp(5.5px, 1.8vw, 6.5px);
     letter-spacing: 0;
   }
 
