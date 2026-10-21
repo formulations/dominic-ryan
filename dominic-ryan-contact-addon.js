@@ -1781,7 +1781,7 @@
 
             <img
               class="dr-contact-monogram"
-              src="dr-reveals-removebg-preview.png"
+              src="/dr-reveals-removebg-preview.png"
               alt=""
               aria-hidden="true"
             >
