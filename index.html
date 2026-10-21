@@ -289,96 +289,7 @@
 
       white-space:nowrap;
     }
-/* =========================================================
-   DOMINIC RYAN — PRIMARY PAGE NAVIGATION
-   Shared styling with formulations
-   ========================================================= */
 
-.collection-navigation {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  gap: 32px;
-
-  margin: 50px auto 0;
-  padding: 0 20px;
-}
-
-.collection-navigation a {
-  position: relative;
-
-  padding-bottom: 9px;
-
-  font-family:
-    "DR Avenir Next",
-    "Avenir Next",
-    Arial,
-    sans-serif;
-
-  color: var(--soft-ink);
-  text-decoration: none;
-
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: .16em;
-
-  white-space: nowrap;
-
-  /* Inactive navigation */
-  opacity: .55;
-
-  transition: opacity .3s ease;
-}
-
-/* Active navigation — fully visible */
-
-.collection-navigation a.active {
-  opacity: 1;
-}
-
-/* Inactive navigation — hover */
-
-.collection-navigation a:not(.active):hover {
-  opacity: .8;
-}
-
-.collection-navigation a::after {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  height: 1px;
-
-  background: transparent;
-
-  transition: background .25s ease;
-}
-
-.collection-navigation a.active::after {
-  background: var(--ink);
-}
-
-/* MOBILE — MATCH FORMULATIONS PAGE */
-
-@media (max-width: 760px) {
-
-  .collection-navigation {
-    margin-top: 45px;
-    gap: clamp(10px, 4vw, 22px);
-    padding: 0 12px;
-  }
-
-  .collection-navigation a {
-    font-size: clamp(8px, 2.3vw, 9px);
-    letter-spacing: .08em;
-  }
-
-}
 
     /* =========================================================
        HERO / LETTER + PHOTO
@@ -844,11 +755,19 @@
   right: -20px;
 
   z-index: 0;
+
   pointer-events: none;
 
-  visibility: hidden;
   clip-path: inset(0 100% 0 0);
 }
+
+  z-index: 0;
+
+  pointer-events: none;
+
+  clip-path: inset(0 100% 0 0);
+}
+
 /* Champagne material with one diagonal-cut end */
 
 .dr-quote-ribbon-material {
@@ -893,51 +812,21 @@
 /* Begin unfurling */
 
 .dr-quote-ribbon.dr-ribbon-visible {
-
-  visibility: visible;
-
   animation:
-
     drRibbonUnfurl
-
     5.5s
-
     cubic-bezier(.38, .05, .62, .95)
-
     forwards;
-
 }
 
 @keyframes drRibbonUnfurl {
-
   from {
-
     clip-path: inset(0 100% 0 0);
-
   }
 
   to {
-
     clip-path: inset(0 0 0 0);
-
   }
-
-}
-
-@-webkit-keyframes drRibbonUnfurl {
-
-  from {
-
-    -webkit-clip-path: inset(0 100% 0 0);
-
-  }
-
-  to {
-
-    -webkit-clip-path: inset(0 0 0 0);
-
-  }
-
 }
 
 /* Keep the quote and ornament above the ribbon */
@@ -948,24 +837,13 @@
   z-index: 1;
 }
 
-/* Keep champagne ribbon animation on all devices */
+/* Accessibility */
 
 @media (prefers-reduced-motion: reduce) {
-
   .dr-quote-ribbon.dr-ribbon-visible {
-
-    animation:
-
-      drRibbonUnfurl
-
-      5.5s
-
-      cubic-bezier(.38, .05, .62, .95)
-
-      forwards !important;
-
+    animation: none;
+    clip-path: inset(0 0 0 0);
   }
-
 }
 /* =========================================================
    FINAL SENTENCE — ELEGANT SIGNATURE-MATCHED REVEAL
@@ -2066,108 +1944,38 @@ transition:
         Arial,
         sans-serif;
     }
+
+
 /* =========================================================
-   DOMINIC RYAN — FLOATING BACK TO TOP
+   SHARED HEADER / NAVIGATION / STATIC MAISON-STYLE FOOTER
    ========================================================= */
+.brand-mark {display:block;flex:none;text-decoration:none;}
+.name {display:block;text-decoration:none;}
+.name:hover {opacity:.82;}
+.collection-navigation {display:flex;justify-content:center;align-items:center;gap:32px;margin:50px auto 0;padding:0 20px;}
+.collection-navigation a {position:relative;padding-bottom:9px;font:500 10px/1.4 "DR Avenir Next","Avenir Next",Arial,sans-serif;letter-spacing:.16em;color:var(--soft-ink);text-decoration:none;white-space:nowrap;opacity:.55;transition:opacity .3s ease;}
+.collection-navigation a.active {opacity:1;}
+.collection-navigation a:not(.active):hover {opacity:.8;}
+.collection-navigation a::after {content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:transparent;}
+.collection-navigation a.active::after {background:var(--ink);}
+.dr-unified-footer {position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#f2ede6;border-top:1px solid #e0d5c8;padding:72px 24px 66px;min-height:0;font-family:"DR Avenir Next","Avenir Next",Arial,sans-serif;}
+.dr-footer-end-mark {display:flex;flex-direction:column;align-items:center;gap:19px;}
+.dr-footer-end-mark img {display:block;width:clamp(54px,5.5vw,86px);height:100px;object-fit:contain;}
+.dr-footer-end-mark span {font-size:9px;font-weight:400;letter-spacing:.3em;color:#51463e;}
+.dr-footer-rule {height:1px;background:#b19b814a;width:min(360px,75vw);margin:28px auto 0;}
+.dr-footer-tagline {font:400 10px/1.8 "DR Avenir Next","Avenir Next",Arial,sans-serif;color:#84776d;letter-spacing:.07em;text-align:center;padding:0 24px;margin:16px 0 0;}
+.dr-footer-nav {display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(16px,3vw,35px);margin-top:35px;padding:0 20px;font:500 9px/1.8 "DR Avenir Next","Avenir Next",Arial,sans-serif;letter-spacing:.15em;}
+.dr-footer-nav a {color:#655d56;text-decoration:none;opacity:.75;transition:opacity .25s ease;}
+.dr-footer-nav a:hover {opacity:1;}
+.dr-footer-return {margin-top:25px;background:none;border:0;border-bottom:1px solid #9d8873;color:var(--ink);padding:10px 0;cursor:pointer;font:400 8px/1.4 "DR Avenir Next","Avenir Next",Arial,sans-serif;letter-spacing:.2em;opacity:.6;}
+.dr-footer-return:hover {opacity:1;}
+.dr-back-to-top {position:fixed;right:19px;bottom:72px;z-index:9998;display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;background:rgba(251,248,242,.92);border:1px solid rgba(81,70,62,.25);border-radius:50%;color:#51463e;box-shadow:0 3px 12px rgba(70,57,47,.08);backdrop-filter:blur(8px);cursor:pointer;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease,visibility .35s ease;}
+.dr-back-to-top.is-visible {opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);}
+.dr-back-to-top svg {display:block;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+@media(max-width:760px){.collection-navigation{margin-top:45px;gap:clamp(10px,4vw,22px);padding:0 12px;}.collection-navigation a{font-size:clamp(8px,2.3vw,9px);letter-spacing:.08em;}.dr-unified-footer{padding:62px 20px calc(65px + env(safe-area-inset-bottom));}.dr-footer-nav{gap:14px;}.dr-footer-return{margin-top:22px;}.dr-back-to-top{right:29px;bottom:82px;}}
+@media(max-width:420px){.name{font-size:18px;letter-spacing:.17em;}}
+@media(prefers-reduced-motion:reduce){.dr-back-to-top{transition:none;}}
 
-.dr-back-to-top {
-  position: fixed;
-
-  right: 19px;
-  bottom: 72px;
-
-  z-index: 9998;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 34px;
-  height: 34px;
-
-  padding: 0;
-
-  background: rgba(251, 248, 242, .92);
-
-  border: 1px solid rgba(81, 70, 62, .25);
-  border-radius: 50%;
-
-  color: #51463e;
-
-  box-shadow:
-    0 3px 12px rgba(70, 57, 47, .08);
-
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-
-  cursor: pointer;
-
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-
-  transform: translateY(8px);
-
-  transition:
-    opacity .35s ease,
-    transform .35s ease,
-    visibility .35s ease,
-    background .2s ease;
-}
-
-.dr-back-to-top.is-visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-
-  transform: translateY(0);
-}
-
-.dr-back-to-top:hover {
-  background: #fbf8f2;
-}
-
-.dr-back-to-top svg {
-  display: block;
-
-  width: 15px;
-  height: 15px;
-
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.dr-back-to-top:focus-visible {
-  outline: 2px solid #51463e;
-  outline-offset: 4px;
-}
-
-/* MOBILE — POSITION ABOVE MUSIC BUTTON */
-
-@media (max-width: 760px) {
-
-  .dr-back-to-top {
-    right: 29px;
-    bottom: 82px;
-
-    width: 34px;
-    height: 34px;
-  }
-
-}
-
-/* ACCESSIBILITY */
-
-@media (prefers-reduced-motion: reduce) {
-
-  .dr-back-to-top {
-    transition: none;
-  }
-
-}
   </style>
 
 </head>
@@ -2201,21 +2009,21 @@ transition:
       <div class="brand">
 
 
-        <div class="brand-mark">
+        <a class="brand-mark" href="/" aria-label="Dominic Ryan home">
 
           <img
             src="dr-reveals.gif"
             alt="DR"
           >
 
-        </div>
+        </a>
 
 
         <div>
 
-          <div class="name">
+          <a class="name" href="/">
             DOMINIC RYAN
-          </div>
+          </a>
 
 
           <div class="tagline">
@@ -2228,39 +2036,22 @@ transition:
       </div>
 
 
-<div class="location">
-  Austin, Texas
-</div>
+      <div class="location">
+        Austin, Texas
+      </div>
 
 
-</header>
+    </header>
 
 
-<!-- =====================================================
-     PRIMARY PAGE NAVIGATION
-     ===================================================== -->
+    <!-- SHARED PRIMARY PAGE NAVIGATION -->
+    <nav class="collection-navigation" aria-label="Primary page navigation">
+      <a href="/" class="active" aria-current="page">A PERSONAL MESSAGE</a>
+      <a href="/maison/">THE MAISON</a>
+      <a href="/formulations/">EXPLORE THE COLLECTION</a>
+    </nav>
 
-<nav
-  class="collection-navigation"
-  aria-label="Page navigation"
->
-
-  <a
-    href="/"
-    class="active"
-    aria-current="page"
-  >
-    A PERSONAL MESSAGE
-  </a>
-
-  <a href="/formulations/">
-    EXPLORE THE COLLECTION
-  </a>
-
-</nav>
-
-
-<main>
+    <main>
 
 
       <!-- LETTER + EDITORIAL PHOTO -->
@@ -2470,97 +2261,30 @@ class="final-typewriter-ornament"
     </main>
 
 
-    <!-- DESKTOP FLOATING / MOBILE FOOTER NAV -->
-
-    <nav
-      class="utility-nav"
-      id="utility-nav"
-      aria-label="Site links"
-    >
-
-
-          <a
-        class="nav-home"
-        href="/formulations/"
-      >
-        EXPLORE COLLECTION
-      </a>
-  
-
-
-      <span
-        class="utility-rule nav-rule-one"
-        aria-hidden="true"
-      ></span>
-
-
-      <a
-
-  class="nav-instagram"
-
-  href="https://www.instagram.com/formulations/"
-
-  target="_blank"
-
-  rel="noopener noreferrer"
-
->
-
-  @FORMULATIONS
-
-</a>
-
-
-      <span
-        class="utility-rule nav-rule-two"
-        aria-hidden="true"
-      ></span>
-
-
-      <a
-        class="nav-linkedin"
-        href="https://www.linkedin.com/in/itsdominicryan"
-        target="_blank"
-        rel="noopener"
-      >
-        LINKEDIN
-      </a>
-<span
-  class="utility-rule nav-rule-three"
-  aria-hidden="true"
-></span>
-
-<a
-  class="nav-contact"
-  href="#contact"
-  data-dr-contact-open
->
-  CONTACT
-</a>
-
-    </nav>
-
-
+    <!-- SHARED STATIC FOOTER — THE MAISON DESIGN -->
+    <footer class="dr-unified-footer" aria-label="Site footer">
+      <div class="dr-footer-end-mark">
+        <img src="/dr-reveals-removebg-preview.png" alt="DR monogram">
+        <span>A PERSONAL MESSAGE</span>
+      </div>
+      <div class="dr-footer-rule" aria-hidden="true"></div>
+      <p class="dr-footer-tagline">Formulations of Art · Design · Travel · Objects with a Past</p>
+      <nav class="dr-footer-nav" aria-label="Footer navigation">
+        <a href="/">A PERSONAL MESSAGE</a>
+        <a href="/maison/">THE MAISON</a>
+        <a href="/formulations/">EXPLORE THE COLLECTION</a>
+        <a href="https://www.instagram.com/formulations/" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
+        <a href="https://www.linkedin.com/in/itsdominicryan" target="_blank" rel="noopener noreferrer">LINKEDIN</a>
+        <a href="#contact" data-dr-contact-open>CONTACT</a>
+      </nav>
+      <button class="dr-footer-return" type="button" id="dr-footer-return">RETURN TO THE TOP ↑</button>
+    </footer>
   </div>
-<!-- =====================================================
-     DOMINIC RYAN — BACK TO TOP
-     ===================================================== -->
 
-<button
-  class="dr-back-to-top"
-  id="dr-back-to-top"
-  type="button"
-  aria-label="Back to top"
-  title="Back to top"
->
-  <svg
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-  >
-    <path d="M12 19V5"></path>
-    <path d="M5 12L12 5L19 12"></path>
-  </svg>
-</button>
+  <!-- BACK TO TOP — ORIGINAL FUNCTION PRESERVED -->
+  <button class="dr-back-to-top" id="dr-back-to-top" type="button" aria-label="Back to top" title="Back to top">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"></path><path d="M5 12L12 5L19 12"></path></svg>
+  </button>
 
   <!-- MUSIC -->
 
@@ -2804,438 +2528,7 @@ class="final-typewriter-ornament"
     requestPhotoUpdate();
 
 
-    /* =======================================================
-       DESKTOP NAV COLLISION ENGINE
-
-       IMPORTANT:
-       It measures CLEAN COPIES of every candidate nav layout.
-
-       That means the current state of the visible nav cannot
-       affect the next measurement.
-
-       DEFAULT:
-       One line.
-
-       ONLY STACK:
-       If the candidate one-line nav would actually collide
-       with the visible white photo frame.
-       ======================================================= */
-
-    const utilityNav =
-      document.getElementById(
-        "utility-nav"
-      );
-
-    const navDesktopQuery =
-      window.matchMedia(
-        "(min-width: 761px)"
-      );
-
-
-    /*
-       Keep a little visual breathing room
-       between navigation and photograph.
-    */
-
-    const NAV_SAFE_GAP =
-      16;
-
-
-    let navCollisionTicking =
-      false;
-
-
-    function clearNavStates(){
-
-      if(!utilityNav){
-        return;
-      }
-
-
-      utilityNav.classList.remove(
-        "nav-stacked",
-        "nav-vertical",
-        "nav-footer-safe"
-      );
-
-    }
-
-
-    /*
-       Create an invisible temporary copy.
-
-       This lets us ask:
-       "How large WOULD this nav be in this state?"
-
-       The visible nav does not influence the result.
-    */
-
-    function measureNavCandidate(
-      stateClass = ""
-    ){
-
-      if(!utilityNav){
-        return null;
-      }
-
-
-      const clone =
-        utilityNav.cloneNode(
-          true
-        );
-
-
-      clone.removeAttribute(
-        "id"
-      );
-
-
-      clone.setAttribute(
-        "aria-hidden",
-        "true"
-      );
-
-
-      clone.classList.remove(
-        "nav-stacked",
-        "nav-vertical",
-        "nav-footer-safe"
-      );
-
-
-      if(stateClass){
-
-        clone.classList.add(
-          stateClass
-        );
-
-      }
-
-
-      clone.style.visibility =
-        "hidden";
-
-      clone.style.pointerEvents =
-        "none";
-
-      clone.style.transition =
-        "none";
-
-      clone.style.zIndex =
-        "-9999";
-
-
-      document.body.appendChild(
-        clone
-      );
-
-
-      const rect =
-        clone.getBoundingClientRect();
-
-
-      const result = {
-
-        left:
-          rect.left,
-
-        right:
-          rect.right,
-
-        top:
-          rect.top,
-
-        bottom:
-          rect.bottom,
-
-        width:
-          rect.width,
-
-        height:
-          rect.height
-
-      };
-
-
-      clone.remove();
-
-
-      return result;
-
-    }
-
-
-    /*
-       Check actual 2D collision.
-
-       This is better than simply checking whether
-       the nav extends farther right than the photo.
-
-       If the photo isn't vertically beside the nav,
-       there is no collision.
-    */
-
-    function candidateCollidesWithPhoto(
-      navRect
-    ){
-
-      if(
-        !navRect ||
-        !photoFrame
-      ){
-        return false;
-      }
-
-
-      const photoRect =
-        photoFrame.getBoundingClientRect();
-
-
-      const horizontalOverlap =
-        navRect.right +
-        NAV_SAFE_GAP
-        >
-        photoRect.left
-        &&
-        navRect.left
-        <
-        photoRect.right +
-        NAV_SAFE_GAP;
-
-
-      const verticalOverlap =
-        navRect.bottom
-        >
-        photoRect.top
-        &&
-        navRect.top
-        <
-        photoRect.bottom;
-
-
-      return(
-        horizontalOverlap &&
-        verticalOverlap
-      );
-
-    }
-
-
-    function updateNavCollision(){
-
-      navCollisionTicking =
-        false;
-
-
-      if(
-        !utilityNav ||
-        !photoFrame
-      ){
-        return;
-      }
-
-
-      /*
-         MOBILE:
-         Remove every desktop state.
-         CSS handles mobile normally.
-      */
-
-      if(
-        !navDesktopQuery.matches
-      ){
-
-        clearNavStates();
-
-        return;
-      }
-
-
-      /*
-         START FROM A CLEAN STATE.
-      */
-
-      clearNavStates();
-
-
-      /*
-         CANDIDATE 1:
-         Original single-line navigation.
-      */
-
-      const oneLineRect =
-        measureNavCandidate();
-
-
-      if(
-        !candidateCollidesWithPhoto(
-          oneLineRect
-        )
-      ){
-
-        /*
-           Fits.
-
-           Do absolutely nothing.
-
-           Visible navigation therefore remains:
-           DOMINIC RYAN | @FORMULATIONS | LINKEDIN
-        */
-
-        return;
-
-      }
-
-
-      /*
-         CANDIDATE 2:
-         LinkedIn beneath the first row.
-      */
-
-      const stackedRect =
-        measureNavCandidate(
-          "nav-stacked"
-        );
-
-
-      if(
-        !candidateCollidesWithPhoto(
-          stackedRect
-        )
-      ){
-
-        utilityNav
-          .classList
-          .add(
-            "nav-stacked"
-          );
-
-        return;
-
-      }
-
-
-      /*
-         CANDIDATE 3:
-         Fully vertical.
-
-         This should only be needed on
-         unusually constrained desktop windows.
-      */
-
-      const verticalRect =
-        measureNavCandidate(
-          "nav-vertical"
-        );
-
-
-      if(
-        !candidateCollidesWithPhoto(
-          verticalRect
-        )
-      ){
-
-        utilityNav
-          .classList
-          .add(
-            "nav-vertical"
-          );
-
-        return;
-
-      }
-
-
-      /*
-         ABSOLUTE LAST RESORT:
-
-         If there is physically no safe floating position,
-         put the nav back into page flow instead of allowing
-         it to cover the photograph.
-      */
-
-      utilityNav
-        .classList
-        .add(
-          "nav-footer-safe"
-        );
-
-    }
-
-
-    function requestNavCollisionUpdate(){
-
-      if(navCollisionTicking){
-        return;
-      }
-
-
-      navCollisionTicking =
-        true;
-
-
-      window
-        .requestAnimationFrame(
-          updateNavCollision
-        );
-
-    }
-
-
-    /*
-       Re-evaluate whenever geometry can change.
-    */
-
-    window.addEventListener(
-      "resize",
-      requestNavCollisionUpdate
-    );
-
-
-    window.addEventListener(
-      "load",
-      requestNavCollisionUpdate
-    );
-
-
-    /*
-       The photograph moves slightly during scroll,
-       so recheck its actual position.
-    */
-
-    window.addEventListener(
-      "scroll",
-      requestNavCollisionUpdate,
-      {
-        passive:true
-      }
-    );
-
-
-    /*
-       Wait for fonts as well.
-
-       Text width can change slightly after
-       the final font has loaded.
-    */
-
-    if(
-      document.fonts &&
-      document.fonts.ready
-    ){
-
-      document
-        .fonts
-        .ready
-        .then(
-          requestNavCollisionUpdate
-        );
-
-    }
-
-
-    requestNavCollisionUpdate();
-
+    /* Static footer: no collision engine required. */
 
     /* =======================================================
        MUSIC
@@ -3689,83 +2982,24 @@ function handleFinalScroll() {
 
 <!-- BRANDED INTRODUCTION -->
 <script src="dominic-ryan-intro.js?v=4" defer></script>
-<!-- =====================================================
-     DOMINIC RYAN — BACK TO TOP FUNCTIONALITY
-     ===================================================== -->
 
 <script>
 (() => {
   "use strict";
-
-  const backToTop =
-    document.getElementById("dr-back-to-top");
-
+  const backToTop = document.getElementById("dr-back-to-top");
+  const footerReturn = document.getElementById("dr-footer-return");
+  const scrollUp = () => window.scrollTo({top:0,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+  if (footerReturn) footerReturn.addEventListener("click",scrollUp);
   if (!backToTop) return;
-
-  const SCROLL_THRESHOLD = 500;
-
-  let ticking = false;
-
-  function updateBackToTop() {
-
-    ticking = false;
-
-    const shouldShow =
-      window.scrollY > SCROLL_THRESHOLD;
-
-    backToTop.classList.toggle(
-      "is-visible",
-      shouldShow
-    );
-
-  }
-
-  function requestBackToTopUpdate() {
-
-    if (ticking) return;
-
-    ticking = true;
-
-    window.requestAnimationFrame(
-      updateBackToTop
-    );
-
-  }
-
-  window.addEventListener(
-    "scroll",
-    requestBackToTopUpdate,
-    { passive: true }
-  );
-
-  window.addEventListener(
-    "resize",
-    requestBackToTopUpdate
-  );
-
-  backToTop.addEventListener(
-    "click",
-    () => {
-
-      const reducedMotion =
-        window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches;
-
-      window.scrollTo({
-        top: 0,
-        behavior: reducedMotion
-          ? "instant"
-          : "smooth"
-      });
-
-    }
-  );
-
-  updateBackToTop();
-
+  let ticking=false;
+  const update=()=>{ticking=false;backToTop.classList.toggle("is-visible",window.scrollY>500);};
+  window.addEventListener("scroll",()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}}, {passive:true});
+  window.addEventListener("resize",update);
+  backToTop.addEventListener("click",scrollUp);
+  update();
 })();
 </script>
+
 </body>
 
 </html>
