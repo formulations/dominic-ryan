@@ -1401,21 +1401,6 @@
       }
 
     }
-
-    /* =====================================================
-       REDUCED MOTION
-       ===================================================== */
-
-    @media (prefers-reduced-motion: reduce) {
-
-      .dr-contact-overlay,
-      .dr-contact-dialog,
-      .dr-contact-trigger,
-      .dr-contact-trigger::before {
-        transition: none !important;
-      }
-
-    }
         /* =====================================================
        HIDE X DURING DISCARD CONFIRMATION
        ===================================================== */
