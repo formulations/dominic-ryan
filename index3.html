@@ -2784,27 +2784,26 @@ document.addEventListener("visibilitychange", () => {
   updateSoundLabel();
 });
 
-/* MOBILE LETTER FADE TRIGGER */
+/* =======================================================
+   MOBILE LETTER FADE — ENVELOPE COORDINATION
+   ======================================================= */
 
 if (window.matchMedia("(max-width: 760px)").matches) {
-
-  const mobilePaper =
-    document.querySelector(".paper");
+  const mobilePaper = document.querySelector(".paper");
 
   if (mobilePaper) {
+    window.drEnvelopeRevealLetter = () => {
+      mobilePaper.classList.add("mobile-paper-visible");
+    };
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-
-        setTimeout(() => {
-          mobilePaper.classList.add(
-            "mobile-paper-visible"
-          );
-        }, 450);
-
-      });
+    // Keep the letter visible if the envelope script fails to load.
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        if (!document.getElementById("dr-envelope-editorial")) {
+          mobilePaper.classList.add("mobile-paper-visible");
+        }
+      }, 700);
     });
-
   }
 }
 /* =======================================================
