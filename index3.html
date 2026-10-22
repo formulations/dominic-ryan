@@ -2983,6 +2983,11 @@ function handleFinalScroll() {
 
   if (revealStarted) return;
 
+  // Ignore automatic scrolling while the envelope is active.
+  if (document.getElementById("dr-envelope-editorial")) {
+    return;
+  }
+
   hasScrolled = true;
 
   initializeFinalObserver();
@@ -3037,7 +3042,7 @@ function handleFinalScroll() {
 <script defer src="/dominic-ryan-swipe.js?v=1"></script>
 <!-- MOBILE CORRESPONDENCE EXPERIENCE -->
 
-<script defer src="/dr-envelope-mobile.js?v=1"></script>
+<script defer src="/dr-envelope-mobile.js?v=2"></script>
 </body>
 
 </html>
