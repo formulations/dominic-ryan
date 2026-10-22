@@ -91,7 +91,7 @@
 
           position: fixed;
           inset: 0;
-          z-index: 999999;
+          z-index: 99998;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -654,54 +654,77 @@
     document.body.classList.remove(LOCK_CLASS);
   }
 
-  function beginOpenSequence() {
-    if (hasOpened || !overlay) return;
+function beginOpenSequence() {
+  if (hasOpened || !overlay) return;
 
-    hasOpened = true;
+  hasOpened = true;
 
-    if (sealButton) {
-      sealButton.disabled = true;
-      sealButton.setAttribute("aria-disabled", "true");
-    }
+  if (sealButton) {
+    sealButton.disabled = true;
+    sealButton.setAttribute("aria-disabled", "true");
+  }
 
-    overlay.classList.add("is-opening");
+  overlay.classList.add("is-opening");
 
-    timers.push(
-      window.setTimeout(() => {
-        handoffToRealMessage();
-      }, 1380)
-    );
+  // Allow the envelope and paper animations to play.
+  timers.push(
+    window.setTimeout(() => {
+      handoffToRealMessage();
+    }, 1380)
+  );
 
-    timers.push(
-      window.setTimeout(() => {
-        if (overlay) {
-          overlay.classList.add("is-handoff");
-        }
-      }, 1625)
-    );
+  // Give the real letter time to become visible
+  // before the envelope begins disappearing.
+  timers.push(
+    window.setTimeout(() => {
+      if (overlay) {
+        overlay.classList.add("is-handoff");
+      }
+    }, 2400)
+  );
 
-    timers.push(
-      window.setTimeout(() => {
-        cleanup(false);
-      }, 2150)
-    );
-  }
+  // Remove the overlay after its fade finishes.
+  timers.push(
+    window.setTimeout(() => {
+      cleanup(false);
+    }, 2950)
+  );
+}
 
-  function handoffToRealMessage() {
-    if (!actualPaper) return;
+function handoffToRealMessage() {
+  if (!actualPaper || !overlay) return;
 
-    actualPaper.classList.add("mobile-paper-visible");
+  /*
+    Keep the envelope opaque while preparing
+    the actual letter underneath.
+  */
 
-    const targetTop =
-      window.pageYOffset +
-      actualPaper.getBoundingClientRect().top -
-      20;
+  const root = document.documentElement;
+  const previousScrollBehavior = root.style.scrollBehavior;
 
-    window.scrollTo({
-      top: Math.max(0, targetTop),
-      behavior: "auto"
-    });
-  }
+  root.style.scrollBehavior = "auto";
+
+  // Release the scroll lock before positioning.
+  unlockViewport();
+
+  const targetTop =
+    window.scrollY +
+    actualPaper.getBoundingClientRect().top -
+    20;
+
+  window.scrollTo(0, Math.max(0, targetTop));
+
+  // Reveal the existing letter.
+  if (typeof window.drEnvelopeRevealLetter === "function") {
+    window.drEnvelopeRevealLetter();
+  } else {
+    actualPaper.classList.add("mobile-paper-visible");
+  }
+
+  requestAnimationFrame(() => {
+    root.style.scrollBehavior = previousScrollBehavior;
+  });
+}
 
   function cleanup(forceImmediate = false) {
     timers.forEach(timer => clearTimeout(timer));
