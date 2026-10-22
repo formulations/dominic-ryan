@@ -7,7 +7,13 @@
   "use strict";
 
   const MOBILE_QUERY = window.matchMedia("(max-width: 760px)");
-  if (!MOBILE_QUERY.matches) return;
+  const ENVELOPE_SESSION_KEY = "dr-envelope-opened";
+
+try {
+  if (sessionStorage.getItem(ENVELOPE_SESSION_KEY) === "true") {
+    return;
+  }
+} catch (_) {}
 
   const STYLE_ID = "dr-envelope-editorial-style";
   const OVERLAY_ID = "dr-envelope-editorial";
@@ -658,6 +664,9 @@ function beginOpenSequence() {
   if (hasOpened || !overlay) return;
 
   hasOpened = true;
+  try {
+  sessionStorage.setItem(ENVELOPE_SESSION_KEY, "true");
+} catch (_) {}
 
   if (sealButton) {
     sealButton.disabled = true;
@@ -673,22 +682,21 @@ function beginOpenSequence() {
     }, 1380)
   );
 
-  // Give the real letter time to become visible
-  // before the envelope begins disappearing.
-  timers.push(
-    window.setTimeout(() => {
-      if (overlay) {
-        overlay.classList.add("is-handoff");
-      }
-    }, 2400)
-  );
+  // Allow the existing letter to complete its gradual reveal.
+timers.push(
+  window.setTimeout(() => {
+    if (overlay) {
+      overlay.classList.add("is-handoff");
+    }
+  }, 5600)
+);
 
-  // Remove the overlay after its fade finishes.
-  timers.push(
-    window.setTimeout(() => {
-      cleanup(false);
-    }, 2950)
-  );
+// Remove the overlay after its fade finishes.
+timers.push(
+  window.setTimeout(() => {
+    cleanup(false);
+  }, 6150)
+);
 }
 
 function handoffToRealMessage() {
