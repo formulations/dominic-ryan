@@ -2792,18 +2792,27 @@ if (window.matchMedia("(max-width: 760px)").matches) {
   const mobilePaper = document.querySelector(".paper");
 
   if (mobilePaper) {
+
     window.drEnvelopeRevealLetter = () => {
       mobilePaper.classList.add("mobile-paper-visible");
     };
 
-    // Keep the letter visible if the envelope script fails to load.
+    // Fallback: reveal the letter if the envelope never initializes.
     window.addEventListener("load", () => {
+
       setTimeout(() => {
-        if (!document.getElementById("dr-envelope-editorial")) {
+
+        const envelope =
+          document.getElementById("dr-envelope-editorial");
+
+        if (!envelope) {
           mobilePaper.classList.add("mobile-paper-visible");
         }
+
       }, 700);
+
     });
+
   }
 }
 /* =======================================================
@@ -3042,7 +3051,7 @@ function handleFinalScroll() {
 <script defer src="/dominic-ryan-swipe.js?v=1"></script>
 <!-- MOBILE CORRESPONDENCE EXPERIENCE -->
 
-<script defer src="/dr-envelope-mobile.js?v=2"></script>
+<script defer src="/dr-envelope-mobile.js?v=3"></script>
 </body>
 
 </html>
