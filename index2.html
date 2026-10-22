@@ -733,110 +733,6 @@
     .signature-name{
       margin-top:0 !important;
     }
-    /* =========================================================
-   DOMINIC RYAN — CHAMPAGNE RIBBON
-   5.5-SECOND HORIZONTAL UNFURL
-   ========================================================= */
-
-.final-typewriter {
-  position: relative;
-  isolation: isolate;
-}
-
-/* Ribbon positioned behind the quote */
-
-.dr-quote-ribbon {
-  position: absolute;
-
-  top: -8px;
-  bottom: -8px;
-
-  left: calc(-1 * var(--dr-ribbon-edge-offset, 0px));
-  right: -20px;
-
-  z-index: 0;
-
-  pointer-events: none;
-
-  clip-path: inset(0 100% 0 0);
-}
-
-  z-index: 0;
-
-  pointer-events: none;
-
-  clip-path: inset(0 100% 0 0);
-}
-
-/* Champagne material with one diagonal-cut end */
-
-.dr-quote-ribbon-material {
-  position: absolute;
-  inset: 0;
-
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    calc(100% - 27px) 100%,
-    0 100%
-  );
-
-  background: linear-gradient(
-    180deg,
-    rgba(221, 207, 187, 0.26) 0%,
-    rgba(218, 202, 179, 0.39) 47%,
-    rgba(224, 209, 190, 0.28) 100%
-  );
-
-  box-shadow:
-    inset 0 1px rgba(255, 255, 255, 0.5),
-    inset 0 -1px rgba(108, 88, 69, 0.11);
-}
-
-/* Subtle material detail */
-
-.dr-quote-ribbon-material::before {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  top: 0;
-  bottom: 0;
-
-  width: 1px;
-
-  background: rgba(91, 72, 53, 0.14);
-}
-
-/* Begin unfurling */
-
-.dr-quote-ribbon.dr-ribbon-visible {
-  animation:
-    drRibbonUnfurl
-    5.5s
-    cubic-bezier(.38, .05, .62, .95)
-    forwards;
-}
-
-@keyframes drRibbonUnfurl {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-/* Keep the quote and ornament above the ribbon */
-
-.final-typewriter-text,
-.final-typewriter-ornament {
-  position: relative;
-  z-index: 1;
-}
-
 
 /* =========================================================
    FINAL SENTENCE — ELEGANT SIGNATURE-MATCHED REVEAL
@@ -1988,237 +1884,20 @@ transition:
   }
   .sound-note {width:20px;height:20px;}
 }
-@media(hover:none){.sound-toggle:hover{background:rgba(112,94,79,.78);}}
+@media(hover:none){
 
-/* =========================================================
-   DOMINIC RYAN — MOBILE ENVELOPE INTRODUCTION
-   ========================================================= */
+  .sound-toggle:hover{
 
-.dr-envelope-intro {
-  display: none;
-}
+    background:rgba(112,94,79,.78);
 
-@media (max-width: 760px) {
-
-  .dr-envelope-intro {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-    min-height: 390px;
-
-    padding: 25px 20px 35px;
-
-    overflow: hidden;
-
-    transition:
-      min-height 1.2s cubic-bezier(.22,.61,.36,1),
-      padding 1.2s cubic-bezier(.22,.61,.36,1),
-      opacity .8s ease;
-  }
-
-  /* INSTRUCTION */
-
-  .dr-envelope-instruction {
-    margin-bottom: 38px;
-
-    text-align: center;
-
-    font-family:
-      "DR Avenir Next",
-      "Avenir Next",
-      Arial,
-      sans-serif;
-
-    font-size: 10px;
-    font-weight: 500;
-
-    letter-spacing: .16em;
-
-    color: #84776d;
-
-    transition: opacity .5s ease;
-  }
-
-  .dr-envelope-instruction span {
-    display: block;
-
-    margin-top: 12px;
-
-    font-size: 17px;
-    font-weight: 400;
-  }
-
-  /* ENVELOPE STAGE */
-
-  .dr-envelope-scene {
-    position: relative;
-
-    width: min(78vw, 320px);
-    aspect-ratio: 1.55 / 1;
-
-    perspective: 900px;
-  }
-
-  .dr-envelope {
-    position: relative;
-
-    width: 100%;
-    height: 100%;
-
-    transform-style: preserve-3d;
-
-    transition:
-      transform 1.4s cubic-bezier(.22,.61,.36,1),
-      opacity 1s ease;
-  }
-
-  /* BACK */
-
-  .dr-envelope-back {
-    position: absolute;
-    inset: 0;
-
-    background: #d8c6b4;
-
-    border: 1px solid rgba(91,72,53,.13);
-
-    box-shadow:
-      0 18px 42px rgba(70,57,47,.13);
-  }
-
-  /* FLAP */
-
-  .dr-envelope-flap {
-    position: absolute;
-    inset: 0;
-
-    z-index: 3;
-
-    background: #c9b29c;
-
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      50% 57%
-    );
-
-    transform-origin: top center;
-
-    transition:
-      transform 1.25s cubic-bezier(.22,.61,.36,1);
-  }
-
-  /* FRONT POCKET */
-
-  .dr-envelope-pocket {
-    position: absolute;
-    inset: 0;
-
-    z-index: 2;
-
-    background: #e3d3c3;
-
-    clip-path: polygon(
-      0 0,
-      50% 55%,
-      100% 0,
-      100% 100%,
-      0 100%
-    );
-  }
-
-  /* WAX SEAL */
-
-  .dr-envelope-seal {
-    position: absolute;
-
-    top: 45%;
-    left: 50%;
-
-    z-index: 5;
-
-    width: 48px;
-    height: 48px;
-
-    transform: translate(-50%, -50%);
-
-    border: 1px solid rgba(255,255,255,.25);
-    border-radius: 50%;
-
-    background: #826653;
-
-    color: #fbf8f2;
-
-    font-family: "DR Didot", Georgia, serif;
-
-    font-size: 17px;
-    letter-spacing: .04em;
-
-    box-shadow:
-      0 4px 12px rgba(70,57,47,.16);
-
-    cursor: pointer;
-
-    transition:
-      opacity .5s ease,
-      transform .7s ease;
-  }
-
-  /* OPENING */
-
-  .dr-envelope-intro.is-opening
-  .dr-envelope-flap {
-    transform: rotateX(175deg);
-  }
-
-  .dr-envelope-intro.is-opening
-  .dr-envelope-seal {
-    opacity: 0;
-
-    transform:
-      translate(-50%, -50%)
-      scale(.8);
-
-    pointer-events: none;
-  }
-
-  .dr-envelope-intro.is-opening
-  .dr-envelope-instruction {
-    opacity: 0;
-  }
-
-  .dr-envelope-intro.is-opening
-  .dr-envelope {
-    transform: translateY(-12px);
-  }
-
-  /* EXIT */
-
-  .dr-envelope-intro.is-complete {
-    min-height: 0;
-    height: 0;
-
-    padding-top: 0;
-    padding-bottom: 0;
-
-    opacity: 0;
-
-    pointer-events: none;
-  }
-
-  /* LETTER IS REVEALED AFTER OPENING */
-
-  .dr-envelope-intro:not(.is-complete)
-  ~ .letter-wrap .paper {
-    opacity: 0 !important;
   }
 
 }
-  </style>
-  <link rel="stylesheet" href="/dominic-ryan-navigation.css">
+
+</style>
+
+<link rel="stylesheet" href="/dominic-ryan-navigation.css">
+
 </head>
 
 <body id="top">
@@ -2293,39 +1972,6 @@ transition:
     </nav>
 
     <main>
-<!-- MOBILE ENVELOPE INTRODUCTION -->
-
-<div class="dr-envelope-intro" id="dr-envelope-intro">
-
-  <div class="dr-envelope-instruction">
-    TAP THE SEAL OR SCROLL TO OPEN
-    <span aria-hidden="true">↓</span>
-  </div>
-
-  <div class="dr-envelope-scene">
-
-    <div class="dr-envelope" id="dr-envelope">
-
-      <div class="dr-envelope-back"></div>
-
-      <div class="dr-envelope-flap"></div>
-
-      <div class="dr-envelope-pocket"></div>
-
-      <button
-        class="dr-envelope-seal"
-        id="dr-envelope-seal"
-        type="button"
-        aria-label="Open personal message"
-      >
-        DR
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
 
       <!-- LETTER + EDITORIAL PHOTO -->
 
@@ -2414,9 +2060,7 @@ transition:
 
 
        <p class="final-typewriter">
-         <span class="dr-quote-ribbon" aria-hidden="true">
-  <span class="dr-quote-ribbon-material"></span>
-</span>
+        
   <span class="final-typewriter-text">𝘼𝙛𝙩𝙚𝙧 𝙖𝙡𝙡, 𝙬𝙚 𝙨𝙥𝙚𝙣𝙙 𝙨𝙤 𝙢𝙪𝙘𝙝 𝙤𝙛 𝙡𝙞𝙛𝙚 𝙡𝙚𝙖𝙧𝙣𝙞𝙣𝙜 𝙝𝙤𝙬 𝙩𝙤 𝙨𝙚𝙚 𝙖𝙣𝙙 𝙞𝙣𝙩𝙚𝙧𝙥𝙧𝙚𝙩 𝙩𝙝𝙚 𝙬𝙤𝙧𝙡𝙙 ⸺ 𝙥𝙚𝙧𝙝𝙖𝙥𝙨 𝙩𝙝𝙚 𝙜𝙧𝙚𝙖𝙩𝙚𝙧 𝙬𝙞𝙨𝙙𝙤𝙢 𝙡𝙞𝙚𝙨 𝙞𝙣 𝙠𝙣𝙤𝙬𝙞𝙣𝙜 𝙬𝙝𝙚𝙣 𝙩𝙤 𝙨𝙞𝙢𝙥𝙡𝙮 𝙚𝙭𝙥𝙚𝙧𝙞𝙚𝙣𝙘𝙚 𝙞𝙩. </span><span
 class="final-typewriter-ornament"
     style="
@@ -3080,41 +2724,7 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("load", () => {
   window.scrollTo(0, 0);
 });
-    /* =======================================================
-   CHAMPAGNE RIBBON — PAPER EDGE ALIGNMENT
-   ======================================================= */
 
-const drQuote = document.querySelector(".final-typewriter");
-const drRibbon = document.querySelector(".dr-quote-ribbon");
-
-function drAlignRibbon() {
-
-  if (!drQuote || !drRibbon) return;
-
-  const paper = drQuote.closest(".paper");
-
-  if (!paper) return;
-
-  const paperLeft = paper.getBoundingClientRect().left;
-  const quoteLeft = drQuote.getBoundingClientRect().left;
-
-  const offset = quoteLeft - paperLeft;
-
-  drQuote.style.setProperty(
-    "--dr-ribbon-edge-offset",
-    `${offset}px`
-  );
-
-}
-
-window.addEventListener("resize", drAlignRibbon);
-window.addEventListener("load", drAlignRibbon);
-
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(drAlignRibbon);
-}
-
-drAlignRibbon();
 /* =======================================================
    FINAL STATEMENT — ELEGANT SCROLL-TRIGGERED REVEAL
 
@@ -3162,13 +2772,6 @@ if (finalTypewriter) {
 
     // Begin gradual quote reveal
     finalText.classList.add("reveal-visible");
-    // Unfurl champagne ribbon alongside quote
-
-drAlignRibbon();
-
-if (drRibbon) {
-  drRibbon.classList.add("dr-ribbon-visible");
-}
 
     // Reveal ornament
     setTimeout(() => {
@@ -3294,88 +2897,9 @@ function handleFinalScroll() {
 </script>
 
 <script defer src="/dominic-ryan-swipe.js?v=1"></script>
-<script>
-/* =========================================================
-   DOMINIC RYAN — MOBILE ENVELOPE INTERACTION
-   ========================================================= */
 
-(() => {
-  "use strict";
+<script defer src="/dominic-ryan-envelope-addon.js?v=2"></script>
 
-  if (!window.matchMedia("(max-width: 760px)").matches) {
-    return;
-  }
-
-  const intro = document.getElementById("dr-envelope-intro");
-  const seal = document.getElementById("dr-envelope-seal");
-  const paper = document.querySelector(".paper");
-
-  if (!intro || !seal || !paper) {
-    return;
-  }
-
-  let opening = false;
-  let completed = false;
-  let touchStartY = null;
-
-  function openEnvelope() {
-
-    if (opening || completed) return;
-
-    opening = true;
-
-    intro.classList.add("is-opening");
-
-    setTimeout(() => {
-
-      intro.classList.add("is-complete");
-
-      paper.classList.add("mobile-paper-visible");
-
-      completed = true;
-
-    }, 1250);
-
-  }
-
-  /* TAP */
-
-  seal.addEventListener("click", openEnvelope);
-
-  /* SWIPE UP */
-
-  intro.addEventListener("touchstart", event => {
-
-    touchStartY = event.touches[0].clientY;
-
-  }, { passive: true });
-
-  intro.addEventListener("touchend", event => {
-
-    if (touchStartY === null) return;
-
-    const touchEndY = event.changedTouches[0].clientY;
-
-    if (touchStartY - touchEndY > 35) {
-      openEnvelope();
-    }
-
-    touchStartY = null;
-
-  }, { passive: true });
-
-  /* MOUSE WHEEL / TRACKPAD */
-
-  intro.addEventListener("wheel", event => {
-
-    if (event.deltaY > 5) {
-      openEnvelope();
-    }
-
-  }, { passive: true });
-
-})();
-</script>
 </body>
 
 </html>
