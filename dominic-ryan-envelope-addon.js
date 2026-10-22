@@ -1,20 +1,17 @@
 /* =========================================================
    DOMINIC RYAN
-   MOBILE CORRESPONDENCE — SCROLL-DRIVEN ENTRANCE
+   MOBILE CORRESPONDENCE — VERSION 3
 
-   Inspired by The Maison's scroll-responsive entrance.
+   Scroll-driven envelope introduction
+   Refined wax seal
+   Shorter animation runway
+   Mobile only
 
-   Features:
-   - Mobile only
-   - Refined ivory envelope
-   - Layered paper folds
-   - Champagne wax seal
-   - Authentic DR monogram
-   - Scroll-responsive opening
-   - Tap-to-open interaction
-   - Reversible animation
-   - Animated directional arrow
-   - Existing letter remains unchanged
+   Requires:
+   - .letter-wrap
+   - .paper
+   - /dr-reveals-removebg-preview.png
+
    ========================================================= */
 
 (() => {
@@ -24,42 +21,26 @@
      MOBILE ONLY
      ========================================================= */
 
-  if (
-    !window.matchMedia("(max-width:760px)").matches
-  ) {
+  if (!window.matchMedia("(max-width:760px)").matches) {
     return;
   }
 
-  /* Prevent duplicate initialization */
-
-  if (
-    document.getElementById(
-      "dr-correspondence-threshold"
-    )
-  ) {
+  if (document.getElementById("dr-correspondence-threshold")) {
     return;
   }
 
-  /* =========================================================
-     EXISTING WEBSITE ELEMENTS
-     ========================================================= */
-
-  const letterWrap =
-    document.querySelector(".letter-wrap");
-
-  const paper =
-    document.querySelector(".paper");
+  const letterWrap = document.querySelector(".letter-wrap");
+  const paper = document.querySelector(".paper");
 
   if (!letterWrap || !paper) {
     return;
   }
 
   /* =========================================================
-     STYLES
+     STYLING
      ========================================================= */
 
-  const style =
-    document.createElement("style");
+  const style = document.createElement("style");
 
   style.textContent = `
 
@@ -70,72 +51,55 @@
          ===================================================== */
 
       #dr-correspondence-threshold {
+        --dr-progress: 0;
+        --dr-instruction: 1;
 
-        --dr-progress:0;
+        position: relative;
 
-        position:relative;
+        height: 132svh;
+        min-height: 0;
 
-        height:155svh;
+        background: var(--bg, #f2ede6);
 
-        min-height:700px;
-
-        background:
-          var(--bg,#f2ede6);
-
-        isolation:isolate;
-
+        isolation: isolate;
       }
 
       /* =====================================================
-         STICKY SCENE
+         STICKY STAGE
          ===================================================== */
 
       #dr-correspondence-stage {
+        position: sticky;
 
-        position:sticky;
+        top: 0;
 
-        top:0;
+        height: 100svh;
+        min-height: 420px;
 
-        height:100svh;
+        overflow: hidden;
 
-        min-height:420px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
 
-        overflow:hidden;
-
-        display:flex;
-
-        align-items:center;
-
-        justify-content:center;
-
-        flex-direction:column;
-
-        padding:
-          12px
-          14px
-          16px;
+        padding: 12px 14px 16px;
 
         background:
           radial-gradient(
-            ellipse 70% 48%
-            at 50% 48%,
+            ellipse 70% 48% at 50% 48%,
             rgba(255,250,241,.5),
             transparent 90%
           );
-
       }
 
-      /* Subtle atmospheric vignette */
-
       #dr-correspondence-stage::before {
+        content: "";
 
-        content:"";
+        position: absolute;
+        inset: 0;
 
-        position:absolute;
-
-        inset:0;
-
-        pointer-events:none;
+        pointer-events: none;
 
         background:
           radial-gradient(
@@ -143,7 +107,6 @@
             transparent 32%,
             rgba(102,79,59,.028) 100%
           );
-
       }
 
       /* =====================================================
@@ -151,34 +114,23 @@
          ===================================================== */
 
       .dr-correspondence-group {
+        position: relative;
 
-        position:relative;
+        width: min(80vw,390px);
 
-        width:min(80vw,390px);
-
-        flex:none;
+        flex: none;
 
         transform:
           translateY(
-            calc(
-              var(--dr-progress) * -28px
-            )
+            calc(var(--dr-progress) * -12px)
           )
           scale(
-            calc(
-              1 - var(--dr-progress) * .055
-            )
+            calc(1 - var(--dr-progress) * .035)
           );
 
-        opacity:
-          calc(
-            1 - var(--dr-progress) * 1.25
-          );
+        opacity: var(--dr-envelope-opacity,1);
 
-        will-change:
-          transform,
-          opacity;
-
+        will-change: transform,opacity;
       }
 
       /* =====================================================
@@ -186,36 +138,25 @@
          ===================================================== */
 
       .dr-correspondence-envelope {
+        position: relative;
 
-        position:relative;
+        width: 100%;
+        aspect-ratio: 1.43;
 
-        width:100%;
-
-        aspect-ratio:1.43;
-
-        perspective:1200px;
+        perspective: 1200px;
 
         filter:
           drop-shadow(
-            0 26px 28px
-            rgba(66,48,34,.12)
+            0 26px 28px rgba(66,48,34,.12)
           )
           drop-shadow(
-            0 8px 12px
-            rgba(66,48,34,.07)
+            0 8px 12px rgba(66,48,34,.07)
           );
-
       }
 
-      /* =====================================================
-         BACKING PAPER
-         ===================================================== */
-
       .dr-correspondence-back {
-
-        position:absolute;
-
-        inset:0;
+        position: absolute;
+        inset: 0;
 
         background:
           linear-gradient(
@@ -226,24 +167,17 @@
           );
 
         border:
-          1px solid
-          rgba(135,113,93,.25);
-
+          1px solid rgba(135,113,93,.25);
       }
 
-      /* =====================================================
-         INTERIOR SHADOW
-         ===================================================== */
-
       .dr-correspondence-inside {
+        position: absolute;
 
-        position:absolute;
+        left: 2px;
+        right: 2px;
+        top: 2px;
 
-        left:2px;
-        right:2px;
-        top:2px;
-
-        height:70%;
+        height: 70%;
 
         background:
           linear-gradient(
@@ -260,34 +194,29 @@
           );
 
         box-shadow:
-          inset 0 3px 12px
-          rgba(69,51,37,.13);
-
+          inset 0 3px 12px rgba(69,51,37,.13);
       }
 
       /* =====================================================
-         FRONT FOLDS
+         ENVELOPE FRONT FOLDS
          ===================================================== */
 
       .dr-correspondence-front {
+        position: absolute;
 
-        position:absolute;
+        inset: 0;
 
-        inset:0;
+        z-index: 3;
 
-        z-index:3;
+        width: 100%;
+        height: 100%;
 
-        width:100%;
-        height:100%;
-
-        overflow:visible;
+        overflow: visible;
 
         filter:
           drop-shadow(
-            0 -1px 1px
-            rgba(100,78,57,.035)
+            0 -1px 1px rgba(100,78,57,.035)
           );
-
       }
 
       /* =====================================================
@@ -295,54 +224,45 @@
          ===================================================== */
 
       .dr-correspondence-flap {
+        position: absolute;
 
-        position:absolute;
+        z-index: 5;
 
-        z-index:5;
+        left: 0;
+        top: 0;
 
-        left:0;
-        top:0;
+        width: 100%;
+        height: 58%;
 
-        width:100%;
-        height:58%;
-
-        transform-origin:
-          top center;
+        transform-origin: top center;
 
         transform:
           rotateX(
             calc(
-              var(--dr-progress) * -179deg
+              var(--dr-flap-progress,0) * -179deg
             )
           );
 
-        transform-style:
-          preserve-3d;
+        transform-style: preserve-3d;
+        backface-visibility: visible;
 
-        backface-visibility:
-          visible;
+        will-change: transform;
 
-        will-change:transform;
-
-        pointer-events:none;
-
+        pointer-events: none;
       }
 
       .dr-correspondence-flap svg {
+        display: block;
 
-        display:block;
+        width: 100%;
+        height: 100%;
 
-        width:100%;
-        height:100%;
-
-        overflow:visible;
+        overflow: visible;
 
         filter:
           drop-shadow(
-            0 3px 2px
-            rgba(91,68,47,.07)
+            0 3px 2px rgba(91,68,47,.07)
           );
-
       }
 
       /* =====================================================
@@ -350,41 +270,30 @@
          ===================================================== */
 
       .dr-correspondence-seal {
+        position: absolute;
 
-        position:absolute;
+        z-index: 7;
 
-        z-index:7;
+        left: 50%;
+        top: 49%;
 
-        left:50%;
-        top:49%;
-
-        width:
-          clamp(
-            53px,
-            15vw,
-            70px
-          );
-
-        aspect-ratio:1;
+        width: clamp(60px,16vw,76px);
+        aspect-ratio: 1;
 
         transform:
           translate(-50%,-50%)
           scale(
             calc(
-              1 - var(--dr-progress) * .22
+              1 - var(--dr-flap-progress,0) * .16
             )
           );
 
-        opacity:
-          calc(
-            1 - var(--dr-progress) * 3.6
-          );
+        opacity: var(--dr-seal-opacity,1);
 
-        border:0;
+        border: 0;
+        border-radius: 50%;
 
-        border-radius:50%;
-
-        padding:0;
+        padding: 0;
 
         background:
           radial-gradient(
@@ -396,93 +305,71 @@
           );
 
         box-shadow:
-          inset 1px 2px 3px
-          rgba(255,255,255,.9),
+          inset 1px 2px 3px rgba(255,255,255,.9),
+          inset -3px -4px 6px rgba(94,65,42,.23),
+          0 4px 8px rgba(78,53,34,.2),
+          0 0 0 1px rgba(119,90,67,.18);
 
-          inset -3px -4px 6px
-          rgba(94,65,42,.23),
+        cursor: pointer;
 
-          0 4px 8px
-          rgba(78,53,34,.2),
+        display: grid;
+        place-items: center;
 
-          0 0 0 1px
-          rgba(119,90,67,.18);
-
-        cursor:pointer;
-
-        display:grid;
-
-        place-items:center;
-
-        overflow:hidden;
-
+        overflow: hidden;
       }
 
-      /* Recessed wax detailing */
-
       .dr-correspondence-seal::before {
+        content: "";
 
-        content:"";
+        position: absolute;
 
-        position:absolute;
-
-        inset:8%;
+        inset: 9%;
 
         border:
-          1px solid
-          rgba(255,252,243,.85);
+          1px solid rgba(255,252,243,.54);
 
-        border-radius:50%;
+        border-radius: 50%;
 
         box-shadow:
-          0 0 0 2px
-          rgba(127,94,68,.26),
-
-          inset 0 1px 3px
-          rgba(112,79,54,.14);
-
+          inset 0 1px 3px rgba(112,79,54,.12);
       }
 
       /* =====================================================
-         ACTUAL DOMINIC RYAN MONOGRAM
+         MONOGRAM — REFINED SCALE
          ===================================================== */
 
       .dr-correspondence-seal img {
+        position: relative;
 
-        position:relative;
+        width: 52%;
+        height: 52%;
 
-        width:70%;
-        height:70%;
+        object-fit: contain;
 
-        object-fit:contain;
+        transform:
+          translate(-4%,-5%);
 
         filter:
-          sepia(.48)
-          saturate(.5)
-          brightness(.75);
+          sepia(.4)
+          saturate(.55)
+          brightness(.72);
 
-        opacity:.85;
+        opacity: .88;
 
-        pointer-events:none;
-
+        pointer-events: none;
       }
 
       /* =====================================================
-         INSTRUCTION BELOW ENVELOPE
+         OPENING INSTRUCTION
          ===================================================== */
 
       .dr-correspondence-prompt {
+        position: relative;
 
-        position:relative;
-
-        z-index:8;
+        z-index: 8;
 
         margin-top:
-          clamp(
-            34px,
-            6svh,
-            65px
-          );
+          clamp(34px,6svh,65px);
 
         font:
           500
@@ -492,21 +379,17 @@
           Arial,
           sans-serif;
 
-        letter-spacing:.16em;
+        letter-spacing: .16em;
 
-        text-align:center;
+        text-align: center;
 
-        color:#84776d;
+        color: #84776d;
 
-        opacity:
-          calc(
-            1 - var(--dr-progress) * 2.7
-          );
+        opacity: var(--dr-prompt-opacity,1);
 
-        white-space:nowrap;
+        white-space: nowrap;
 
-        pointer-events:none;
-
+        pointer-events: none;
       }
 
       /* =====================================================
@@ -514,74 +397,66 @@
          ===================================================== */
 
       .dr-correspondence-arrow {
+        display: block;
 
-        display:block;
+        margin: 0 auto 12px;
 
-        margin:
-          0 auto 12px;
-
-        width:18px;
-        height:25px;
+        width: 18px;
+        height: 25px;
 
         animation:
           drCorrespondenceFloat
           2.5s
           ease-in-out
           infinite;
-
       }
 
       .dr-correspondence-arrow svg {
+        display: block;
 
-        display:block;
+        width: 100%;
+        height: 100%;
 
-        width:100%;
-        height:100%;
+        fill: none;
 
-        fill:none;
+        stroke: #95857b;
+        stroke-width: 1.6;
 
-        stroke:#95857b;
-
-        stroke-width:1.6;
-
-        stroke-linecap:round;
-
-        stroke-linejoin:round;
-
+        stroke-linecap: round;
+        stroke-linejoin: round;
       }
 
       @keyframes drCorrespondenceFloat {
 
         0%,100% {
-          transform:translateY(-3px);
+          transform: translateY(-3px);
         }
 
         50% {
-          transform:translateY(4px);
+          transform: translateY(4px);
         }
 
       }
 
       /* =====================================================
-         AMBIENT LIGHT
+         SUBTLE AMBIENT LIGHT
          ===================================================== */
 
+      #dr-correspondence-threshold
       .dr-correspondence-glow {
+        position: absolute;
 
-        position:absolute;
+        z-index: 1;
 
-        z-index:1;
+        pointer-events: none;
 
-        pointer-events:none;
+        left: 50%;
+        top: 50%;
 
-        left:50%;
-        top:50%;
+        width: 85%;
+        height: 70%;
 
-        width:85%;
-        height:70%;
-
-        transform:
-          translate(-50%,-50%);
+        transform: translate(-50%,-50%);
 
         background:
           radial-gradient(
@@ -594,53 +469,36 @@
           calc(
             .25 + var(--dr-progress) * .45
           );
-
       }
 
       /* =====================================================
-         EXISTING LETTER
+         MOBILE LETTER VISIBILITY
          ===================================================== */
 
       body.dr-correspondence-enabled .paper {
-
-        animation:none !important;
+        animation: none !important;
 
         transition:
-          opacity .75s
-          cubic-bezier(.22,.61,.36,1),
+          opacity .75s cubic-bezier(.22,.61,.36,1),
           box-shadow .75s ease !important;
 
-        opacity:1 !important;
-
+        opacity: 1 !important;
       }
 
       body.dr-correspondence-enabled .paper-content {
-
-        animation:none !important;
-
-        opacity:1 !important;
-
+        animation: none !important;
+        opacity: 1 !important;
       }
-
-      /* =====================================================
-         ACCESSIBILITY
-         ===================================================== */
 
       #dr-correspondence-threshold:focus-visible {
-
-        outline:
-          2px solid #9d8873;
-
-        outline-offset:-4px;
-
+        outline: 2px solid #9d8873;
+        outline-offset: -4px;
       }
 
-      @media (
-        prefers-reduced-motion:reduce
-      ) {
+      @media (prefers-reduced-motion:reduce) {
 
         .dr-correspondence-arrow {
-          animation:none !important;
+          animation: none !important;
         }
 
       }
@@ -652,14 +510,12 @@
   document.head.appendChild(style);
 
   /* =========================================================
-     CREATE ENVELOPE
+     ENVELOPE MARKUP
      ========================================================= */
 
-  const threshold =
-    document.createElement("div");
+  const threshold = document.createElement("div");
 
-  threshold.id =
-    "dr-correspondence-threshold";
+  threshold.id = "dr-correspondence-threshold";
 
   threshold.setAttribute(
     "aria-label",
@@ -679,15 +535,9 @@
 
         <div class="dr-correspondence-envelope">
 
-          <!-- BACKING -->
-
           <div class="dr-correspondence-back"></div>
 
-          <!-- INTERIOR -->
-
           <div class="dr-correspondence-inside"></div>
-
-          <!-- OPENING FLAP -->
 
           <div
             class="dr-correspondence-flap"
@@ -709,9 +559,7 @@
                   y2="1"
                 >
 
-                  <stop
-                    stop-color="#fbf9f5"
-                  />
+                  <stop stop-color="#fbf9f5"/>
 
                   <stop
                     offset=".65"
@@ -738,8 +586,6 @@
 
           </div>
 
-          <!-- FRONT PAPER FOLDS -->
-
           <svg
             class="dr-correspondence-front"
             viewBox="0 0 400 280"
@@ -757,9 +603,7 @@
                 y2="1"
               >
 
-                <stop
-                  stop-color="#faf8f4"
-                />
+                <stop stop-color="#faf8f4"/>
 
                 <stop
                   offset="1"
@@ -776,9 +620,7 @@
                 y2="1"
               >
 
-                <stop
-                  stop-color="#f6f2ed"
-                />
+                <stop stop-color="#f6f2ed"/>
 
                 <stop
                   offset="1"
@@ -795,9 +637,7 @@
                 y2="1"
               >
 
-                <stop
-                  stop-color="#f7f3ee"
-                />
+                <stop stop-color="#f7f3ee"/>
 
                 <stop
                   offset="1"
@@ -808,8 +648,6 @@
 
             </defs>
 
-            <!-- LEFT FOLD -->
-
             <path
               d="M0 0L204 144L0 280Z"
               fill="url(#dr-left-fold)"
@@ -817,16 +655,12 @@
               stroke-width=".8"
             />
 
-            <!-- RIGHT FOLD -->
-
             <path
               d="M400 0L196 144L400 280Z"
               fill="url(#dr-right-fold)"
               stroke="#d3c4b7"
               stroke-width=".8"
             />
-
-            <!-- LOWER FOLD -->
 
             <path
               d="M0 280L200 138L400 280Z"
@@ -836,8 +670,6 @@
             />
 
           </svg>
-
-          <!-- WAX SEAL -->
 
           <button
             class="dr-correspondence-seal"
@@ -853,8 +685,6 @@
           </button>
 
         </div>
-
-        <!-- INSTRUCTION -->
 
         <div class="dr-correspondence-prompt">
 
@@ -895,50 +725,75 @@
 
   /* =========================================================
      SCROLL PROGRESS
-     SAME PRINCIPLE AS THE MAISON
      ========================================================= */
 
   let ticking = false;
 
   const clamp = value =>
-    Math.min(
-      1,
-      Math.max(0, value)
-    );
+    Math.min(1,Math.max(0,value));
 
   function update() {
 
     ticking = false;
 
-    const max =
-      Math.max(
-        1,
-        threshold.offsetHeight -
-        window.innerHeight
-      );
+    const max = Math.max(
+      1,
+      threshold.offsetHeight - window.innerHeight
+    );
 
-    const progress =
-      clamp(
-        -threshold
-          .getBoundingClientRect()
-          .top / max
-      );
+    const progress = clamp(
+      -threshold.getBoundingClientRect().top / max
+    );
 
     threshold.style.setProperty(
       "--dr-progress",
       progress.toFixed(4)
     );
 
+    /* Envelope opening */
+
+    const flap = clamp(
+      (progress - .04) / .64
+    );
+
+    /* Envelope disappearance */
+
+    const finish = clamp(
+      (progress - .79) / .21
+    );
+
+    threshold.style.setProperty(
+      "--dr-flap-progress",
+      flap.toFixed(4)
+    );
+
+    threshold.style.setProperty(
+      "--dr-envelope-opacity",
+      (1 - finish).toFixed(4)
+    );
+
+    threshold.style.setProperty(
+      "--dr-seal-opacity",
+      (
+        1 - clamp(
+          (progress - .02) / .24
+        )
+      ).toFixed(4)
+    );
+
+    threshold.style.setProperty(
+      "--dr-prompt-opacity",
+      (
+        1 - clamp(
+          progress / .24
+        )
+      ).toFixed(4)
+    );
+
     threshold.style.pointerEvents =
-      progress > .96
-        ? "none"
-        : "";
+      progress > .96 ? "none" : "";
 
   }
-
-  /* =========================================================
-     OPTIMIZED SCROLL LISTENER
-     ========================================================= */
 
   function tick() {
 
@@ -965,25 +820,18 @@
   );
 
   /* =========================================================
-     TAP SEAL TO OPEN
+     TOUCH SEAL TO OPEN
      ========================================================= */
 
-  function openEnvelope() {
+  const open = () => {
 
     const destination =
       window.scrollY +
-      threshold
-        .getBoundingClientRect()
-        .top +
-      Math.max(
-        0,
-        threshold.offsetHeight -
-        window.innerHeight
-      );
+      letterWrap.getBoundingClientRect().top;
 
     window.scrollTo({
 
-      top:destination,
+      top: destination,
 
       behavior:
         window.matchMedia(
@@ -994,24 +842,14 @@
 
     });
 
-  }
+  };
 
   threshold
-    .querySelector(
-      ".dr-correspondence-seal"
-    )
-    .addEventListener(
-      "click",
-      openEnvelope
-    );
+    .querySelector(".dr-correspondence-seal")
+    .addEventListener("click",open);
 
   /* =========================================================
-     NATURAL SWIPE / SCROLL
-
-     Do not intercept touchmove.
-
-     Native scrolling controls the envelope's
-     opening progress, just as it does on The Maison.
+     INITIALIZE
      ========================================================= */
 
   update();
