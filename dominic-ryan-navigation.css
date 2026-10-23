@@ -6,6 +6,14 @@
    - The Maison
    - Explore the Collection
 
+   Includes:
+   - Shared primary navigation
+   - Traveling active underline
+   - Desktop and mobile navigation
+   - Unified editorial footer
+   - Native cross-page transitions
+   - JavaScript animation fallback
+
    ========================================================= */
 
 
@@ -139,7 +147,73 @@
 }
 
 
-/* MOBILE PRIMARY NAVIGATION */
+/* =========================================================
+   02 — TRAVELING NAVIGATION UNDERLINE
+
+   One animated underline moves between page labels.
+
+   JavaScript positions and animates this element.
+
+   ========================================================= */
+
+
+/* NAVIGATION POSITIONING CONTEXT */
+
+.collection-navigation.dr-travel-nav,
+.maison-primary-nav.dr-travel-nav {
+  position: relative;
+}
+
+
+/* SINGLE MOVING UNDERLINE */
+
+.dr-traveling-underline {
+  position: absolute;
+
+  display: block;
+
+  height: 1px;
+
+  background: #51463e;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  z-index: 2;
+
+  will-change:
+    left,
+    width,
+    opacity;
+}
+
+
+/* HIDE ORIGINAL ACTIVE UNDERLINE
+   WHEN TRAVELING UNDERLINE IS AVAILABLE */
+
+.dr-travel-nav a.active::after,
+.dr-travel-nav a[aria-current="page"]::after {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+
+/* RETAIN HOVER UNDERLINES FOR INACTIVE LINKS */
+
+@media (hover: hover) and (pointer: fine) {
+
+  .dr-travel-nav a:not(.active):not([aria-current="page"]):hover::after {
+    opacity: .65;
+    transform: scaleX(1);
+  }
+
+}
+
+
+/* =========================================================
+   03 — MOBILE PRIMARY NAVIGATION
+   ========================================================= */
 
 @media (max-width: 760px) {
 
@@ -180,7 +254,7 @@
 
 
 /* =========================================================
-   02 — UNIFIED FOOTER CONTAINER
+   04 — UNIFIED FOOTER CONTAINER
    ========================================================= */
 
 .dr-unified-footer {
@@ -213,7 +287,7 @@
 
 
 /* =========================================================
-   03 — FOOTER MONOGRAM & PAGE IDENTIFIER
+   05 — FOOTER MONOGRAM & PAGE IDENTIFIER
    ========================================================= */
 
 .dr-footer-end-mark {
@@ -316,7 +390,7 @@
 
 
 /* =========================================================
-   04 — EDITORIAL DIVIDER
+   06 — EDITORIAL DIVIDER
    ========================================================= */
 
 .dr-footer-rule {
@@ -330,7 +404,7 @@
 
 
 /* =========================================================
-   05 — ITALICIZED BRAND STATEMENT
+   07 — ITALICIZED BRAND STATEMENT
    ========================================================= */
 
 .dr-footer-tagline {
@@ -358,7 +432,7 @@
 
 
 /* =========================================================
-   06 — FOOTER NAVIGATION
+   08 — FOOTER NAVIGATION
    ========================================================= */
 
 .dr-footer-nav {
@@ -399,7 +473,7 @@
 
 
 /* =========================================================
-   07 — FOOTER LINKS
+   09 — FOOTER LINKS
    ========================================================= */
 
 .dr-footer-nav a {
@@ -428,7 +502,7 @@
 
 
 /* =========================================================
-   08 — CURRENT PAGE
+   10 — CURRENT PAGE
    BOLD, NON-CLICKABLE, NO UNDERLINE
    ========================================================= */
 
@@ -452,7 +526,7 @@
 
 
 /* =========================================================
-   09 — ANIMATED FOOTER UNDERLINE
+   11 — ANIMATED FOOTER UNDERLINE
    ========================================================= */
 
 .dr-footer-nav a::after {
@@ -506,7 +580,7 @@
 
 
 /* =========================================================
-   10 — EXPLICIT RETURN TO TOP
+   12 — EXPLICIT RETURN TO TOP
    ========================================================= */
 
 .dr-footer-return {
@@ -554,7 +628,7 @@
 
 
 /* =========================================================
-   11 — MOBILE FOOTER
+   13 — MOBILE FOOTER
    TWO DELIBERATE, SINGLE-LINE ROWS
    ========================================================= */
 
@@ -675,7 +749,7 @@
 
 
 /* =========================================================
-   12 — EXTRA-NARROW MOBILE
+   14 — EXTRA-NARROW MOBILE
    ========================================================= */
 
 @media (max-width: 360px) {
@@ -699,8 +773,10 @@
 
 
 /* =========================================================
-   THE MAISON — HEADER LOGO AND NAME ALIGNMENT
-   Matches A Personal Message and Explore the Collection
+   15 — THE MAISON HEADER ALIGNMENT
+
+   Matches A Personal Message and Explore the Collection.
+
    ========================================================= */
 
 .dr-site-header .dr-brand-mark {
@@ -719,52 +795,55 @@
 .dr-site-header .dr-brand-name {
   display: block;
   margin: 3px 0 0;
-  font-family: "DR Didot", Didot, Georgia, serif;
+
+  font-family:
+    "DR Didot",
+    Didot,
+    Georgia,
+    serif;
+
   font-size: clamp(18px, 1.7vw, 27px);
   font-weight: 400;
   line-height: 1.15;
   letter-spacing: .24em;
+
   color: #4e443d;
 }
 
 @media (max-width: 760px) {
+
   .dr-site-header .dr-brand-mark {
     width: 54px;
   }
+
 }
 
 @media (max-width: 420px) {
+
   .dr-site-header .dr-brand-name {
     font-size: 18px;
     letter-spacing: .17em;
   }
+
 }
 
 
 /* =========================================================
-   13 — DESKTOP + MOBILE CROSS-PAGE TRANSITIONS
+   16 — DESKTOP + MOBILE CROSS-PAGE TRANSITIONS
 
    Native View Transitions with JavaScript fallback.
-
-   Applies to:
-   - A Personal Message
-   - The Maison
-   - Explore the Collection
 
    ========================================================= */
 
 
-/* Native cross-document transition opt-in.
-   Must be present on both pages. */
+/* NATIVE CROSS-DOCUMENT TRANSITION OPT-IN */
 
 @view-transition {
   navigation: auto;
 }
 
 
-/* =========================================================
-   TRANSITION DIRECTION VARIABLES
-   ========================================================= */
+/* DIRECTION VARIABLES */
 
 :root {
   --dr-swipe-out: -22px;
@@ -789,9 +868,7 @@
 }
 
 
-/* =========================================================
-   NATIVE EXIT
-   ========================================================= */
+/* NATIVE EXIT */
 
 @keyframes dr-page-out {
 
@@ -808,9 +885,7 @@
 }
 
 
-/* =========================================================
-   NATIVE ENTRY
-   ========================================================= */
+/* NATIVE ENTRY */
 
 @keyframes dr-page-in {
 
@@ -838,9 +913,7 @@ html.dr-fallback-leaving body {
 }
 
 
-/* =========================================================
-   JAVASCRIPT FALLBACK — ENTRY
-   ========================================================= */
+/* JAVASCRIPT FALLBACK — ENTRY */
 
 html.dr-fallback-entering body {
   animation:
@@ -849,9 +922,7 @@ html.dr-fallback-entering body {
 }
 
 
-/* =========================================================
-   FALLBACK EXIT KEYFRAMES
-   ========================================================= */
+/* FALLBACK EXIT KEYFRAMES */
 
 @keyframes dr-fallback-out {
 
@@ -868,9 +939,7 @@ html.dr-fallback-entering body {
 }
 
 
-/* =========================================================
-   FALLBACK ENTRY KEYFRAMES
-   ========================================================= */
+/* FALLBACK ENTRY KEYFRAMES */
 
 @keyframes dr-fallback-in {
 
