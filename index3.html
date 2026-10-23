@@ -4,14 +4,33 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- Replay the DR introduction and mobile envelope on every page load. -->
+  <!-- First-visit introduction: persist across refreshes and return visits. -->
   <script>
-    try {
-      sessionStorage.removeItem("dr-intro-shown");
-      sessionStorage.removeItem("dr-envelope-v7-opened");
-    } catch (_) {
-      /* Animations still run when session storage is unavailable. */
-    }
+    (() => {
+      "use strict";
+      const VISITED_KEY = "dr-personal-message-intro-seen-v1";
+      let alreadyVisited = false;
+      try {
+        alreadyVisited = localStorage.getItem(VISITED_KEY) === "yes";
+        if (!alreadyVisited) localStorage.setItem(VISITED_KEY, "yes");
+      } catch (_) {
+        // When persistent storage is unavailable, retain once-per-tab behavior.
+        try {
+          alreadyVisited = sessionStorage.getItem(VISITED_KEY) === "yes";
+          if (!alreadyVisited) sessionStorage.setItem(VISITED_KEY, "yes");
+        } catch (_) {}
+      }
+      try {
+        if (alreadyVisited) {
+          sessionStorage.setItem("dr-intro-shown", "true");
+          sessionStorage.setItem("dr-envelope-v7-opened", "yes");
+        } else {
+          sessionStorage.removeItem("dr-intro-shown");
+          sessionStorage.removeItem("dr-envelope-v7-opened");
+        }
+      } catch (_) {}
+      window.drReturningVisitor = alreadyVisited;
+    })();
   </script>
 
   <meta
@@ -2888,7 +2907,7 @@ function handleFinalScroll() {
 <script src="dominic-ryan-contact-addon.js" defer></script>
 
 <!-- BRANDED INTRODUCTION -->
-<script src="/dominic-ryan-intro.js?v=10"></script>
+<script>if (!window.drReturningVisitor) { const intro = document.createElement("script"); intro.src = "/dominic-ryan-intro.js?v=10"; intro.async = false; document.head.appendChild(intro); }</script>
 
 <script>
 (() => {
@@ -2910,7 +2929,15 @@ function handleFinalScroll() {
 <script defer src="/dominic-ryan-swipe.js?v=9"></script>
 <!-- MOBILE CORRESPONDENCE EXPERIENCE — VERSION 10 -->
 
-<script defer src="/dr-envelope-mobile.js?v=200"></script>
+<script>
+  if (window.drReturningVisitor) {
+    document.querySelector(".paper")?.classList.add("mobile-paper-visible", "dr-letter-revealed");
+  } else {
+    const envelope = document.createElement("script");
+    envelope.src = "/dr-envelope-mobile.js?v=200";
+    document.body.appendChild(envelope);
+  }
+</script>
 </body>
 
 </html>
