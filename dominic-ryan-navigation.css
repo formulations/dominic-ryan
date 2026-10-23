@@ -742,7 +742,7 @@
 
 
 /* =========================================================
-   13 — MOBILE CROSS-PAGE TRANSITIONS
+   13 — DESKTOP + MOBILE CROSS-PAGE TRANSITIONS
 
    Native View Transitions with JavaScript fallback.
 
@@ -763,109 +763,125 @@
 
 
 /* =========================================================
-   MOBILE TRANSITION ANIMATIONS
+   TRANSITION DIRECTION VARIABLES
    ========================================================= */
 
-@media (max-width: 760px) {
+:root {
+  --dr-swipe-out: -22px;
+  --dr-swipe-in: 22px;
+}
 
-  /* DIRECTION VARIABLES */
 
-  :root {
-    --dr-swipe-out: -22px;
-    --dr-swipe-in: 22px;
+/* =========================================================
+   NATIVE VIEW TRANSITIONS
+   ========================================================= */
+
+::view-transition-old(root) {
+  animation:
+    280ms cubic-bezier(.22, .7, .2, 1)
+    both dr-page-out;
+}
+
+::view-transition-new(root) {
+  animation:
+    280ms cubic-bezier(.22, .7, .2, 1)
+    both dr-page-in;
+}
+
+
+/* =========================================================
+   NATIVE EXIT
+   ========================================================= */
+
+@keyframes dr-page-out {
+
+  from {
+    opacity: 1;
+    transform: translateX(0);
   }
 
-
-  /* NATIVE VIEW TRANSITIONS */
-
-  ::view-transition-old(root) {
-    animation:
-      280ms cubic-bezier(.22, .7, .2, 1)
-      both dr-page-out;
+  to {
+    opacity: .88;
+    transform: translateX(var(--dr-swipe-out));
   }
 
-  ::view-transition-new(root) {
-    animation:
-      280ms cubic-bezier(.22, .7, .2, 1)
-      both dr-page-in;
+}
+
+
+/* =========================================================
+   NATIVE ENTRY
+   ========================================================= */
+
+@keyframes dr-page-in {
+
+  from {
+    opacity: .88;
+    transform: translateX(var(--dr-swipe-in));
   }
 
-
-  @keyframes dr-page-out {
-
-    from {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    to {
-      opacity: .88;
-      transform: translateX(var(--dr-swipe-out));
-    }
-
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 
+}
 
-  @keyframes dr-page-in {
 
-    from {
-      opacity: .88;
-      transform: translateX(var(--dr-swipe-in));
-    }
+/* =========================================================
+   JAVASCRIPT FALLBACK — EXIT
+   ========================================================= */
 
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+html.dr-fallback-leaving body {
+  animation:
+    280ms cubic-bezier(.22, .7, .2, 1)
+    both dr-fallback-out;
+}
 
+
+/* =========================================================
+   JAVASCRIPT FALLBACK — ENTRY
+   ========================================================= */
+
+html.dr-fallback-entering body {
+  animation:
+    280ms cubic-bezier(.22, .7, .2, 1)
+    both dr-fallback-in;
+}
+
+
+/* =========================================================
+   FALLBACK EXIT KEYFRAMES
+   ========================================================= */
+
+@keyframes dr-fallback-out {
+
+  from {
+    opacity: 1;
+    transform: translateX(0);
   }
 
-
-  /* JAVASCRIPT FALLBACK — EXIT */
-
-  html.dr-fallback-leaving body {
-    animation:
-      280ms cubic-bezier(.22, .7, .2, 1)
-      both dr-fallback-out;
+  to {
+    opacity: .88;
+    transform: translateX(var(--dr-swipe-out));
   }
 
+}
 
-  /* JAVASCRIPT FALLBACK — ENTRY */
 
-  html.dr-fallback-entering body {
-    animation:
-      280ms cubic-bezier(.22, .7, .2, 1)
-      both dr-fallback-in;
+/* =========================================================
+   FALLBACK ENTRY KEYFRAMES
+   ========================================================= */
+
+@keyframes dr-fallback-in {
+
+  from {
+    opacity: .88;
+    transform: translateX(var(--dr-swipe-in));
   }
 
-
-  @keyframes dr-fallback-out {
-
-    from {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    to {
-      opacity: .88;
-      transform: translateX(var(--dr-swipe-out));
-    }
-
-  }
-
-
-  @keyframes dr-fallback-in {
-
-    from {
-      opacity: .88;
-      transform: translateX(var(--dr-swipe-in));
-    }
-
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 
 }
