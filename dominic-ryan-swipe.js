@@ -11,7 +11,9 @@
    - index3.html testing support
    - Contact modal protection
    - SociableKIT Highlights protection
-   - Reduced-motion accessibility
+
+   Navigation animations are not conditional on
+   the device's Reduce Motion preference.
    ========================================================= */
 
 (() => {
@@ -26,10 +28,6 @@
   if (!window.matchMedia(MOBILE).matches) {
     return;
   }
-
-  const reduceMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  );
 
   /* =========================================================
      PAGE ORDER
@@ -81,6 +79,7 @@
      ========================================================= */
 
   const nativeTransitions =
+    typeof CSS !== "undefined" &&
     CSS.supports(
       "view-transition-name",
       "none"
@@ -131,8 +130,7 @@
 
   if (
     fallbackEntry &&
-    !nativeTransitions &&
-    !reduceMotion.matches
+    !nativeTransitions
   ) {
     const startEntry = () => {
 
@@ -187,9 +185,13 @@
     "#dr-contact-overlay",
     "video",
 
+    /* SociableKIT Instagram Highlights */
+
     ".instagram-highlights",
     ".sk-ww-instagram-story-highlights",
     "[data-embed-id='25723348']",
+
+    /* Expanded story viewer */
 
     ".sk-story-viewer-layout",
     ".sk-story-frame",
@@ -265,15 +267,6 @@
         direction === 1 ? "left" : "right"
       );
     } catch (_) {}
-
-    /* =======================================================
-       REDUCED MOTION
-       ======================================================= */
-
-    if (reduceMotion.matches) {
-      window.location.assign(destination);
-      return;
-    }
 
     /* =======================================================
        NATIVE VIEW TRANSITIONS
