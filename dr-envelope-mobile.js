@@ -5,16 +5,19 @@
 
    REFINEMENTS
    ---------------------------------------------------------
-   01. Presentation positioned directly beneath navigation
-   02. Excessive vertical gap eliminated
-   03. Square-cornered ivory presentation layer
-   04. Original envelope, seal and monogram preserved
-   05. Original fonts and invitation preserved
-   06. Original letter extraction animation preserved
-   07. No automatic scrolling
-   08. Original website restored after opening
-   09. Envelope reappears on every refresh
-   10. Desktop unaffected
+   01. Presentation directly beneath navigation
+   02. No excessive vertical gap
+   03. Square-cornered ivory presentation
+   04. Original envelope and champagne seal preserved
+   05. Original DR monogram preserved exactly
+   06. Only the TOP of the letter rises from the envelope
+   07. Letter text never scrolls inside the envelope
+   08. Animated letter uses original Avenir Next typography
+   09. Smooth transition to the complete original letter
+   10. No automatic page scrolling during opening
+   11. Original website restored after opening
+   12. Envelope reappears on every refresh
+   13. Desktop unaffected
 
    ========================================================= */
 
@@ -76,22 +79,18 @@
      ========================================================= */
 
   const CONFIG = {
-
-    monogram:
-      "/dr-envelope-logo.png",
+    monogram: "/dr-envelope-logo.png",
 
     invitationFont:
       "/eb-garamond-latin-400-italic.woff2",
 
-    openingDuration:
-      1050,
+    /* Only a small portion of the stationery emerges. */
+    letterLiftPercent: 18,
 
-    letterRiseDuration:
-      1750,
-
-    handoffDuration:
-      900
-
+    flapDelay: 0,
+    letterDelay: 600,
+    handoffDelay: 2050,
+    completeDelay: 2950
   };
 
   /* =========================================================
@@ -100,7 +99,6 @@
 
   let opened = false;
   let completed = false;
-
   let animationTimers = [];
 
   const originalBodyOverflow =
@@ -111,6 +109,9 @@
 
   const originalBodyTouchAction =
     document.body.style.touchAction;
+
+  const originalScrollBehavior =
+    document.documentElement.style.scrollBehavior;
 
   /* =========================================================
      STYLES
@@ -162,10 +163,6 @@
       font-display: swap;
     }
 
-    /* =====================================================
-       MOBILE ONLY
-       ===================================================== */
-
     @media (max-width: 760px) {
 
       /* ===================================================
@@ -184,11 +181,6 @@
 
       /* ===================================================
          HIDE ORIGINAL CONTENT DURING INTRODUCTION
-
-         IMPORTANT:
-         display:none removes the original hero from
-         layout so its large vertical spacing cannot
-         push the envelope downward.
          =================================================== */
 
       body.dr-envelope-active .letter-wrap {
@@ -227,9 +219,7 @@
       }
 
       /* ===================================================
-         MAIN PRESENTATION
-
-         Independently placed immediately after navigation.
+         PRESENTATION POSITION
          =================================================== */
 
       #dr-envelope-experience {
@@ -244,7 +234,6 @@
         width: 100%;
 
         margin: 16px auto 0;
-
         padding: 0 12px;
 
         isolation: isolate;
@@ -258,9 +247,7 @@
       }
 
       /* ===================================================
-         IVORY PRESENTATION PANEL
-
-         SQUARE CORNERS
+         SQUARE-CORNERED IVORY PRESENTATION
          =================================================== */
 
       .dr-envelope-presentation {
@@ -357,7 +344,6 @@
         letter-spacing: .24em;
 
         text-transform: uppercase;
-
         text-align: center;
 
         color: #756660;
@@ -410,6 +396,10 @@
 
       /* ===================================================
          LETTER EXTRACTION WINDOW
+
+         The clipping area is limited to the upper portion
+         of the envelope. The letter cannot overlap the
+         presentation title.
          =================================================== */
 
       .dr-envelope-letter-window {
@@ -418,9 +408,9 @@
         left: 5%;
         right: 5%;
 
-        top: -92%;
+        top: -24%;
 
-        height: 192%;
+        height: 124%;
 
         z-index: 2;
 
@@ -431,6 +421,9 @@
 
       /* ===================================================
          ANIMATED LETTER
+
+         The entire stationery moves as one physical sheet.
+         No internal scrolling or text translation.
          =================================================== */
 
       .dr-envelope-letter {
@@ -439,11 +432,13 @@
         left: 0;
         right: 0;
 
-        top: 48%;
+        top: 38%;
+
+        box-sizing: border-box;
 
         width: 100%;
 
-        min-height: 155%;
+        height: 92%;
 
         padding:
           clamp(19px, 4.6vw, 30px)
@@ -454,20 +449,26 @@
 
         box-shadow:
           0 7px 23px
-            rgba(70,57,47,.09);
+          rgba(70,57,47,.09);
 
-        transform:
-          translateY(0);
+        transform: translateY(0);
 
         opacity: 0;
 
         transition:
-          transform 1.75s
+          transform 1.45s
             cubic-bezier(.22,.61,.36,1),
-          opacity .45s ease;
+          opacity .4s ease;
 
         overflow: hidden;
       }
+
+      /* ===================================================
+         MATCH ACTUAL LETTER TYPOGRAPHY
+
+         Font sizes are taken from the original letter
+         rather than using smaller preview-specific sizes.
+         =================================================== */
 
       .dr-envelope-letter-content {
         font-family:
@@ -477,99 +478,36 @@
 
         font-weight: 400;
 
-        font-style: normal;
-
         color: #5c524b;
       }
 
-      .dr-envelope-letter-content
-      .message-label {
+      .dr-envelope-letter-content h1,
+      .dr-envelope-letter-content h2,
+      .dr-envelope-letter-content h3,
+      .dr-envelope-letter-content p,
+      .dr-envelope-letter-content span,
+      .dr-envelope-letter-content div {
         font-family:
           "DR Envelope Avenir",
+          "DR Avenir Next",
           sans-serif !important;
-
-        font-size: 10px;
-
-        font-weight: 500;
-
-        letter-spacing: .08em;
-
-        line-height: 1.5;
-
-        margin-bottom: 17px;
-
-        color: #7a6f67;
-      }
-
-      .dr-envelope-letter-content h1 {
-        font-family:
-          "DR Envelope Avenir",
-          sans-serif !important;
-
-        font-size:
-          clamp(15px, 3.9vw, 20px);
-
-        font-weight: 500;
-
-        line-height: 1.35;
-
-        margin: 0 0 17px;
-
-        color: #51463e;
-      }
-
-      .dr-envelope-letter-content p {
-        font-family:
-          "DR Envelope Avenir",
-          sans-serif !important;
-
-        font-size:
-          clamp(10px, 2.7vw, 13px);
-
-        font-weight: 400;
-
-        line-height: 1.56;
-
-        margin: 0 0 15px;
-
-        color: #5c524b;
       }
 
       .dr-envelope-letter-content strong,
       .dr-envelope-letter-content b {
-        font-family:
-          "DR Envelope Avenir",
-          sans-serif !important;
-
         font-weight: 600 !important;
       }
 
-      .dr-envelope-letter-content em,
-      .dr-envelope-letter-content i {
-        font-family:
-          "DR Envelope Avenir",
-          sans-serif !important;
-
-        font-style: italic;
-      }
-
       .dr-envelope-letter-content
-      .final-typewriter-text {
-        opacity: 1 !important;
-        filter: none !important;
-        transition: none !important;
-      }
-
+      .final-typewriter-text,
       .dr-envelope-letter-content
-      .final-typewriter-ornament {
-        opacity: 1 !important;
-      }
-
+      .final-typewriter-ornament,
       .dr-envelope-letter-content
       .signature {
         opacity: 1 !important;
-        transform: none !important;
         filter: none !important;
+        animation: none !important;
+        transition: none !important;
       }
 
       /* ===================================================
@@ -670,8 +608,7 @@
         transform-origin:
           50% 0;
 
-        backface-visibility:
-          hidden;
+        backface-visibility: hidden;
 
         transition:
           transform 1.05s
@@ -894,7 +831,7 @@
       }
 
       /* ===================================================
-         OPENING ANIMATION — UNCHANGED
+         OPENING ANIMATION
          =================================================== */
 
       #dr-envelope-experience.dr-opening
@@ -910,24 +847,23 @@
 
       #dr-envelope-experience.dr-opening
       .dr-envelope-flap {
-        transform:
-          rotateX(178deg);
+        transform: rotateX(178deg);
       }
 
       #dr-envelope-experience.dr-opening
       .dr-envelope-prompt {
         opacity: 0;
-
-        transition:
-          opacity .35s ease;
+        transition: opacity .35s ease;
       }
+
+      /* Only lift the stationery a restrained distance. */
 
       #dr-envelope-experience.dr-letter-rising
       .dr-envelope-letter {
         opacity: 1;
 
         transform:
-          translateY(-58%);
+          translateY(-${CONFIG.letterLiftPercent}%);
       }
 
       /* ===================================================
@@ -936,11 +872,7 @@
 
       #dr-envelope-experience.dr-handoff {
         opacity: 0;
-
         pointer-events: none;
-
-        transform:
-          translateY(0);
       }
 
       /* ===================================================
@@ -988,7 +920,7 @@
   );
 
   /* =========================================================
-     SCROLL LOCK
+     LOCK SCROLLING
      ========================================================= */
 
   function lockScrolling() {
@@ -1030,6 +962,9 @@
 
     document.body.style.touchAction =
       originalBodyTouchAction;
+
+    document.documentElement.style.scrollBehavior =
+      originalScrollBehavior;
 
   }
 
@@ -1154,8 +1089,6 @@
 
   /* =========================================================
      INSERT DIRECTLY AFTER NAVIGATION
-
-     This is the key positioning correction.
      ========================================================= */
 
   navigation.insertAdjacentElement(
@@ -1174,7 +1107,7 @@
   lockScrolling();
 
   /* =========================================================
-     SET AVAILABLE PRESENTATION HEIGHT
+     PRESENTATION HEIGHT
      ========================================================= */
 
   function updatePresentationHeight() {
@@ -1235,7 +1168,11 @@
   }
 
   /* =========================================================
-     SYNCHRONIZE LETTER TYPOGRAPHY
+     MATCH ORIGINAL LETTER TYPOGRAPHY
+
+     The preview uses the same computed font size,
+     line height, letter spacing, weight and margins
+     as the real letter.
      ========================================================= */
 
   function synchronizeLetterTypography() {
@@ -1246,6 +1183,24 @@
     ) {
       return;
     }
+
+    const sourceRootStyle =
+      window.getComputedStyle(originalContent);
+
+    animatedContent.style.fontFamily =
+      '"DR Envelope Avenir", "DR Avenir Next", sans-serif';
+
+    animatedContent.style.fontSize =
+      sourceRootStyle.fontSize;
+
+    animatedContent.style.lineHeight =
+      sourceRootStyle.lineHeight;
+
+    animatedContent.style.letterSpacing =
+      sourceRootStyle.letterSpacing;
+
+    animatedContent.style.color =
+      sourceRootStyle.color;
 
     const originalElements =
       originalContent.querySelectorAll("*");
@@ -1276,6 +1231,12 @@
       target.style.fontFamily =
         '"DR Envelope Avenir", "DR Avenir Next", sans-serif';
 
+      target.style.fontSize =
+        computed.fontSize;
+
+      target.style.lineHeight =
+        computed.lineHeight;
+
       target.style.fontWeight =
         computed.fontWeight;
 
@@ -1284,6 +1245,15 @@
 
       target.style.letterSpacing =
         computed.letterSpacing;
+
+      target.style.marginTop =
+        computed.marginTop;
+
+      target.style.marginBottom =
+        computed.marginBottom;
+
+      target.style.color =
+        computed.color;
 
     }
 
@@ -1298,15 +1268,15 @@
   if (document.fonts) {
 
     document.fonts.load(
-      '400 14px "DR Envelope Avenir"'
+      '400 16px "DR Envelope Avenir"'
     ).catch(() => {});
 
     document.fonts.load(
-      '500 14px "DR Envelope Avenir"'
+      '500 16px "DR Envelope Avenir"'
     ).catch(() => {});
 
     document.fonts.load(
-      '600 14px "DR Envelope Avenir"'
+      '600 16px "DR Envelope Avenir"'
     ).catch(() => {});
 
     document.fonts.load(
@@ -1421,13 +1391,13 @@
 
     seal.disabled = true;
 
-    /* Phase 1 — Break seal and open flap */
+    /* PHASE 1 — OPEN FLAP */
 
     experience.classList.add(
       "dr-opening"
     );
 
-    /* Phase 2 — Letter rises */
+    /* PHASE 2 — LIFT ONLY THE TOP OF THE LETTER */
 
     schedule(() => {
 
@@ -1435,27 +1405,25 @@
         "dr-letter-rising"
       );
 
-    }, 570);
+    }, CONFIG.letterDelay);
 
-    /* Phase 3 — Fade presentation */
+    /* PHASE 3 — FADE TO ORIGINAL LETTER */
 
     schedule(() => {
-
-      revealOriginalLetter();
 
       experience.classList.add(
         "dr-handoff"
       );
 
-    }, 2100);
+    }, CONFIG.handoffDelay);
 
-    /* Phase 4 — Restore website */
+    /* PHASE 4 — RESTORE ORIGINAL WEBSITE */
 
     schedule(() => {
 
       completeOpening();
 
-    }, 3000);
+    }, CONFIG.completeDelay);
 
   }
 
@@ -1504,7 +1472,7 @@
   /* =========================================================
      NO SESSION STORAGE
 
-     The envelope appears on every refresh.
+     Envelope appears on every refresh.
      ========================================================= */
 
 })();
