@@ -3,19 +3,15 @@
 
    A Personal Message ↔ The Maison ↔ Explore the Collection
 
-   Mobile only.
-
-   Supports:
-   - /
-   - /index.html
-   - /index3.html
-   - /maison/
-   - /formulations/
-
-   Preserves existing navigation and transitions.
-
-   Excludes interactive elements, the contact form,
-   SociableKIT Instagram Highlights, and story viewers.
+   Features:
+   - Mobile-only swipe navigation
+   - Native View Transitions
+   - JavaScript animation fallback
+   - Direction-aware animations
+   - index3.html testing support
+   - Contact modal protection
+   - SociableKIT Highlights protection
+   - Reduced-motion accessibility
    ========================================================= */
 
 (() => {
@@ -31,6 +27,10 @@
     return;
   }
 
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+
   /* =========================================================
      PAGE ORDER
      ========================================================= */
@@ -43,9 +43,6 @@
 
   /* =========================================================
      PATH NORMALIZATION
-
-     Treat index3.html as the homepage during testing.
-     Continue supporting index.html after publication.
      ========================================================= */
 
   function normalize(path) {
@@ -80,86 +77,86 @@
   }
 
   /* =========================================================
-     TRANSITION STYLING
+     BROWSER CAPABILITY
      ========================================================= */
 
-  const style = document.createElement("style");
-
-  style.textContent = `
-    @media (max-width: 760px) and
-           (prefers-reduced-motion: no-preference) {
-
-      @view-transition {
-        navigation: auto;
-      }
-
-      ::view-transition-old(root) {
-        animation:
-          220ms cubic-bezier(.22,.7,.2,1)
-          both dr-page-out;
-      }
-
-      ::view-transition-new(root) {
-        animation:
-          220ms cubic-bezier(.22,.7,.2,1)
-          both dr-page-in;
-      }
-
-      @keyframes dr-page-out {
-        to {
-          opacity: .86;
-          transform:
-            translateX(var(--dr-swipe-out, -14px));
-        }
-      }
-
-      @keyframes dr-page-in {
-        from {
-          opacity: .86;
-          transform:
-            translateX(var(--dr-swipe-in, 14px));
-        }
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-
-      ::view-transition-old(root),
-      ::view-transition-new(root) {
-        animation: none !important;
-      }
-
-    }
-  `;
-
-  document.head.appendChild(style);
+  const nativeTransitions =
+    CSS.supports(
+      "view-transition-name",
+      "none"
+    ) &&
+    "startViewTransition" in document;
 
   /* =========================================================
      DIRECTION PERSISTENCE
      ========================================================= */
 
+  const DIRECTION_KEY = "drSwipeDirection";
+  const FALLBACK_KEY = "drFallbackTransition";
+
   let incomingDirection = null;
+  let fallbackEntry = false;
 
   try {
     incomingDirection = sessionStorage.getItem(
-      "drSwipeDirection"
+      DIRECTION_KEY
     );
 
-    sessionStorage.removeItem(
-      "drSwipeDirection"
-    );
+    fallbackEntry =
+      sessionStorage.getItem(FALLBACK_KEY) === "true";
+
+    sessionStorage.removeItem(DIRECTION_KEY);
+    sessionStorage.removeItem(FALLBACK_KEY);
   } catch (_) {}
+
+  /* =========================================================
+     INCOMING DIRECTION
+     ========================================================= */
 
   if (incomingDirection === "left") {
     document.documentElement.style.setProperty(
       "--dr-swipe-in",
-      "14px"
+      "22px"
     );
   } else if (incomingDirection === "right") {
     document.documentElement.style.setProperty(
       "--dr-swipe-in",
-      "-14px"
+      "-22px"
     );
+  }
+
+  /* =========================================================
+     FALLBACK ENTRY ANIMATION
+     ========================================================= */
+
+  if (
+    fallbackEntry &&
+    !nativeTransitions &&
+    !reduceMotion.matches
+  ) {
+    const startEntry = () => {
+
+      document.documentElement.classList.add(
+        "dr-fallback-entering"
+      );
+
+      window.setTimeout(() => {
+        document.documentElement.classList.remove(
+          "dr-fallback-entering"
+        );
+      }, 300);
+
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener(
+        "DOMContentLoaded",
+        startEntry,
+        { once: true }
+      );
+    } else {
+      startEntry();
+    }
   }
 
   /* =========================================================
@@ -176,7 +173,7 @@
   const MAX_VERTICAL_DRIFT = 65;
 
   /* =========================================================
-     EXCLUDED INTERACTIVE ELEMENTS
+     EXCLUSIONS
      ========================================================= */
 
   const EXCLUDED = [
@@ -190,13 +187,9 @@
     "#dr-contact-overlay",
     "video",
 
-    /* SociableKIT Instagram Highlights */
-
     ".instagram-highlights",
     ".sk-ww-instagram-story-highlights",
     "[data-embed-id='25723348']",
-
-    /* Expanded story viewer */
 
     ".sk-story-viewer-layout",
     ".sk-story-frame",
@@ -237,6 +230,82 @@
   }
 
   /* =========================================================
+     NAVIGATION ENGINE
+     ========================================================= */
+
+  function navigate(next, direction) {
+
+    if (navigating) {
+      return;
+    }
+
+    navigating = true;
+
+    const destination = pages[next];
+
+    const outgoing =
+      direction === 1 ? "-22px" : "22px";
+
+    const incoming =
+      direction === 1 ? "22px" : "-22px";
+
+    document.documentElement.style.setProperty(
+      "--dr-swipe-out",
+      outgoing
+    );
+
+    document.documentElement.style.setProperty(
+      "--dr-swipe-in",
+      incoming
+    );
+
+    try {
+      sessionStorage.setItem(
+        DIRECTION_KEY,
+        direction === 1 ? "left" : "right"
+      );
+    } catch (_) {}
+
+    /* =======================================================
+       REDUCED MOTION
+       ======================================================= */
+
+    if (reduceMotion.matches) {
+      window.location.assign(destination);
+      return;
+    }
+
+    /* =======================================================
+       NATIVE VIEW TRANSITIONS
+       ======================================================= */
+
+    if (nativeTransitions) {
+      window.location.assign(destination);
+      return;
+    }
+
+    /* =======================================================
+       JAVASCRIPT FALLBACK
+       ======================================================= */
+
+    try {
+      sessionStorage.setItem(
+        FALLBACK_KEY,
+        "true"
+      );
+    } catch (_) {}
+
+    document.documentElement.classList.add(
+      "dr-fallback-leaving"
+    );
+
+    window.setTimeout(() => {
+      window.location.assign(destination);
+    }, 280);
+
+  }
+
+  /* =========================================================
      TOUCH START
      ========================================================= */
 
@@ -268,7 +337,7 @@
   );
 
   /* =========================================================
-     SWIPE NAVIGATION
+     TOUCH END
      ========================================================= */
 
   document.addEventListener(
@@ -292,24 +361,16 @@
       const deltaY =
         event.changedTouches[0].clientY - startY;
 
-      if (Math.abs(deltaX) < MIN_DISTANCE) {
-        return;
-      }
-
       if (
-        Math.abs(deltaY) > MAX_VERTICAL_DRIFT
+        Math.abs(deltaX) < MIN_DISTANCE ||
+        Math.abs(deltaY) > MAX_VERTICAL_DRIFT ||
+        Math.abs(deltaX) < Math.abs(deltaY) * 1.5
       ) {
         return;
       }
 
-      if (
-        Math.abs(deltaX) <
-        Math.abs(deltaY) * 1.5
-      ) {
-        return;
-      }
-
-      const direction = deltaX < 0 ? 1 : -1;
+      const direction =
+        deltaX < 0 ? 1 : -1;
 
       const next = current + direction;
 
@@ -320,44 +381,14 @@
         return;
       }
 
-      navigating = true;
-
-      /* =====================================================
-         OUTGOING TRANSITION DIRECTION
-         ===================================================== */
-
-      document.documentElement.style.setProperty(
-        "--dr-swipe-out",
-        direction === 1
-          ? "-14px"
-          : "14px"
-      );
-
-      /* =====================================================
-         INCOMING TRANSITION DIRECTION
-         ===================================================== */
-
-      try {
-        sessionStorage.setItem(
-          "drSwipeDirection",
-          direction === 1
-            ? "left"
-            : "right"
-        );
-      } catch (_) {}
-
-      /* =====================================================
-         NAVIGATE
-         ===================================================== */
-
-      window.location.assign(pages[next]);
+      navigate(next, direction);
 
     },
     { passive: true }
   );
 
   /* =========================================================
-     GESTURE CANCELLATION
+     TOUCH CANCELLATION
      ========================================================= */
 
   document.addEventListener(
