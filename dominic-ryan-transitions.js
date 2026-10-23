@@ -3,7 +3,7 @@
 
    A Personal Message ↔ The Maison ↔ Explore the Collection
 
-   Mobile only: 760px and below.
+   Desktop + Mobile
 
    Coordinates with:
    - dominic-ryan-navigation.css
@@ -14,7 +14,7 @@
    - JavaScript animation fallback
    - Direction-aware page movement
    - Navigation-link transitions
-   - Swipe navigation coordination
+   - Mobile swipe navigation coordination
    - Browser back/forward restoration
    - Double-navigation prevention
    - No Reduce Motion checks
@@ -28,8 +28,6 @@
      01 — CONFIGURATION
      ========================================================= */
 
-  const MOBILE = "(max-width: 760px)";
-
   const DURATION = 280;
 
   const PAGES = [
@@ -40,21 +38,21 @@
 
   const STORAGE = {
     direction: "drSwipeDirection",
-    fallback: "drFallbackTransition"
+    fallback: "drFallbackTransition",
+    destination: "drTransitionDestination",
+    timestamp: "drTransitionTimestamp"
   };
 
   const EXIT_CLASS = "dr-fallback-leaving";
   const ENTRY_CLASS = "dr-fallback-entering";
 
-  const TRANSITION_EASING =
-    "cubic-bezier(.22, .7, .2, 1)";
-
   const root = document.documentElement;
 
-  const mobileQuery = window.matchMedia(MOBILE);
+  const TRANSITION_MAX_AGE = 10000;
 
   let navigating = false;
   let navigationTimer = null;
+  let entryTimer = null;
 
 
   /* =========================================================
@@ -126,7 +124,7 @@
 
       sessionStorage.setItem(
         key,
-        value
+        String(value)
       );
 
     } catch (_) {}
@@ -160,6 +158,16 @@
       );
 
     } catch (_) {}
+
+  }
+
+
+  function clearTransitionStorage() {
+
+    remove(STORAGE.direction);
+    remove(STORAGE.fallback);
+    remove(STORAGE.destination);
+    remove(STORAGE.timestamp);
 
   }
 
@@ -220,11 +228,14 @@
   /* =========================================================
      05 — NATIVE TRANSITION SUPPORT
 
-     Native cross-document transitions are controlled
-     by CSS and the browser.
+     Cross-document transitions require browser support
+     and @view-transition { navigation: auto; } on
+     both participating documents.
 
-     This detection is used only as an approximation.
-     It does not guarantee cross-document support.
+     The browser is responsible for running the native
+     transition. We avoid assuming that support for
+     document.startViewTransition() guarantees support
+     for cross-document transitions.
 
      ========================================================= */
 
@@ -237,7 +248,8 @@
         "view-transition-name",
         "none"
       ) &&
-      typeof document.startViewTransition === "function"
+      typeof document.startViewTransition === "function" &&
+      typeof window.navigation !== "undefined"
     );
 
   }
@@ -246,18 +258,11 @@
   /* =========================================================
      06 — PREPARE NAVIGATION
 
-     Called by dominic-ryan-swipe.js.
-
-     Saves direction so the destination page
-     can use the appropriate animation.
+     Also called by dominic-ryan-swipe.js.
 
      ========================================================= */
 
   function prepareNavigation(destination) {
-
-    if (!mobileQuery.matches) {
-      return false;
-    }
 
     const direction = getDirection(
       destination
@@ -267,11 +272,24 @@
       return false;
     }
 
+    const destinationPath =
+      getDestinationPath(destination);
+
     setDirection(direction);
 
     store(
       STORAGE.direction,
       direction
+    );
+
+    store(
+      STORAGE.destination,
+      destinationPath
+    );
+
+    store(
+      STORAGE.timestamp,
+      Date.now()
     );
 
     return true;
@@ -319,10 +337,13 @@
       getDestinationPath(destination);
 
     if (!destinationPath) {
+
       window.location.assign(
         destination
       );
+
       return;
+
     }
 
     const direction = getDirection(
@@ -336,15 +357,7 @@
       );
 
       return;
-    }
 
-    if (!mobileQuery.matches) {
-
-      window.location.assign(
-        destination
-      );
-
-      return;
     }
 
     navigating = true;
@@ -365,6 +378,7 @@
       );
 
       return;
+
     }
 
     /*
@@ -392,37 +406,48 @@
 
   function animateEntry() {
 
-    if (!mobileQuery.matches) {
-      return;
-    }
+    const destination = retrieve(
+      STORAGE.destination
+    );
+
+    const timestamp = Number(
+      retrieve(STORAGE.timestamp)
+    );
 
     const direction = retrieve(
       STORAGE.direction
     );
 
-    if (direction) {
-
-      setDirection(
-        direction
-      );
-
-      remove(
-        STORAGE.direction
-      );
-
-    }
-
     const fallback = retrieve(
       STORAGE.fallback
     );
 
+    const currentPath = normalizePath(
+      window.location.pathname
+    );
+
+    const validTransition = (
+      destination === currentPath &&
+      Number.isFinite(timestamp) &&
+      timestamp > 0 &&
+      Date.now() - timestamp < TRANSITION_MAX_AGE &&
+      (direction === "left" || direction === "right")
+    );
+
+    if (!validTransition) {
+
+      clearTransitionStorage();
+      return;
+
+    }
+
+    setDirection(direction);
+
+    clearTransitionStorage();
+
     if (fallback !== "1") {
       return;
     }
-
-    remove(
-      STORAGE.fallback
-    );
 
     root.classList.remove(
       EXIT_CLASS
@@ -432,11 +457,13 @@
       ENTRY_CLASS
     );
 
-    window.setTimeout(() => {
+    entryTimer = window.setTimeout(() => {
 
       root.classList.remove(
         ENTRY_CLASS
       );
+
+      entryTimer = null;
 
     }, DURATION + 50);
 
@@ -448,10 +475,6 @@
      ========================================================= */
 
   function handleNavigationClick(event) {
-
-    if (!mobileQuery.matches) {
-      return;
-    }
 
     if (event.defaultPrevented) {
       return;
@@ -483,7 +506,17 @@
 
     if (
       link.hasAttribute("download") ||
-      link.target === "_blank"
+      (
+        link.target &&
+        link.target.toLowerCase() !== "_self"
+      )
+    ) {
+      return;
+    }
+
+    if (
+      link.hasAttribute("data-dr-contact-open") ||
+      link.closest("#dr-contact-overlay")
     ) {
       return;
     }
@@ -540,8 +573,22 @@
 
     }
 
+    if (entryTimer !== null) {
+
+      window.clearTimeout(
+        entryTimer
+      );
+
+      entryTimer = null;
+
+    }
+
     root.classList.remove(
       EXIT_CLASS
+    );
+
+    root.classList.remove(
+      ENTRY_CLASS
     );
 
   }
@@ -552,10 +599,6 @@
      ========================================================= */
 
   function initialize() {
-
-    if (!mobileQuery.matches) {
-      return;
-    }
 
     animateEntry();
 
@@ -568,13 +611,15 @@
       "pageshow",
       event => {
 
-        resetNavigation();
-
         if (event.persisted) {
 
-          root.classList.remove(
-            ENTRY_CLASS
-          );
+          resetNavigation();
+
+          clearTransitionStorage();
+
+        } else {
+
+          navigating = false;
 
         }
 
@@ -592,7 +637,6 @@
 
     prepareNavigation,
     navigate,
-
     getDirection,
 
     isNavigating() {
