@@ -696,6 +696,8 @@
   }
 
 }
+
+
 /* =========================================================
    THE MAISON — HEADER LOGO AND NAME ALIGNMENT
    Matches A Personal Message and Explore the Collection
@@ -737,6 +739,8 @@
     letter-spacing: .17em;
   }
 }
+
+
 /* =========================================================
    13 — MOBILE CROSS-PAGE TRANSITIONS
 
@@ -747,18 +751,32 @@
    - The Maison
    - Explore the Collection
 
-   Desktop remains unchanged.
+   ========================================================= */
+
+
+/* Native cross-document transition opt-in.
+   Must be present on both pages. */
+
+@view-transition {
+  navigation: auto;
+}
+
+
+/* =========================================================
+   MOBILE TRANSITION ANIMATIONS
    ========================================================= */
 
 @media (max-width: 760px) {
 
-  @view-transition {
-    navigation: auto;
+  /* DIRECTION VARIABLES */
+
+  :root {
+    --dr-swipe-out: -22px;
+    --dr-swipe-in: 22px;
   }
 
-  /* =======================================================
-     NATIVE VIEW TRANSITIONS
-     ======================================================= */
+
+  /* NATIVE VIEW TRANSITIONS */
 
   ::view-transition-old(root) {
     animation:
@@ -772,31 +790,38 @@
       both dr-page-in;
   }
 
+
   @keyframes dr-page-out {
+
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
     to {
       opacity: .88;
-
-      transform:
-        translateX(
-          var(--dr-swipe-out, -22px)
-        );
+      transform: translateX(var(--dr-swipe-out));
     }
+
   }
+
 
   @keyframes dr-page-in {
+
     from {
       opacity: .88;
-
-      transform:
-        translateX(
-          var(--dr-swipe-in, 22px)
-        );
+      transform: translateX(var(--dr-swipe-in));
     }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
   }
 
-  /* =======================================================
-     JAVASCRIPT FALLBACK
-     ======================================================= */
+
+  /* JAVASCRIPT FALLBACK — EXIT */
 
   html.dr-fallback-leaving body {
     animation:
@@ -804,50 +829,43 @@
       both dr-fallback-out;
   }
 
+
+  /* JAVASCRIPT FALLBACK — ENTRY */
+
   html.dr-fallback-entering body {
     animation:
       280ms cubic-bezier(.22, .7, .2, 1)
       both dr-fallback-in;
   }
 
+
   @keyframes dr-fallback-out {
+
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
     to {
       opacity: .88;
-
-      transform:
-        translateX(
-          var(--dr-swipe-out, -22px)
-        );
+      transform: translateX(var(--dr-swipe-out));
     }
+
   }
+
 
   @keyframes dr-fallback-in {
+
     from {
       opacity: .88;
-
-      transform:
-        translateX(
-          var(--dr-swipe-in, 22px)
-        );
+      transform: translateX(var(--dr-swipe-in));
     }
-  }
 
-}
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
 
-/* =========================================================
-   ACCESSIBILITY — REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none !important;
-  }
-
-  html.dr-fallback-leaving body,
-  html.dr-fallback-entering body {
-    animation: none !important;
   }
 
 }
