@@ -8,10 +8,10 @@
 
    Includes:
    - Shared primary navigation
-   - Traveling active underline
+   - Continuous traveling active underline
    - Desktop and mobile navigation
    - Unified editorial footer
-   - Native cross-page transitions
+   - Native cross-document View Transitions
    - JavaScript animation fallback
 
    ========================================================= */
@@ -148,11 +148,14 @@
 
 
 /* =========================================================
-   02 — TRAVELING NAVIGATION UNDERLINE
+   02 — CONTINUOUS TRAVELING NAVIGATION UNDERLINE
 
-   One animated underline moves between page labels.
+   The underline is a real DOM element.
 
-   JavaScript positions and animates this element.
+   Native cross-document View Transitions preserve its
+   visual identity between outgoing and incoming pages.
+
+   JavaScript positions it beneath the active link.
 
    ========================================================= */
 
@@ -194,8 +197,8 @@
 
 .dr-travel-nav a.active::after,
 .dr-travel-nav a[aria-current="page"]::after {
-  opacity: 0;
-  transform: scaleX(0);
+  opacity: 0 !important;
+  transform: scaleX(0) !important;
 }
 
 
@@ -829,9 +832,13 @@
 
 
 /* =========================================================
-   16 — DESKTOP + MOBILE CROSS-PAGE TRANSITIONS
+   16 — CROSS-DOCUMENT VIEW TRANSITIONS
 
-   Native View Transitions with JavaScript fallback.
+   Page:
+   280ms directional glide
+
+   Navigation underline:
+   400ms continuous position and width interpolation
 
    ========================================================= */
 
@@ -852,7 +859,7 @@
 
 
 /* =========================================================
-   NATIVE VIEW TRANSITIONS
+   NATIVE VIEW TRANSITIONS — PAGE
    ========================================================= */
 
 ::view-transition-old(root) {
@@ -868,7 +875,54 @@
 }
 
 
-/* NATIVE EXIT */
+/* =========================================================
+   NATIVE VIEW TRANSITIONS — UNDERLINE
+   ========================================================= */
+
+/*
+   Assign a stable identity to the underline.
+
+   The browser can now interpolate its position and
+   dimensions between the outgoing and incoming pages.
+*/
+
+.dr-native-underline .dr-traveling-underline {
+  view-transition-name: dr-navigation-underline;
+}
+
+
+/*
+   Allow the underline's transition group to move
+   independently of the page's 280ms animation.
+*/
+
+::view-transition-group(dr-navigation-underline) {
+  animation-duration: 400ms;
+  animation-timing-function:
+    cubic-bezier(.22, 1, .36, 1);
+  animation-fill-mode: both;
+}
+
+
+/*
+   Prevent the underline from fading out and back in
+   during its movement.
+
+   The position and width are handled by the group.
+*/
+
+::view-transition-old(dr-navigation-underline),
+::view-transition-new(dr-navigation-underline) {
+  animation-duration: 400ms;
+  animation-timing-function:
+    cubic-bezier(.22, 1, .36, 1);
+  animation-fill-mode: both;
+}
+
+
+/* =========================================================
+   NATIVE EXIT
+   ========================================================= */
 
 @keyframes dr-page-out {
 
@@ -885,7 +939,9 @@
 }
 
 
-/* NATIVE ENTRY */
+/* =========================================================
+   NATIVE ENTRY
+   ========================================================= */
 
 @keyframes dr-page-in {
 
