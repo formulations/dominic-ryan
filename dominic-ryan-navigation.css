@@ -150,12 +150,11 @@
 /* =========================================================
    02 — CONTINUOUS TRAVELING NAVIGATION UNDERLINE
 
-   The underline is a real DOM element.
+   A single underline is positioned beneath the
+   active navigation label.
 
-   Native cross-document View Transitions preserve its
-   visual identity between outgoing and incoming pages.
-
-   JavaScript positions it beneath the active link.
+   Native cross-document View Transitions interpolate
+   its position and dimensions between pages.
 
    ========================================================= */
 
@@ -185,6 +184,8 @@
 
   z-index: 2;
 
+  transform: translateZ(0);
+
   will-change:
     left,
     width,
@@ -193,12 +194,23 @@
 
 
 /* HIDE ORIGINAL ACTIVE UNDERLINE
-   WHEN TRAVELING UNDERLINE IS AVAILABLE */
+   WHEN TRAVELING UNDERLINE IS AVAILABLE
 
-.dr-travel-nav a.active::after,
-.dr-travel-nav a[aria-current="page"]::after {
+   Explicitly suppress the original pseudo-element
+   to avoid duplicate underlines on The Maison.
+*/
+
+.collection-navigation.dr-travel-nav a.active::after,
+.collection-navigation.dr-travel-nav a[aria-current="page"]::after,
+.maison-primary-nav.dr-travel-nav a.active::after,
+.maison-primary-nav.dr-travel-nav a[aria-current="page"]::after {
+  content: none !important;
   opacity: 0 !important;
+  visibility: hidden !important;
+  background: transparent !important;
   transform: scaleX(0) !important;
+  animation: none !important;
+  transition: none !important;
 }
 
 
@@ -879,21 +891,26 @@
    NATIVE VIEW TRANSITIONS — UNDERLINE
    ========================================================= */
 
-/*
-   Assign a stable identity to the underline.
 
-   The browser can now interpolate its position and
-   dimensions between the outgoing and incoming pages.
+/*
+   The underline receives a matching identity
+   in both documents.
+
+   JavaScript applies the dr-native-underline class
+   during the cross-document transition lifecycle.
 */
 
-.dr-native-underline .dr-traveling-underline {
+html.dr-native-underline .dr-traveling-underline {
   view-transition-name: dr-navigation-underline;
 }
 
 
 /*
-   Allow the underline's transition group to move
-   independently of the page's 280ms animation.
+   The browser interpolates the underline's
+   position and dimensions over 400ms.
+
+   The underline moves independently of the
+   page's 280ms transition.
 */
 
 ::view-transition-group(dr-navigation-underline) {
@@ -905,18 +922,26 @@
 
 
 /*
-   Prevent the underline from fading out and back in
-   during its movement.
+   Disable the default old/new crossfade.
 
-   The position and width are handled by the group.
+   Both snapshots remain opaque while the
+   transition group interpolates their geometry.
 */
 
 ::view-transition-old(dr-navigation-underline),
 ::view-transition-new(dr-navigation-underline) {
-  animation-duration: 400ms;
-  animation-timing-function:
-    cubic-bezier(.22, 1, .36, 1);
-  animation-fill-mode: both;
+  animation: none;
+  opacity: 1;
+}
+
+
+/*
+   Keep the underline's transition group above
+   the page transition imagery.
+*/
+
+::view-transition-group(dr-navigation-underline) {
+  z-index: 2;
 }
 
 
