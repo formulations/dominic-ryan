@@ -65,8 +65,13 @@
     @media(max-width:420px){.name{font-size:18px;letter-spacing:.17em}}
     
   </style>
-  <link rel="stylesheet" href="/dominic-ryan-navigation.css">
-  <link rel="stylesheet" href="/dominic-ryan-transitions.css?v=1">
+<!-- DOMINIC RYAN — SHARED NAVIGATION & PAGE TRANSITIONS -->
+
+<link rel="stylesheet" href="/dominic-ryan-navigation.css">
+
+<script src="/dominic-ryan-transitions.js" defer></script>
+<script src="/dominic-ryan-swipe.js" defer></script>
+
 </head>
 <body id="top">
   <div class="background-dr" aria-hidden="true"><img src="/dr-reveals-removebg-preview.png" alt=""></div>
@@ -214,9 +219,7 @@
   <script>
     (()=>{'use strict';const backToTop=document.getElementById('dr-back-to-top');const footerReturn=document.getElementById('dr-footer-return');const scrollUp=()=>window.scrollTo({top:0,behavior:'smooth'});if(footerReturn)footerReturn.addEventListener('click',scrollUp);if(!backToTop)return;let ticking=false;function update(){ticking=false;backToTop.classList.toggle('is-visible',window.scrollY>500)}function request(){if(ticking)return;ticking=true;requestAnimationFrame(update)}addEventListener('scroll',request,{passive:true});addEventListener('resize',request);backToTop.addEventListener('click',scrollUp);update()})();
   </script>
-  
-<script defer src="/dominic-ryan-transitions.js?v=1"></script>
-<script defer src="/dominic-ryan-swipe.js?v=10"></script>
+
 
 </body>
 </html>
