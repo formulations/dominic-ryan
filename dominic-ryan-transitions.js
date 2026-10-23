@@ -5,24 +5,20 @@
 
    Desktop + Mobile
 
-   Page:
-   - 280ms directional glide
-   - Direction-aware navigation
-   - Native cross-document transitions
+   DESIGN
+   - 280ms directional page glide
+   - 400ms traveling navigation underline
+   - Single visible underline during native transitions
+   - No competing page animations
 
-   Navigation underline:
-   - 400ms continuous movement
-   - Natural width interpolation
-   - No competing crossfade
-   - Matching identity across documents
-
-   Supports:
-   - index.html
-   - index3.html
-   - Mobile swipe navigation
-   - Desktop navigation
-   - Browser back/forward restoration
-   - JavaScript fallback
+   RELIABILITY
+   - Early pageswap / pagereveal registration
+   - Direction-aware forward and backward navigation
+   - Stable underline geometry
+   - Font and viewport recalibration
+   - Browser history restoration
+   - Progressive fallback
+   - Mobile swipe integration
 
    ========================================================= */
 
@@ -54,7 +50,6 @@
 
   const EXIT_CLASS = "dr-fallback-leaving";
   const ENTRY_CLASS = "dr-fallback-entering";
-
   const NATIVE_CLASS = "dr-native-underline";
 
   const TRANSITION_MAX_AGE = 10000;
@@ -62,6 +57,7 @@
   const root = document.documentElement;
 
   let navigating = false;
+  let initialized = false;
 
   let navigationTimer = null;
   let entryTimer = null;
@@ -72,7 +68,7 @@
 
   let resizeObserver = null;
 
-  let incomingTransition = false;
+  let nativeTransitionActive = false;
 
   /* =========================================================
      02 — PATH NORMALIZATION
@@ -137,7 +133,7 @@
   }
 
   /* =========================================================
-     03 — STORAGE
+     03 — SESSION STORAGE
      ========================================================= */
 
   function store(key, value) {
@@ -176,14 +172,29 @@
   }
 
   /* =========================================================
-     04 — DIRECTION
+     04 — NAVIGATION DIRECTION
      ========================================================= */
 
-  function getDirection(destination) {
+  function directionBetween(fromPath, toPath) {
 
-    const currentIndex = getPageIndex(
-      window.location.pathname
-    );
+    const fromIndex = getPageIndex(fromPath);
+    const toIndex = getPageIndex(toPath);
+
+    if (
+      fromIndex === -1 ||
+      toIndex === -1 ||
+      fromIndex === toIndex
+    ) {
+      return null;
+    }
+
+    return toIndex > fromIndex
+      ? "left"
+      : "right";
+
+  }
+
+  function getDirection(destination) {
 
     const destinationPath =
       getDestinationPath(destination);
@@ -192,25 +203,21 @@
       return null;
     }
 
-    const destinationIndex = getPageIndex(
+    return directionBetween(
+      window.location.pathname,
       destinationPath
     );
-
-    if (
-      currentIndex === -1 ||
-      destinationIndex === -1 ||
-      currentIndex === destinationIndex
-    ) {
-      return null;
-    }
-
-    return destinationIndex > currentIndex
-      ? "left"
-      : "right";
 
   }
 
   function setDirection(direction) {
+
+    if (
+      direction !== "left" &&
+      direction !== "right"
+    ) {
+      return;
+    }
 
     const movingLeft = direction === "left";
 
@@ -227,10 +234,16 @@
   }
 
   /* =========================================================
-     05 — NATIVE TRANSITION SUPPORT
+     05 — NATIVE CAPABILITY
+
+     This detects the core View Transition API.
+
+     Actual cross-document transitions are confirmed
+     through pageswap / pagereveal event.viewTransition.
+
      ========================================================= */
 
-  function supportsNativeTransitions() {
+  function supportsViewTransitionAPI() {
 
     return (
       typeof CSS !== "undefined" &&
@@ -239,8 +252,7 @@
         "view-transition-name",
         "none"
       ) &&
-      typeof document.startViewTransition === "function" &&
-      typeof window.navigation !== "undefined"
+      typeof document.startViewTransition === "function"
     );
 
   }
@@ -259,7 +271,9 @@
 
   function getNavigationLink(path) {
 
-    const navigation = getPrimaryNavigation();
+    const navigation =
+      underlineNavigation ||
+      getPrimaryNavigation();
 
     if (!navigation) {
       return null;
@@ -293,21 +307,33 @@
       return null;
     }
 
-    const linkRect = link.getBoundingClientRect();
-    const navRect = navigation.getBoundingClientRect();
+    const linkRect =
+      link.getBoundingClientRect();
+
+    const navRect =
+      navigation.getBoundingClientRect();
+
+    if (
+      !linkRect.width ||
+      !Number.isFinite(linkRect.left)
+    ) {
+      return null;
+    }
 
     return {
       left:
         linkRect.left -
         navRect.left -
-        navigation.clientLeft,
+        navigation.clientLeft +
+        navigation.scrollLeft,
 
       width: linkRect.width,
 
       top:
         linkRect.bottom -
         navRect.top -
-        navigation.clientTop -
+        navigation.clientTop +
+        navigation.scrollTop -
         1
     };
 
@@ -315,7 +341,10 @@
 
   function applyUnderlineGeometry(geometry) {
 
-    if (!underlineElement || !geometry) {
+    if (
+      !underlineElement ||
+      !geometry
+    ) {
       return;
     }
 
@@ -332,12 +361,21 @@
 
   }
 
-  function positionUnderline() {
+  function positionUnderline(force = false) {
 
     if (
       !underlineElement ||
-      !underlineNavigation ||
-      navigating
+      !underlineNavigation
+    ) {
+      return;
+    }
+
+    if (
+      !force &&
+      (
+        navigating ||
+        nativeTransitionActive
+      )
     ) {
       return;
     }
@@ -346,40 +384,52 @@
       window.location.pathname
     );
 
-    const link = getNavigationLink(currentPath);
+    const link = getNavigationLink(
+      currentPath
+    );
 
     if (!link) {
       return;
     }
 
-    applyUnderlineGeometry(
-      getUnderlineGeometry(
-        link,
-        underlineNavigation
-      )
+    const geometry = getUnderlineGeometry(
+      link,
+      underlineNavigation
     );
+
+    applyUnderlineGeometry(geometry);
 
   }
 
   /* =========================================================
-     08 — INITIALIZE UNDERLINE
+     08 — UNDERLINE INITIALIZATION
      ========================================================= */
 
   function initializeUnderline() {
 
-    if (underlineElement) {
-      return;
+    if (
+      underlineElement &&
+      underlineElement.isConnected
+    ) {
+      return true;
     }
 
-    const navigation = getPrimaryNavigation();
+    const navigation =
+      getPrimaryNavigation();
 
     if (!navigation) {
-      return;
+      return false;
     }
 
     underlineNavigation = navigation;
 
-    const underline = document.createElement("span");
+    const existing = navigation.querySelector(
+      ".dr-traveling-underline"
+    );
+
+    const underline =
+      existing ||
+      document.createElement("span");
 
     underline.className =
       "dr-traveling-underline";
@@ -389,7 +439,9 @@
       "true"
     );
 
-    navigation.appendChild(underline);
+    if (!existing) {
+      navigation.appendChild(underline);
+    }
 
     underlineElement = underline;
 
@@ -397,13 +449,19 @@
       "dr-travel-nav"
     );
 
-    positionUnderline();
+    positionUnderline(true);
 
-    if ("ResizeObserver" in window) {
+    if (
+      "ResizeObserver" in window &&
+      !resizeObserver
+    ) {
 
       resizeObserver = new ResizeObserver(() => {
 
-        if (!navigating) {
+        if (
+          !navigating &&
+          !nativeTransitionActive
+        ) {
           positionUnderline();
         }
 
@@ -413,17 +471,27 @@
 
     }
 
-    if (document.fonts && document.fonts.ready) {
+    if (
+      document.fonts &&
+      document.fonts.ready
+    ) {
 
-      document.fonts.ready.then(() => {
+      document.fonts.ready
+        .then(() => {
 
-        if (!navigating) {
-          positionUnderline();
-        }
+          if (
+            !navigating &&
+            !nativeTransitionActive
+          ) {
+            positionUnderline();
+          }
 
-      }).catch(() => {});
+        })
+        .catch(() => {});
 
     }
+
+    return true;
 
   }
 
@@ -433,19 +501,22 @@
 
   function enableNativeUnderline() {
 
-    if (!underlineElement) {
-      initializeUnderline();
+    if (!initializeUnderline()) {
+      return false;
     }
 
-    if (!underlineElement) {
-      return;
-    }
+    /*
+       Measure before assigning the named
+       transition identity.
+    */
 
-    positionUnderline();
+    positionUnderline(true);
 
     root.classList.add(
       NATIVE_CLASS
     );
+
+    return true;
 
   }
 
@@ -458,14 +529,15 @@
   }
 
   /* =========================================================
-     10 — FALLBACK UNDERLINE ANIMATION
+     10 — FALLBACK UNDERLINE MOVEMENT
      ========================================================= */
 
   function animateFallbackUnderline(destination) {
 
     if (
       !underlineElement ||
-      !underlineNavigation
+      !underlineNavigation ||
+      typeof underlineElement.animate !== "function"
     ) {
       return;
     }
@@ -477,15 +549,18 @@
       return;
     }
 
-    const currentLink =
-      getNavigationLink(
-        normalizePath(window.location.pathname)
-      );
+    const currentLink = getNavigationLink(
+      normalizePath(window.location.pathname)
+    );
 
-    const destinationLink =
-      getNavigationLink(destinationPath);
+    const destinationLink = getNavigationLink(
+      destinationPath
+    );
 
-    if (!currentLink || !destinationLink) {
+    if (
+      !currentLink ||
+      !destinationLink
+    ) {
       return;
     }
 
@@ -507,86 +582,86 @@
       underlineAnimation.cancel();
     }
 
-    const distance = to.left - from.left;
+    const distance =
+      to.left - from.left;
 
     const stretch = Math.min(
       Math.abs(distance) * 0.08,
       12
     );
 
-    const movingRight = distance > 0;
+    const movingRight =
+      distance > 0;
 
-    underlineAnimation = underlineElement.animate(
-      [
+    underlineAnimation =
+      underlineElement.animate(
+        [
+          {
+            left: `${from.left}px`,
+            width: `${from.width}px`,
+            top: `${from.top}px`,
+            opacity: 1,
+            offset: 0
+          },
+          {
+            left:
+              `${
+                from.left +
+                distance * 0.58 -
+                (movingRight ? 0 : stretch)
+              }px`,
+
+            width:
+              `${
+                from.width +
+                (to.width - from.width) * 0.58 +
+                stretch
+              }px`,
+
+            top:
+              `${
+                from.top +
+                (to.top - from.top) * 0.58
+              }px`,
+
+            opacity: 1,
+            offset: 0.58
+          },
+          {
+            left: `${to.left}px`,
+            width: `${to.width}px`,
+            top: `${to.top}px`,
+            opacity: 1,
+            offset: 1
+          }
+        ],
         {
-          left: `${from.left}px`,
-          width: `${from.width}px`,
-          top: `${from.top}px`,
-          opacity: 1,
-          offset: 0
-        },
-        {
-          left:
-            `${
-              from.left +
-              distance * 0.58 -
-              (movingRight ? 0 : stretch)
-            }px`,
-
-          width:
-            `${
-              from.width +
-              (to.width - from.width) * 0.58 +
-              stretch
-            }px`,
-
-          top:
-            `${
-              from.top +
-              (to.top - from.top) * 0.58
-            }px`,
-
-          opacity: 1,
-          offset: 0.58
-        },
-        {
-          left: `${to.left}px`,
-          width: `${to.width}px`,
-          top: `${to.top}px`,
-          opacity: 1,
-          offset: 1
+          duration: LINE_DURATION,
+          easing: LINE_EASING,
+          fill: "forwards"
         }
-      ],
-      {
-        duration: LINE_DURATION,
-        easing: LINE_EASING,
-        fill: "forwards"
-      }
-    );
+      );
 
   }
 
   /* =========================================================
-     11 — INCOMING TRANSITION
+     11 — INCOMING TRANSITION STATE
      ========================================================= */
 
   function prepareIncomingTransition() {
 
-    const destination = retrieve(
-      STORAGE.destination
-    );
+    const destination =
+      retrieve(STORAGE.destination);
 
     const timestamp = Number(
       retrieve(STORAGE.timestamp)
     );
 
-    const direction = retrieve(
-      STORAGE.direction
-    );
+    const direction =
+      retrieve(STORAGE.direction);
 
-    const fallback = retrieve(
-      STORAGE.fallback
-    );
+    const fallback =
+      retrieve(STORAGE.fallback);
 
     const currentPath = normalizePath(
       window.location.pathname
@@ -604,18 +679,18 @@
     );
 
     if (!validTransition) {
-
       clearTransitionStorage();
-      positionUnderline();
       return;
-
     }
-
-    incomingTransition = true;
 
     setDirection(direction);
 
     clearTransitionStorage();
+
+    /*
+       Only animate entry when the outgoing
+       page explicitly used the JS fallback.
+    */
 
     if (fallback === "1") {
 
@@ -638,51 +713,116 @@
   }
 
   /* =========================================================
-     12 — VIEW TRANSITION LIFECYCLE
+     12 — NATIVE TRANSITION LIFECYCLE
+
+     These listeners are registered immediately,
+     before DOMContentLoaded.
+
      ========================================================= */
 
-  function initializeViewTransitionEvents() {
+  window.addEventListener(
+    "pageswap",
+    event => {
 
-    /*
-       pageswap:
-       Outgoing document, before snapshot capture.
-    */
+      if (!event.viewTransition) {
+        return;
+      }
 
-    window.addEventListener(
-      "pageswap",
-      event => {
+      /*
+         Determine direction for navigations that
+         bypass our click handler, including history.
+      */
 
-        if (!event.viewTransition) {
-          return;
-        }
+      const activation =
+        event.activation;
 
-        enableNativeUnderline();
+      if (
+        activation &&
+        activation.from &&
+        activation.entry
+      ) {
+
+        const direction = directionBetween(
+          new URL(activation.from.url).pathname,
+          new URL(activation.entry.url).pathname
+        );
+
+        setDirection(direction);
 
       }
-    );
 
-    /*
-       pagereveal:
-       Incoming document, before snapshot capture.
+      /*
+         Outgoing snapshot preparation.
+      */
 
-       Ensure the underline exists, is positioned,
-       and has the matching transition name.
-    */
+      enableNativeUnderline();
 
-    window.addEventListener(
-      "pagereveal",
-      event => {
+    }
+  );
 
-        if (!event.viewTransition) {
-          return;
-        }
+  window.addEventListener(
+    "pagereveal",
+    event => {
 
-        enableNativeUnderline();
+      /*
+         Resolve incoming direction before
+         the new snapshot is captured.
+      */
+
+      const activation =
+        event.activation;
+
+      if (
+        activation &&
+        activation.from &&
+        activation.entry
+      ) {
+
+        const direction = directionBetween(
+          new URL(activation.from.url).pathname,
+          new URL(activation.entry.url).pathname
+        );
+
+        setDirection(direction);
 
       }
-    );
 
-  }
+      if (!event.viewTransition) {
+        return;
+      }
+
+      /*
+         Incoming snapshot preparation.
+
+         This must occur synchronously inside
+         pagereveal.
+      */
+
+      nativeTransitionActive = true;
+
+      enableNativeUnderline();
+
+      /*
+         Clear the named identity after the
+         browser finishes the transition.
+      */
+
+      Promise.resolve(
+        event.viewTransition.finished
+      )
+        .catch(() => {})
+        .then(() => {
+
+          nativeTransitionActive = false;
+
+          disableNativeUnderline();
+
+          positionUnderline(true);
+
+        });
+
+    }
+  );
 
   /* =========================================================
      13 — NAVIGATION PREPARATION
@@ -690,7 +830,8 @@
 
   function prepareNavigation(destination) {
 
-    const direction = getDirection(destination);
+    const direction =
+      getDirection(destination);
 
     if (!direction) {
       return false;
@@ -701,9 +842,20 @@
 
     setDirection(direction);
 
-    store(STORAGE.direction, direction);
-    store(STORAGE.destination, destinationPath);
-    store(STORAGE.timestamp, Date.now());
+    store(
+      STORAGE.direction,
+      direction
+    );
+
+    store(
+      STORAGE.destination,
+      destinationPath
+    );
+
+    store(
+      STORAGE.timestamp,
+      Date.now()
+    );
 
     return true;
 
@@ -754,7 +906,8 @@
 
     }
 
-    const direction = getDirection(destination);
+    const direction =
+      getDirection(destination);
 
     if (!direction) {
 
@@ -767,24 +920,25 @@
 
     prepareNavigation(destination);
 
-    if (supportsNativeTransitions()) {
+    /*
+       Native-capable browsers navigate immediately.
 
-      /*
-         Native navigation begins immediately.
+       Cross-document transitions are coordinated
+       by pageswap / pagereveal.
 
-         The browser coordinates the page and
-         named underline transitions.
-      */
+       No JS page animation is applied simultaneously.
+    */
+
+    if (supportsViewTransitionAPI()) {
 
       window.location.assign(destination);
-
       return;
 
     }
 
     /*
-       JavaScript fallback:
-       Animate the outgoing page before navigation.
+       Controlled fallback for browsers without
+       the View Transition API.
     */
 
     store(STORAGE.fallback, "1");
@@ -881,6 +1035,7 @@
   function resetNavigation() {
 
     navigating = false;
+    nativeTransitionActive = false;
 
     if (navigationTimer !== null) {
 
@@ -908,7 +1063,7 @@
 
     disableNativeUnderline();
 
-    positionUnderline();
+    positionUnderline(true);
 
   }
 
@@ -918,11 +1073,15 @@
 
   function initialize() {
 
+    if (initialized) {
+      return;
+    }
+
+    initialized = true;
+
     initializeUnderline();
 
     prepareIncomingTransition();
-
-    initializeViewTransitionEvents();
 
     document.addEventListener(
       "click",
@@ -933,9 +1092,31 @@
       "resize",
       () => {
 
-        if (!navigating) {
+        if (
+          !navigating &&
+          !nativeTransitionActive
+        ) {
           positionUnderline();
         }
+
+      },
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "orientationchange",
+      () => {
+
+        window.requestAnimationFrame(() => {
+
+          if (
+            !navigating &&
+            !nativeTransitionActive
+          ) {
+            positionUnderline();
+          }
+
+        });
 
       },
       { passive: true }
@@ -963,6 +1144,9 @@
 
   /* =========================================================
      19 — PUBLIC API
+
+     Preserves compatibility with mobile swipe JS.
+
      ========================================================= */
 
   window.DRPageTransitions = {
@@ -980,6 +1164,12 @@
   /* =========================================================
      20 — START
      ========================================================= */
+
+  /*
+     Register native lifecycle listeners immediately
+     above, then initialize the DOM-dependent elements
+     as soon as the parsed document is available.
+  */
 
   if (document.readyState === "loading") {
 
