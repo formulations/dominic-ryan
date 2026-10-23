@@ -896,14 +896,6 @@
 
       }
 
-      @media (prefers-reduced-motion: reduce) {
-
-        .dr-envelope-arrow {
-          animation: none;
-        }
-
-      }
-
     }
 
   `;
