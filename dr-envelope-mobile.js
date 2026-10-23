@@ -1,41 +1,20 @@
 /* =========================================================
    DOMINIC RYAN — MOBILE CORRESPONDENCE EXPERIENCE
-   FINAL REFINED VERSION
-
-   Designed for:
-   Dominic Ryan | A Personal Message
 
    MOBILE ONLY — 760px AND BELOW
 
-   FEATURES
+   REFINEMENTS
    ---------------------------------------------------------
-   01. Original website header/navigation preserved
-   02. Full-height editorial presentation
-   03. Layered ivory presentation background
-   04. Original envelope proportions and folded appearance
-   05. Champagne wax seal with illuminated DR monogram
-   06. Properly scaled and centered monogram
-   07. EB Garamond italic invitation
-   08. Original DR Avenir Next typography
-   09. Animated letter derived from actual letter content
-   10. Letter rises naturally from envelope
-   11. Envelope masks the lower portion during extraction
-   12. Continuous transition to original HTML letter
-   13. No automatic scrolling during opening
-   14. Background content hidden until opening completes
-   15. Scrolling disabled until opening completes
-   16. Envelope reappears on every page refresh
-   17. Desktop experience unaffected
-
-   REQUIRED EXISTING ASSETS
-   ---------------------------------------------------------
-   /dr-envelope-logo.png
-
-   /AvenirNext-Regular.woff2
-   /AvenirNext-Medium.woff2
-   /AvenirNext-DemiBold.woff2
-
-   /eb-garamond-latin-400-italic.woff2
+   01. Presentation positioned directly beneath navigation
+   02. Excessive vertical gap eliminated
+   03. Square-cornered ivory presentation layer
+   04. Original envelope, seal and monogram preserved
+   05. Original fonts and invitation preserved
+   06. Original letter extraction animation preserved
+   07. No automatic scrolling
+   08. Original website restored after opening
+   09. Envelope reappears on every refresh
+   10. Desktop unaffected
 
    ========================================================= */
 
@@ -68,6 +47,10 @@
      ORIGINAL WEBSITE ELEMENTS
      ========================================================= */
 
+  const navigation = document.querySelector(
+    ".collection-navigation"
+  );
+
   const hero = document.querySelector(
     ".hero-composition"
   );
@@ -76,23 +59,15 @@
     ".hero-composition > .paper"
   );
 
-  const photoStage = document.querySelector(
-    ".hero-composition > .photo-stage"
+  const originalContent = originalPaper?.querySelector(
+    ".paper-content"
   );
 
-  const instagramSection = document.querySelector(
-    ".formulations-feed"
-  );
-
-  const footer = document.querySelector(
-    ".dr-unified-footer"
-  );
-
-  const backToTop = document.getElementById(
-    "dr-back-to-top"
-  );
-
-  if (!hero || !originalPaper) {
+  if (
+    !navigation ||
+    !hero ||
+    !originalPaper
+  ) {
     return;
   }
 
@@ -115,10 +90,7 @@
       1750,
 
     handoffDuration:
-      900,
-
-    monogramScale:
-      0.64
+      900
 
   };
 
@@ -127,12 +99,9 @@
      ========================================================= */
 
   let opened = false;
-
   let completed = false;
 
   let animationTimers = [];
-
-  let originalScrollY = window.scrollY;
 
   const originalBodyOverflow =
     document.body.style.overflow;
@@ -144,7 +113,7 @@
     document.body.style.touchAction;
 
   /* =========================================================
-     FONT DEFINITIONS
+     STYLES
      ========================================================= */
 
   const style = document.createElement("style");
@@ -154,7 +123,7 @@
   style.textContent = `
 
     /* =====================================================
-       EXACT WEBSITE FONTS
+       ORIGINAL WEBSITE FONTS
        ===================================================== */
 
     @font-face {
@@ -194,13 +163,13 @@
     }
 
     /* =====================================================
-       MOBILE EXPERIENCE ONLY
+       MOBILE ONLY
        ===================================================== */
 
     @media (max-width: 760px) {
 
       /* ===================================================
-         PAGE LOCK
+         SCROLL LOCK
          =================================================== */
 
       html.dr-envelope-locked,
@@ -210,84 +179,73 @@
       }
 
       body.dr-envelope-locked {
-        touch-action: none;
+        touch-action: none !important;
       }
 
       /* ===================================================
-         HIDE SECONDARY WEBSITE CONTENT
-         =================================================== */
+         HIDE ORIGINAL CONTENT DURING INTRODUCTION
 
-      body.dr-envelope-active .photo-stage,
-      body.dr-envelope-active .formulations-feed,
-      body.dr-envelope-active .dr-unified-footer,
-      body.dr-envelope-active .dr-back-to-top {
-        visibility: hidden !important;
-        pointer-events: none !important;
-      }
-
-      /* ===================================================
-         ORIGINAL LETTER DURING INTRODUCTION
-         =================================================== */
-
-      body.dr-envelope-active
-      .hero-composition > .paper {
-        opacity: 0 !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-        animation: none !important;
-        transition: none !important;
-      }
-
-      body.dr-envelope-active
-      .hero-composition > .paper
-      .paper-content {
-        opacity: 0 !important;
-        animation: none !important;
-      }
-
-      /* ===================================================
-         PRESENTATION POSITIONING
+         IMPORTANT:
+         display:none removes the original hero from
+         layout so its large vertical spacing cannot
+         push the envelope downward.
          =================================================== */
 
       body.dr-envelope-active .letter-wrap {
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        display: none !important;
       }
 
-      body.dr-envelope-active .hero-composition {
-        position: relative;
-        display: block !important;
-        width: 100% !important;
-        min-height: 0;
-        transform: none !important;
+      body.dr-envelope-active .formulations-feed,
+      body.dr-envelope-active .dr-unified-footer,
+      body.dr-envelope-active #dr-back-to-top {
+        visibility: hidden !important;
+        pointer-events: none !important;
       }
 
       /* ===================================================
-         MAIN EDITORIAL PRESENTATION
+         ORIGINAL LETTER REVEAL
+         =================================================== */
 
-         Three layers:
-         - Website background
-         - Ivory presentation panel
-         - Physical envelope
+      body.dr-envelope-complete
+      .hero-composition > .paper {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        animation: none !important;
+
+        transition:
+          opacity .9s
+          cubic-bezier(.22,.61,.36,1) !important;
+      }
+
+      body.dr-envelope-complete
+      .hero-composition > .paper
+      .paper-content {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+      }
+
+      /* ===================================================
+         MAIN PRESENTATION
+
+         Independently placed immediately after navigation.
          =================================================== */
 
       #dr-envelope-experience {
         position: relative;
 
-        width: 100%;
-
-        min-height: calc(
-          100svh - var(--dr-envelope-top, 0px)
-        );
-
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
 
-        padding:
-          clamp(18px, 4vw, 28px)
-          12px
-          clamp(22px, 5vw, 40px);
+        box-sizing: border-box;
+
+        width: 100%;
+
+        margin: 16px auto 0;
+
+        padding: 0 12px;
 
         isolation: isolate;
 
@@ -300,20 +258,24 @@
       }
 
       /* ===================================================
-         PRESENTATION BACKGROUND
+         IVORY PRESENTATION PANEL
+
+         SQUARE CORNERS
          =================================================== */
 
       .dr-envelope-presentation {
         position: relative;
 
+        box-sizing: border-box;
+
         width: 100%;
 
-        min-height: min(
-          740px,
+        min-height: max(
+          440px,
           calc(
             100svh -
             var(--dr-envelope-top, 0px) -
-            42px
+            16px
           )
         );
 
@@ -330,9 +292,9 @@
 
         border:
           1px solid
-          rgba(171, 150, 132, .32);
+          rgba(171,150,132,.32);
 
-        border-radius: 13px;
+        border-radius: 0;
 
         background:
           linear-gradient(
@@ -344,20 +306,17 @@
 
         box-shadow:
           0 18px 50px
-            rgba(74, 60, 48, .065),
+            rgba(74,60,48,.065),
           0 2px 9px
-            rgba(74, 60, 48, .025);
+            rgba(74,60,48,.025);
 
         overflow: hidden;
       }
-
-      /* Subtle illuminated paper surface */
 
       .dr-envelope-presentation::before {
         content: "";
 
         position: absolute;
-
         inset: 0;
 
         pointer-events: none;
@@ -472,8 +431,6 @@
 
       /* ===================================================
          ANIMATED LETTER
-
-         Same Avenir typography as original letter.
          =================================================== */
 
       .dr-envelope-letter {
@@ -497,7 +454,7 @@
 
         box-shadow:
           0 7px 23px
-          rgba(70,57,47,.09);
+            rgba(70,57,47,.09);
 
         transform:
           translateY(0);
@@ -728,7 +685,7 @@
       }
 
       /* ===================================================
-         WAX SEAL
+         WAX SEAL — UNCHANGED
          =================================================== */
 
       .dr-envelope-seal {
@@ -809,11 +766,7 @@
       }
 
       /* ===================================================
-         MONOGRAM
-
-         Intentionally smaller than the inner ring.
-
-         The image is not stretched to fill the seal.
+         MONOGRAM — UNCHANGED
          =================================================== */
 
       .dr-envelope-monogram-frame {
@@ -941,7 +894,7 @@
       }
 
       /* ===================================================
-         OPENING ANIMATION
+         OPENING ANIMATION — UNCHANGED
          =================================================== */
 
       #dr-envelope-experience.dr-opening
@@ -978,7 +931,7 @@
       }
 
       /* ===================================================
-         FINAL HANDOFF
+         HANDOFF
          =================================================== */
 
       #dr-envelope-experience.dr-handoff {
@@ -988,30 +941,6 @@
 
         transform:
           translateY(0);
-      }
-
-      /* ===================================================
-         ORIGINAL LETTER REVEAL
-         =================================================== */
-
-      body.dr-envelope-complete
-      .hero-composition > .paper {
-        opacity: 1 !important;
-        visibility: visible !important;
-        pointer-events: auto !important;
-        animation: none !important;
-
-        transition:
-          opacity .9s
-          cubic-bezier(.22,.61,.36,1) !important;
-      }
-
-      body.dr-envelope-complete
-      .hero-composition > .paper
-      .paper-content {
-        opacity: 1 !important;
-        transform: none !important;
-        animation: none !important;
       }
 
       /* ===================================================
@@ -1035,10 +964,6 @@
 
       }
 
-      /* ===================================================
-         REDUCED MOTION
-         =================================================== */
-
       @media (prefers-reduced-motion: reduce) {
 
         .dr-envelope-arrow {
@@ -1054,48 +979,19 @@
   document.head.appendChild(style);
 
   /* =========================================================
-     SAVE ORIGINAL PAGE STATE
-     ========================================================= */
-
-  const originalDisplay = new Map();
-
-  [
-    photoStage,
-    instagramSection,
-    footer,
-    backToTop
-  ].forEach(element => {
-
-    if (!element) {
-      return;
-    }
-
-    originalDisplay.set(
-      element,
-      element.style.display
-    );
-
-  });
-
-  /* =========================================================
-     PREPARE THE ORIGINAL LETTER
+     PREPARE ORIGINAL LETTER
      ========================================================= */
 
   originalPaper.classList.remove(
-    "mobile-paper-visible"
-  );
-
-  originalPaper.classList.remove(
+    "mobile-paper-visible",
     "dr-letter-revealed"
   );
 
   /* =========================================================
-     PREVENT PAGE SCROLLING
+     SCROLL LOCK
      ========================================================= */
 
   function lockScrolling() {
-
-    originalScrollY = window.scrollY;
 
     document.documentElement.classList.add(
       "dr-envelope-locked"
@@ -1136,16 +1032,6 @@
       originalBodyTouchAction;
 
   }
-
-  /* =========================================================
-     ACTIVATE INTRODUCTION
-     ========================================================= */
-
-  document.body.classList.add(
-    "dr-envelope-active"
-  );
-
-  lockScrolling();
 
   /* =========================================================
      CREATE PRESENTATION
@@ -1267,16 +1153,28 @@
   `;
 
   /* =========================================================
-     INSERT ENVELOPE INTO EXISTING WEBSITE
+     INSERT DIRECTLY AFTER NAVIGATION
+
+     This is the key positioning correction.
      ========================================================= */
 
-  hero.insertBefore(
-    experience,
-    originalPaper
+  navigation.insertAdjacentElement(
+    "afterend",
+    experience
   );
 
   /* =========================================================
-     ADJUST HEIGHT TO AVAILABLE MOBILE VIEWPORT
+     ACTIVATE INTRODUCTION
+     ========================================================= */
+
+  document.body.classList.add(
+    "dr-envelope-active"
+  );
+
+  lockScrolling();
+
+  /* =========================================================
+     SET AVAILABLE PRESENTATION HEIGHT
      ========================================================= */
 
   function updatePresentationHeight() {
@@ -1310,21 +1208,7 @@
 
   /* =========================================================
      CLONE ORIGINAL LETTER CONTENT
-
-     IMPORTANT:
-     The animation uses the actual letter HTML.
-
-     This preserves:
-     - Existing wording
-     - Original stylized Dominic Ryan lettering
-     - Existing paragraph structure
-     - Bold and italic markup
      ========================================================= */
-
-  const originalContent =
-    originalPaper.querySelector(
-      ".paper-content"
-    );
 
   const animatedContent =
     experience.querySelector(
@@ -1342,8 +1226,6 @@
     animatedContent.innerHTML =
       clonedContent.innerHTML;
 
-    /* Remove duplicate IDs from preview. */
-
     animatedContent
       .querySelectorAll("[id]")
       .forEach(element => {
@@ -1353,10 +1235,7 @@
   }
 
   /* =========================================================
-     FORCE FONT CONSISTENCY
-
-     Ensures the animated preview uses the same Avenir
-     family as the original personal letter.
+     SYNCHRONIZE LETTER TYPOGRAPHY
      ========================================================= */
 
   function synchronizeLetterTypography() {
@@ -1413,7 +1292,7 @@
   synchronizeLetterTypography();
 
   /* =========================================================
-     LOAD FONTS BEFORE INTERACTION
+     PRELOAD FONTS
      ========================================================= */
 
   if (document.fonts) {
@@ -1443,11 +1322,6 @@
   const seal = experience.querySelector(
     ".dr-envelope-seal"
   );
-
-  const animatedLetter =
-    experience.querySelector(
-      ".dr-envelope-letter"
-    );
 
   /* =========================================================
      TIMER MANAGEMENT
@@ -1487,10 +1361,7 @@
     );
 
     originalPaper.classList.add(
-      "mobile-paper-visible"
-    );
-
-    originalPaper.classList.add(
+      "mobile-paper-visible",
       "dr-letter-revealed"
     );
 
@@ -1506,13 +1377,7 @@
   }
 
   /* =========================================================
-     COMPLETE HANDOFF
-
-     No scrollTo().
-     No automatic scroll animation.
-     No jump to top.
-
-     The original page remains in its natural position.
+     COMPLETE OPENING
      ========================================================= */
 
   function completeOpening() {
@@ -1556,19 +1421,13 @@
 
     seal.disabled = true;
 
-    /* -----------------------------------------------------
-       PHASE 1 — BREAK SEAL AND OPEN FLAP
-       ----------------------------------------------------- */
+    /* Phase 1 — Break seal and open flap */
 
     experience.classList.add(
       "dr-opening"
     );
 
-    /* -----------------------------------------------------
-       PHASE 2 — LETTER RISES FROM ENVELOPE
-
-       Lower portion remains hidden behind envelope folds.
-       ----------------------------------------------------- */
+    /* Phase 2 — Letter rises */
 
     schedule(() => {
 
@@ -1578,12 +1437,7 @@
 
     }, 570);
 
-    /* -----------------------------------------------------
-       PHASE 3 — PREPARE ACTUAL LETTER
-
-       The full original letter is revealed as the
-       presentation fades away.
-       ----------------------------------------------------- */
+    /* Phase 3 — Fade presentation */
 
     schedule(() => {
 
@@ -1595,11 +1449,7 @@
 
     }, 2100);
 
-    /* -----------------------------------------------------
-       PHASE 4 — REMOVE PRESENTATION
-
-       Original page becomes fully interactive.
-       ----------------------------------------------------- */
+    /* Phase 4 — Restore website */
 
     schedule(() => {
 
@@ -1608,10 +1458,6 @@
     }, 3000);
 
   }
-
-  /* =========================================================
-     SEAL INTERACTION
-     ========================================================= */
 
   seal.addEventListener(
     "click",
@@ -1624,11 +1470,9 @@
 
   function handleBreakpointChange(event) {
 
-    if (event.matches) {
-      return;
+    if (!event.matches) {
+      completeOpening();
     }
-
-    completeOpening();
 
   }
 
@@ -1658,19 +1502,9 @@
   );
 
   /* =========================================================
-     IMPORTANT:
      NO SESSION STORAGE
 
-     The envelope intentionally appears every time the
-     page is loaded or refreshed.
-
-     This includes:
-     - Normal browsing
-     - Private browsing
-     - New tabs
-     - New sessions
-     - Repeated refreshes
-
+     The envelope appears on every refresh.
      ========================================================= */
 
 })();
