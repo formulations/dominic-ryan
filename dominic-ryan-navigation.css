@@ -183,13 +183,6 @@
   pointer-events: none;
 
   z-index: 2;
-
-  transform: translateZ(0);
-
-  will-change:
-    left,
-    width,
-    opacity;
 }
 
 
@@ -625,7 +618,7 @@
   font-weight: 400;
 
   line-height: 1.4;
-  letter-spacing: .2em;
+  letter-spacing: .16em;
 
   opacity: .6;
 
@@ -918,30 +911,28 @@ html.dr-native-underline .dr-traveling-underline {
   animation-timing-function:
     cubic-bezier(.22, 1, .36, 1);
   animation-fill-mode: both;
+  z-index: 2;
 }
 
 
 /*
-   Disable the default old/new crossfade.
+   A single visible underline snapshot.
 
-   Both snapshots remain opaque while the
-   transition group interpolates their geometry.
+   The outgoing image is hidden. The incoming
+   image is displayed throughout the transition.
+
+   The group still interpolates from the
+   outgoing geometry to the incoming geometry.
 */
 
-::view-transition-old(dr-navigation-underline),
+::view-transition-old(dr-navigation-underline) {
+  animation: none;
+  opacity: 0;
+}
+
 ::view-transition-new(dr-navigation-underline) {
   animation: none;
   opacity: 1;
-}
-
-
-/*
-   Keep the underline's transition group above
-   the page transition imagery.
-*/
-
-::view-transition-group(dr-navigation-underline) {
-  z-index: 2;
 }
 
 
