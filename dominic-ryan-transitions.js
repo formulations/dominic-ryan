@@ -1,860 +1,946 @@
 /* =========================================================
-   DOMINIC RYAN — SHARED NAVIGATION & EDITORIAL FOOTER
+   DOMINIC RYAN — CROSS-PAGE TRANSITIONS
 
-   Applies to:
-   - A Personal Message
-   - The Maison
-   - Explore the Collection
+   A Personal Message ↔ The Maison ↔ Explore the Collection
+
+   Desktop + Mobile
+
+   Page:
+   - 280ms directional glide
+
+   Navigation underline:
+   - 400ms directional movement
+   - Subtle stretch and contraction
+   - Soft deceleration
+   - Coordinated across page changes
+
+   Supports:
+   - index.html
+   - index3.html
+   - Mobile swipe navigation
+   - Desktop navigation
+   - Browser back/forward restoration
 
    ========================================================= */
 
+(() => {
+  "use strict";
 
-/* =========================================================
-   01 — PRIMARY NAVIGATION
-   ========================================================= */
+  /* =========================================================
+     01 — CONFIGURATION
+     ========================================================= */
 
-.collection-navigation,
-.maison-primary-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  const PAGE_DURATION = 280;
+  const LINE_DURATION = 400;
 
-  gap: 32px;
+  const PAGE_EASING =
+    "cubic-bezier(.22, .7, .2, 1)";
 
-  margin: 50px auto 0;
-  padding: 0 20px;
-}
+  const LINE_EASING =
+    "cubic-bezier(.22, 1, .36, 1)";
 
+  const PAGES = [
+    "/",
+    "/maison/",
+    "/formulations/"
+  ];
 
-/* PRIMARY NAVIGATION LINKS */
+  const STORAGE = {
+    direction: "drSwipeDirection",
+    fallback: "drFallbackTransition",
+    destination: "drTransitionDestination",
+    timestamp: "drTransitionTimestamp",
+    underline: "drTransitionUnderline"
+  };
 
-.collection-navigation a,
-.maison-primary-nav a {
-  position: relative;
-  display: inline-block;
+  const EXIT_CLASS = "dr-fallback-leaving";
+  const ENTRY_CLASS = "dr-fallback-entering";
 
-  padding-bottom: 9px;
+  const TRANSITION_MAX_AGE = 10000;
 
-  font-family:
-    "DR Avenir Next",
-    "Avenir Next",
-    Arial,
-    sans-serif;
+  const root = document.documentElement;
 
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 1.4;
+  let navigating = false;
+  let navigationTimer = null;
+  let entryTimer = null;
 
-  letter-spacing: .16em;
+  let underlineElement = null;
+  let underlineNavigation = null;
+  let underlineAnimation = null;
 
-  color: #655d56;
-  text-decoration: none;
+  let resizeObserver = null;
 
-  white-space: nowrap;
-  opacity: .55;
+  /* =========================================================
+     02 — PATH NORMALIZATION
+     ========================================================= */
 
-  transition:
-    opacity 300ms ease,
-    color 300ms ease;
+  function normalizePath(path) {
 
-  -webkit-tap-highlight-color: transparent;
-}
+    if (typeof path !== "string") {
+      return "/";
+    }
 
+    let cleaned = path;
 
-/* ACTIVE PRIMARY PAGE */
+    try {
+      cleaned = decodeURIComponent(cleaned);
+    } catch (_) {}
 
-.collection-navigation a.active,
-.collection-navigation a[aria-current="page"],
-.maison-primary-nav a.active,
-.maison-primary-nav a[aria-current="page"] {
-  opacity: 1;
-  color: #51463e;
-}
+    cleaned = cleaned.replace(
+      /\/index(?:3)?\.html$/i,
+      "/"
+    );
 
+    if (!cleaned.startsWith("/")) {
+      cleaned = `/${cleaned}`;
+    }
 
-/* PRIMARY UNDERLINE */
+    return cleaned.endsWith("/")
+      ? cleaned
+      : `${cleaned}/`;
 
-.collection-navigation a::after,
-.maison-primary-nav a::after {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  height: 1px;
-
-  background: #51463e;
-
-  opacity: 0;
-
-  transform: scaleX(0);
-  transform-origin: center;
-
-  transition:
-    transform 550ms cubic-bezier(.22, .61, .36, 1),
-    opacity 350ms ease;
-
-  pointer-events: none;
-}
-
-
-/* ACTIVE UNDERLINE */
-
-.collection-navigation a.active::after,
-.collection-navigation a[aria-current="page"]::after,
-.maison-primary-nav a.active::after,
-.maison-primary-nav a[aria-current="page"]::after {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-
-/* DESKTOP HOVER */
-
-@media (hover: hover) and (pointer: fine) {
-
-  .collection-navigation a:not(.active):not([aria-current="page"]):hover,
-  .maison-primary-nav a:not(.active):not([aria-current="page"]):hover {
-    opacity: .85;
   }
 
-  .collection-navigation a:not(.active):not([aria-current="page"]):hover::after,
-  .maison-primary-nav a:not(.active):not([aria-current="page"]):hover::after {
-    opacity: .65;
-    transform: scaleX(1);
+  function getPageIndex(path) {
+
+    return PAGES.indexOf(
+      normalizePath(path)
+    );
+
   }
 
-}
+  function getDestinationPath(destination) {
 
+    try {
 
-/* PRIMARY NAVIGATION FOCUS */
+      const url = new URL(
+        destination,
+        window.location.href
+      );
 
-.collection-navigation a:focus-visible,
-.maison-primary-nav a:focus-visible {
-  outline: 1px solid #51463e;
-  outline-offset: 5px;
-}
+      if (url.origin !== window.location.origin) {
+        return null;
+      }
 
+      return normalizePath(url.pathname);
 
-/* =========================================================
-   TRAVELING UNDERLINE
-   ========================================================= */
+    } catch (_) {
 
-.collection-navigation.dr-travel-nav,
-.maison-primary-nav.dr-travel-nav {
-  position: relative;
-}
+      return null;
 
+    }
 
-/* THE SINGLE MOVING LINE */
-
-.dr-traveling-underline {
-  position: absolute;
-
-  display: block;
-
-  height: 1px;
-
-  background: #51463e;
-
-  opacity: 0;
-
-  pointer-events: none;
-
-  z-index: 2;
-
-  will-change: left, width, opacity;
-}
-
-
-/* HIDE STATIC ACTIVE UNDERLINE
-   WHEN TRAVELING UNDERLINE IS ENABLED */
-
-.dr-travel-nav a.active::after,
-.dr-travel-nav a[aria-current="page"]::after {
-  opacity: 0;
-  transform: scaleX(0);
-}
-
-
-/* KEEP HOVER UNDERLINES ON INACTIVE LINKS */
-
-@media (hover: hover) and (pointer: fine) {
-
-  .dr-travel-nav a:not(.active):not([aria-current="page"]):hover::after {
-    opacity: .65;
-    transform: scaleX(1);
   }
 
-}
+  /* =========================================================
+     03 — STORAGE
+     ========================================================= */
 
+  function store(key, value) {
 
-/* =========================================================
-   MOBILE PRIMARY NAVIGATION
-   ========================================================= */
+    try {
+      sessionStorage.setItem(key, String(value));
+    } catch (_) {}
 
-@media (max-width: 760px) {
-
-  .collection-navigation,
-  .maison-primary-nav {
-    margin-top: 45px;
-
-    gap: clamp(10px, 4vw, 22px);
-
-    padding: 0 12px;
   }
 
-  .collection-navigation a,
-  .maison-primary-nav a {
-    font-size: clamp(8px, 2.3vw, 9px);
-    letter-spacing: .08em;
+  function retrieve(key) {
+
+    try {
+      return sessionStorage.getItem(key);
+    } catch (_) {
+      return null;
+    }
+
   }
 
-}
+  function remove(key) {
 
+    try {
+      sessionStorage.removeItem(key);
+    } catch (_) {}
 
-/* MOBILE PRIMARY NAVIGATION TAP */
-
-@media (hover: none) {
-
-  .collection-navigation a:not(.active):not([aria-current="page"]):active,
-  .maison-primary-nav a:not(.active):not([aria-current="page"]):active {
-    opacity: 1;
   }
 
-  .collection-navigation a:not(.active):not([aria-current="page"]):active::after,
-  .maison-primary-nav a:not(.active):not([aria-current="page"]):active::after {
-    opacity: .65;
-    transform: scaleX(1);
+  function clearTransitionStorage() {
+
+    remove(STORAGE.direction);
+    remove(STORAGE.fallback);
+    remove(STORAGE.destination);
+    remove(STORAGE.timestamp);
+    remove(STORAGE.underline);
+
   }
 
-}
+  /* =========================================================
+     04 — DIRECTION
+     ========================================================= */
 
+  function getDirection(destination) {
 
-/* =========================================================
-   02 — UNIFIED FOOTER CONTAINER
-   ========================================================= */
+    const currentIndex = getPageIndex(
+      window.location.pathname
+    );
 
-.dr-unified-footer {
-  position: relative;
+    const destinationPath =
+      getDestinationPath(destination);
 
-  display: flex;
-  flex-direction: column;
+    if (!destinationPath) {
+      return null;
+    }
 
-  align-items: center;
-  justify-content: center;
+    const destinationIndex = getPageIndex(
+      destinationPath
+    );
 
-  width: 100%;
+    if (
+      currentIndex === -1 ||
+      destinationIndex === -1 ||
+      currentIndex === destinationIndex
+    ) {
+      return null;
+    }
 
-  min-height: 0;
+    return destinationIndex > currentIndex
+      ? "left"
+      : "right";
 
-  padding: 72px 24px 66px;
-
-  background: #f2ede6;
-
-  border-top: 1px solid #e0d5c8;
-
-  text-align: center;
-
-  font-family:
-    "DR Avenir Next",
-    "Avenir Next",
-    Arial,
-    sans-serif;
-}
-
-
-/* =========================================================
-   03 — FOOTER MONOGRAM & PAGE IDENTIFIER
-   ========================================================= */
-
-.dr-footer-end-mark {
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-
-  gap: 19px;
-}
-
-
-/* DISCREET MONOGRAM BUTTON */
-
-.dr-footer-monogram {
-  display: block;
-
-  width: clamp(54px, 5.5vw, 86px);
-  height: 100px;
-
-  padding: 0;
-  margin: 0;
-
-  appearance: none;
-  -webkit-appearance: none;
-
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-
-  color: inherit;
-
-  cursor: pointer;
-
-  -webkit-tap-highlight-color: transparent;
-
-  transition:
-    opacity 350ms ease,
-    color 300ms ease;
-}
-
-
-/* MONOGRAM IMAGE */
-
-.dr-footer-monogram img {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: contain;
-
-  border: none;
-  background: transparent;
-
-  pointer-events: none;
-}
-
-
-/* SUBTLE DESKTOP HOVER */
-
-@media (hover: hover) and (pointer: fine) {
-
-  .dr-footer-monogram:hover {
-    opacity: .72;
   }
 
-}
+  function setDirection(direction) {
 
+    const movingLeft = direction === "left";
 
-/* KEYBOARD FOCUS */
+    root.style.setProperty(
+      "--dr-swipe-out",
+      movingLeft ? "-22px" : "22px"
+    );
 
-.dr-footer-monogram:focus-visible {
-  outline: 1px solid #51463e;
-  outline-offset: 6px;
-}
+    root.style.setProperty(
+      "--dr-swipe-in",
+      movingLeft ? "22px" : "-22px"
+    );
 
-
-/* PAGE IDENTIFIER — DIDOT */
-
-.dr-footer-page-title {
-  display: block;
-
-  font-family:
-    "DR Didot",
-    Didot,
-    "Bodoni 72",
-    Georgia,
-    serif;
-
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-
-  line-height: 1.5;
-  letter-spacing: .16em;
-
-  color: #51463e;
-}
-
-
-/* =========================================================
-   04 — EDITORIAL DIVIDER
-   ========================================================= */
-
-.dr-footer-rule {
-  width: min(360px, 75vw);
-  height: 1px;
-
-  margin: 28px auto 0;
-
-  background: rgba(177, 155, 129, .29);
-}
-
-
-/* =========================================================
-   05 — ITALICIZED BRAND STATEMENT
-   ========================================================= */
-
-.dr-footer-tagline {
-  margin: 16px 0 0;
-
-  padding: 0 24px;
-
-  font-family:
-    "DR Avenir Next",
-    "Avenir Next",
-    Arial,
-    sans-serif;
-
-  font-size: 11px;
-  font-style: italic;
-  font-weight: 400;
-
-  line-height: 1.8;
-  letter-spacing: .025em;
-
-  color: #84776d;
-
-  text-align: center;
-}
-
-
-/* =========================================================
-   06 — FOOTER NAVIGATION
-   ========================================================= */
-
-.dr-footer-nav {
-  display: flex;
-
-  flex-direction: row;
-  flex-wrap: wrap;
-
-  justify-content: center;
-  align-items: center;
-
-  gap: clamp(16px, 3vw, 35px);
-
-  width: 100%;
-
-  margin-top: 35px;
-  padding: 0 20px;
-
-  font-family:
-    "DR Avenir Next",
-    "Avenir Next",
-    Arial,
-    sans-serif;
-
-  font-size: 9px;
-  font-weight: 500;
-
-  line-height: 1.8;
-  letter-spacing: .15em;
-}
-
-
-/* DESKTOP: GROUPS SHARE ONE CONTINUOUS ROW */
-
-.dr-footer-nav-group {
-  display: contents;
-}
-
-
-/* =========================================================
-   07 — FOOTER LINKS
-   ========================================================= */
-
-.dr-footer-nav a {
-  position: relative;
-
-  display: inline-block;
-
-  padding-bottom: 5px;
-
-  font: inherit;
-
-  color: #655d56;
-
-  text-decoration: none;
-
-  white-space: nowrap;
-
-  opacity: .75;
-
-  transition:
-    opacity 300ms ease,
-    color 300ms ease;
-
-  -webkit-tap-highlight-color: transparent;
-}
-
-
-/* =========================================================
-   08 — CURRENT PAGE
-   BOLD, NON-CLICKABLE, NO UNDERLINE
-   ========================================================= */
-
-.dr-footer-current {
-  display: inline-block;
-
-  padding-bottom: 5px;
-
-  font: inherit;
-
-  font-weight: 600;
-
-  color: #51463e;
-
-  opacity: 1;
-
-  white-space: nowrap;
-
-  cursor: default;
-}
-
-
-/* =========================================================
-   09 — ANIMATED FOOTER UNDERLINE
-   ========================================================= */
-
-.dr-footer-nav a::after {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  height: 1px;
-
-  background: currentColor;
-
-  opacity: 0;
-
-  transform: scaleX(0);
-  transform-origin: center;
-
-  transition:
-    transform 550ms cubic-bezier(.22, .61, .36, 1),
-    opacity 350ms ease;
-
-  pointer-events: none;
-}
-
-
-/* DESKTOP HOVER */
-
-@media (hover: hover) and (pointer: fine) {
-
-  .dr-footer-nav a:hover {
-    opacity: 1;
   }
 
-  .dr-footer-nav a:hover::after {
-    opacity: .7;
-    transform: scaleX(1);
+  /* =========================================================
+     05 — NAVIGATION UNDERLINE
+     ========================================================= */
+
+  function getPrimaryNavigation() {
+
+    return document.querySelector(
+      ".collection-navigation, .maison-primary-nav"
+    );
+
   }
 
-}
+  function getNavigationLink(path) {
 
+    const navigation = getPrimaryNavigation();
 
-/* FOOTER LINK FOCUS */
+    if (!navigation) {
+      return null;
+    }
 
-.dr-footer-nav a:focus-visible {
-  outline: 1px solid #51463e;
-  outline-offset: 5px;
-}
+    const links = navigation.querySelectorAll(
+      "a[href]"
+    );
 
+    for (const link of links) {
 
-/* =========================================================
-   10 — EXPLICIT RETURN TO TOP
-   ========================================================= */
+      if (
+        getDestinationPath(link.href) === path
+      ) {
+        return link;
+      }
 
-.dr-footer-return {
-  margin-top: 25px;
+    }
 
-  padding: 10px 0;
+    return null;
 
-  appearance: none;
-  -webkit-appearance: none;
-
-  background: transparent;
-
-  border: 0;
-  border-bottom: 1px solid #9d8873;
-
-  color: #51463e;
-
-  cursor: pointer;
-
-  font-family:
-    "DR Avenir Next",
-    "Avenir Next",
-    Arial,
-    sans-serif;
-
-  font-size: 8px;
-  font-weight: 400;
-
-  line-height: 1.4;
-  letter-spacing: .2em;
-}
-
-
-/* =========================================================
-   11 — MOBILE FOOTER
-   TWO DELIBERATE, SINGLE-LINE ROWS
-   ========================================================= */
-
-@media (max-width: 760px) {
-
-  .dr-unified-footer {
-    padding:
-      62px
-      12px
-      calc(65px + env(safe-area-inset-bottom));
   }
 
-  .dr-footer-page-title {
-    font-size: 11px;
-    letter-spacing: .14em;
+  function getUnderlineGeometry(link, navigation) {
+
+    if (!link || !navigation) {
+      return null;
+    }
+
+    const linkRect = link.getBoundingClientRect();
+    const navRect = navigation.getBoundingClientRect();
+
+    return {
+      left: linkRect.left - navRect.left,
+      width: linkRect.width,
+      top: linkRect.bottom - navRect.top - 1
+    };
+
   }
 
-  .dr-footer-tagline {
-    font-size: 10.5px;
-    line-height: 1.8;
-    letter-spacing: .01em;
-    padding: 0 12px;
+  function applyUnderlineGeometry(geometry) {
+
+    if (!underlineElement || !geometry) {
+      return;
+    }
+
+    underlineElement.style.left =
+      `${geometry.left}px`;
+
+    underlineElement.style.width =
+      `${geometry.width}px`;
+
+    underlineElement.style.top =
+      `${geometry.top}px`;
+
+    underlineElement.style.opacity = "1";
+
   }
 
-  .dr-footer-nav {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: center;
-    gap: 17px;
-    width: 100%;
-    margin-top: 38px;
-    padding: 0;
+  function positionUnderline() {
+
+    if (
+      !underlineElement ||
+      !underlineNavigation ||
+      navigating
+    ) {
+      return;
+    }
+
+    const currentPath = normalizePath(
+      window.location.pathname
+    );
+
+    const link = getNavigationLink(currentPath);
+
+    if (!link) {
+      return;
+    }
+
+    applyUnderlineGeometry(
+      getUnderlineGeometry(
+        link,
+        underlineNavigation
+      )
+    );
+
   }
 
-  .dr-footer-nav-group {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    min-width: 0;
-    gap: clamp(7px, 2.5vw, 18px);
+  function initializeUnderline() {
+
+    const navigation = getPrimaryNavigation();
+
+    if (!navigation) {
+      return;
+    }
+
+    underlineNavigation = navigation;
+
+    const underline = document.createElement("span");
+
+    underline.className =
+      "dr-traveling-underline";
+
+    underline.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+    navigation.appendChild(underline);
+
+    underlineElement = underline;
+
+    navigation.classList.add(
+      "dr-travel-nav"
+    );
+
+    positionUnderline();
+
+    if ("ResizeObserver" in window) {
+
+      resizeObserver = new ResizeObserver(() => {
+
+        if (!navigating) {
+          positionUnderline();
+        }
+
+      });
+
+      resizeObserver.observe(navigation);
+
+    }
+
+    if (document.fonts && document.fonts.ready) {
+
+      document.fonts.ready.then(() => {
+
+        if (!navigating) {
+          positionUnderline();
+        }
+
+      }).catch(() => {});
+
+    }
+
   }
 
-  .dr-footer-nav a,
-  .dr-footer-current {
-    flex: 0 1 auto;
-    font-size: clamp(7px, 2vw, 9px);
-    letter-spacing: clamp(.015em, .15vw, .1em);
-    line-height: 1.6;
-    padding-bottom: 4px;
-    white-space: nowrap;
+  /* =========================================================
+     06 — UNDERLINE ANIMATION
+     ========================================================= */
+
+  function animateUnderline(destination) {
+
+    if (
+      !underlineElement ||
+      !underlineNavigation
+    ) {
+      return;
+    }
+
+    const currentPath = normalizePath(
+      window.location.pathname
+    );
+
+    const destinationPath =
+      getDestinationPath(destination);
+
+    if (!destinationPath) {
+      return;
+    }
+
+    const currentLink =
+      getNavigationLink(currentPath);
+
+    const destinationLink =
+      getNavigationLink(destinationPath);
+
+    if (!currentLink || !destinationLink) {
+      return;
+    }
+
+    const from = getUnderlineGeometry(
+      currentLink,
+      underlineNavigation
+    );
+
+    const to = getUnderlineGeometry(
+      destinationLink,
+      underlineNavigation
+    );
+
+    if (!from || !to) {
+      return;
+    }
+
+    if (underlineAnimation) {
+      underlineAnimation.cancel();
+    }
+
+    const distance = to.left - from.left;
+
+    /*
+       A very restrained extension of the line
+       during movement.
+
+       Maximum stretch: 12px.
+    */
+
+    const stretch = Math.min(
+      Math.abs(distance) * 0.08,
+      12
+    );
+
+    const movingRight = distance > 0;
+
+    const midpoint = {
+      left:
+        from.left +
+        distance * 0.58 -
+        (movingRight ? 0 : stretch),
+
+      width:
+        from.width +
+        (to.width - from.width) * 0.58 +
+        stretch,
+
+      top:
+        from.top +
+        (to.top - from.top) * 0.58
+    };
+
+    underlineAnimation = underlineElement.animate(
+      [
+        {
+          left: `${from.left}px`,
+          width: `${from.width}px`,
+          top: `${from.top}px`,
+          opacity: 1,
+          offset: 0
+        },
+        {
+          left: `${midpoint.left}px`,
+          width: `${midpoint.width}px`,
+          top: `${midpoint.top}px`,
+          opacity: 1,
+          offset: 0.58
+        },
+        {
+          left: `${to.left}px`,
+          width: `${to.width}px`,
+          top: `${to.top}px`,
+          opacity: 1,
+          offset: 1
+        }
+      ],
+      {
+        duration: LINE_DURATION,
+        easing: LINE_EASING,
+        fill: "forwards"
+      }
+    );
+
+    store(
+      STORAGE.underline,
+      destinationPath
+    );
+
   }
 
-  .dr-footer-current {
-    font-weight: 600;
+  /* =========================================================
+     07 — INCOMING UNDERLINE
+     ========================================================= */
+
+  function animateIncomingUnderline(direction) {
+
+    if (
+      !underlineElement ||
+      !underlineNavigation
+    ) {
+      return;
+    }
+
+    const currentPath = normalizePath(
+      window.location.pathname
+    );
+
+    const currentLink =
+      getNavigationLink(currentPath);
+
+    if (!currentLink) {
+      return;
+    }
+
+    const to = getUnderlineGeometry(
+      currentLink,
+      underlineNavigation
+    );
+
+    if (!to) {
+      return;
+    }
+
+    const enteringFromRight =
+      direction === "left";
+
+    const offset = enteringFromRight
+      ? -10
+      : 10;
+
+    const stretch = 8;
+
+    underlineElement.animate(
+      [
+        {
+          transform: `translateX(${offset}px)`,
+          width: `${to.width + stretch}px`,
+          opacity: 0.9
+        },
+        {
+          transform: "translateX(0)",
+          width: `${to.width}px`,
+          opacity: 1
+        }
+      ],
+      {
+        duration: LINE_DURATION,
+        easing: LINE_EASING,
+        fill: "none"
+      }
+    );
+
   }
 
-  .dr-footer-nav a:active {
-    opacity: 1;
-    color: #51463e;
+  /* =========================================================
+     08 — NATIVE TRANSITION DETECTION
+     ========================================================= */
+
+  function supportsNativeTransitions() {
+
+    return (
+      typeof CSS !== "undefined" &&
+      typeof CSS.supports === "function" &&
+      CSS.supports(
+        "view-transition-name",
+        "none"
+      ) &&
+      typeof document.startViewTransition === "function" &&
+      typeof window.navigation !== "undefined"
+    );
+
   }
 
-  .dr-footer-nav a:active::after {
-    opacity: .65;
-    transform: scaleX(1);
+  /* =========================================================
+     09 — PREPARE NAVIGATION
+     ========================================================= */
+
+  function prepareNavigation(destination) {
+
+    const direction = getDirection(destination);
+
+    if (!direction) {
+      return false;
+    }
+
+    const destinationPath =
+      getDestinationPath(destination);
+
+    setDirection(direction);
+
+    store(STORAGE.direction, direction);
+    store(STORAGE.destination, destinationPath);
+    store(STORAGE.timestamp, Date.now());
+
+    animateUnderline(destination);
+
+    return true;
+
   }
 
-  .dr-footer-return {
-    margin-top: 22px;
+  /* =========================================================
+     10 — FALLBACK PAGE EXIT
+     ========================================================= */
+
+  function animateExit() {
+
+    return new Promise(resolve => {
+
+      root.classList.remove(ENTRY_CLASS);
+      root.classList.add(EXIT_CLASS);
+
+      navigationTimer = window.setTimeout(
+        resolve,
+        PAGE_DURATION
+      );
+
+    });
+
   }
 
-}
+  /* =========================================================
+     11 — NAVIGATION
+     ========================================================= */
 
+  async function navigate(destination) {
 
-/* =========================================================
-   12 — EXTRA-NARROW MOBILE
-   ========================================================= */
+    if (navigating) {
+      return;
+    }
 
-@media (max-width: 360px) {
+    const destinationPath =
+      getDestinationPath(destination);
 
-  .dr-unified-footer {
-    padding-left: 6px;
-    padding-right: 6px;
+    if (!destinationPath) {
+
+      window.location.assign(destination);
+      return;
+
+    }
+
+    const direction = getDirection(destination);
+
+    if (!direction) {
+
+      window.location.assign(destination);
+      return;
+
+    }
+
+    navigating = true;
+
+    prepareNavigation(destination);
+
+    if (supportsNativeTransitions()) {
+
+      window.location.assign(destination);
+      return;
+
+    }
+
+    store(STORAGE.fallback, "1");
+
+    await animateExit();
+
+    window.location.assign(destination);
+
   }
 
-  .dr-footer-nav-group {
-    gap: 4px;
+  /* =========================================================
+     12 — INCOMING PAGE
+     ========================================================= */
+
+  function animateEntry() {
+
+    const destination = retrieve(
+      STORAGE.destination
+    );
+
+    const timestamp = Number(
+      retrieve(STORAGE.timestamp)
+    );
+
+    const direction = retrieve(
+      STORAGE.direction
+    );
+
+    const fallback = retrieve(
+      STORAGE.fallback
+    );
+
+    const currentPath = normalizePath(
+      window.location.pathname
+    );
+
+    const validTransition = (
+      destination === currentPath &&
+      Number.isFinite(timestamp) &&
+      timestamp > 0 &&
+      Date.now() - timestamp < TRANSITION_MAX_AGE &&
+      (
+        direction === "left" ||
+        direction === "right"
+      )
+    );
+
+    if (!validTransition) {
+
+      clearTransitionStorage();
+      positionUnderline();
+      return;
+
+    }
+
+    setDirection(direction);
+
+    clearTransitionStorage();
+
+    positionUnderline();
+
+    animateIncomingUnderline(direction);
+
+    if (fallback !== "1") {
+      return;
+    }
+
+    root.classList.remove(EXIT_CLASS);
+    root.classList.add(ENTRY_CLASS);
+
+    entryTimer = window.setTimeout(() => {
+
+      root.classList.remove(ENTRY_CLASS);
+      entryTimer = null;
+
+    }, PAGE_DURATION + 50);
+
   }
 
-  .dr-footer-nav a,
-  .dr-footer-current {
-    font-size: clamp(5.5px, 1.8vw, 6.5px);
-    letter-spacing: 0;
+  /* =========================================================
+     13 — CLICK HANDLING
+     ========================================================= */
+
+  function handleNavigationClick(event) {
+
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    const target = event.target;
+
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    const link = target.closest("a[href]");
+
+    if (!link) {
+      return;
+    }
+
+    if (
+      link.hasAttribute("download") ||
+      (
+        link.target &&
+        link.target.toLowerCase() !== "_self"
+      )
+    ) {
+      return;
+    }
+
+    if (
+      link.hasAttribute("data-dr-contact-open") ||
+      link.closest("#dr-contact-overlay")
+    ) {
+      return;
+    }
+
+    const destinationPath =
+      getDestinationPath(link.href);
+
+    if (!destinationPath) {
+      return;
+    }
+
+    const destinationIndex =
+      getPageIndex(destinationPath);
+
+    const currentIndex =
+      getPageIndex(window.location.pathname);
+
+    if (
+      destinationIndex === -1 ||
+      currentIndex === -1 ||
+      destinationIndex === currentIndex
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+
+    navigate(link.href);
+
   }
 
-}
+  /* =========================================================
+     14 — RESTORATION
+     ========================================================= */
 
+  function resetNavigation() {
 
-/* =========================================================
-   THE MAISON — HEADER LOGO AND NAME ALIGNMENT
-   ========================================================= */
+    navigating = false;
 
-.dr-site-header .dr-brand-mark {
-  display: block;
-  width: 72px;
-  height: auto;
-  flex: none;
-}
+    if (navigationTimer !== null) {
 
-.dr-site-header .dr-brand-mark img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
+      clearTimeout(navigationTimer);
+      navigationTimer = null;
 
-.dr-site-header .dr-brand-name {
-  display: block;
-  margin: 3px 0 0;
-  font-family: "DR Didot", Didot, Georgia, serif;
-  font-size: clamp(18px, 1.7vw, 27px);
-  font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: .24em;
-  color: #4e443d;
-}
+    }
 
-@media (max-width: 760px) {
-  .dr-site-header .dr-brand-mark {
-    width: 54px;
-  }
-}
+    if (entryTimer !== null) {
 
-@media (max-width: 420px) {
-  .dr-site-header .dr-brand-name {
-    font-size: 18px;
-    letter-spacing: .17em;
-  }
-}
+      clearTimeout(entryTimer);
+      entryTimer = null;
 
+    }
 
-/* =========================================================
-   13 — DESKTOP + MOBILE CROSS-PAGE TRANSITIONS
-   ========================================================= */
+    if (underlineAnimation) {
 
-@view-transition {
-  navigation: auto;
-}
+      underlineAnimation.cancel();
+      underlineAnimation = null;
 
+    }
 
-/* DIRECTION VARIABLES */
+    root.classList.remove(EXIT_CLASS);
+    root.classList.remove(ENTRY_CLASS);
 
-:root {
-  --dr-swipe-out: -22px;
-  --dr-swipe-in: 22px;
-}
+    positionUnderline();
 
-
-/* NATIVE VIEW TRANSITIONS */
-
-::view-transition-old(root) {
-  animation:
-    280ms cubic-bezier(.22, .7, .2, 1)
-    both dr-page-out;
-}
-
-::view-transition-new(root) {
-  animation:
-    280ms cubic-bezier(.22, .7, .2, 1)
-    both dr-page-in;
-}
-
-
-/* NATIVE EXIT */
-
-@keyframes dr-page-out {
-
-  from {
-    opacity: 1;
-    transform: translateX(0);
   }
 
-  to {
-    opacity: .88;
-    transform: translateX(var(--dr-swipe-out));
+  /* =========================================================
+     15 — INITIALIZATION
+     ========================================================= */
+
+  function initialize() {
+
+    initializeUnderline();
+
+    animateEntry();
+
+    document.addEventListener(
+      "click",
+      handleNavigationClick
+    );
+
+    window.addEventListener(
+      "resize",
+      () => {
+
+        if (!navigating) {
+          positionUnderline();
+        }
+
+      },
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "pageshow",
+      event => {
+
+        if (event.persisted) {
+
+          resetNavigation();
+          clearTransitionStorage();
+
+        } else {
+
+          navigating = false;
+
+        }
+
+      }
+    );
+
   }
 
-}
+  /* =========================================================
+     16 — PUBLIC API
+     ========================================================= */
 
+  window.DRPageTransitions = {
 
-/* NATIVE ENTRY */
+    prepareNavigation,
+    navigate,
+    getDirection,
 
-@keyframes dr-page-in {
+    isNavigating() {
+      return navigating;
+    }
 
-  from {
-    opacity: .88;
-    transform: translateX(var(--dr-swipe-in));
+  };
+
+  /* =========================================================
+     17 — START
+     ========================================================= */
+
+  if (document.readyState === "loading") {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      initialize,
+      { once: true }
+    );
+
+  } else {
+
+    initialize();
+
   }
 
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-}
-
-
-/* JAVASCRIPT FALLBACK — EXIT */
-
-html.dr-fallback-leaving body {
-  animation:
-    280ms cubic-bezier(.22, .7, .2, 1)
-    both dr-fallback-out;
-}
-
-
-/* JAVASCRIPT FALLBACK — ENTRY */
-
-html.dr-fallback-entering body {
-  animation:
-    280ms cubic-bezier(.22, .7, .2, 1)
-    both dr-fallback-in;
-}
-
-
-/* FALLBACK EXIT KEYFRAMES */
-
-@keyframes dr-fallback-out {
-
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  to {
-    opacity: .88;
-    transform: translateX(var(--dr-swipe-out));
-  }
-
-}
-
-
-/* FALLBACK ENTRY KEYFRAMES */
-
-@keyframes dr-fallback-in {
-
-  from {
-    opacity: .88;
-    transform: translateX(var(--dr-swipe-in));
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-}
+})();
