@@ -1,667 +1,860 @@
 /* =========================================================
-   DOMINIC RYAN — CROSS-PAGE TRANSITIONS
+   DOMINIC RYAN — SHARED NAVIGATION & EDITORIAL FOOTER
 
-   A Personal Message ↔ The Maison ↔ Explore the Collection
-
-   Desktop + Mobile
-
-   Coordinates with:
-   - dominic-ryan-navigation.css
-   - dominic-ryan-swipe.js
-
-   Features:
-   - Native cross-document View Transitions
-   - JavaScript animation fallback
-   - Direction-aware page movement
-   - Navigation-link transitions
-   - Mobile swipe navigation coordination
-   - Browser back/forward restoration
-   - Double-navigation prevention
-   - No Reduce Motion checks
+   Applies to:
+   - A Personal Message
+   - The Maison
+   - Explore the Collection
 
    ========================================================= */
 
-(() => {
-  "use strict";
 
-  /* =========================================================
-     01 — CONFIGURATION
-     ========================================================= */
+/* =========================================================
+   01 — PRIMARY NAVIGATION
+   ========================================================= */
 
-  const DURATION = 280;
+.collection-navigation,
+.maison-primary-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  const PAGES = [
-    "/",
-    "/maison/",
-    "/formulations/"
-  ];
+  gap: 32px;
 
-  const STORAGE = {
-    direction: "drSwipeDirection",
-    fallback: "drFallbackTransition",
-    destination: "drTransitionDestination",
-    timestamp: "drTransitionTimestamp"
-  };
-
-  const EXIT_CLASS = "dr-fallback-leaving";
-  const ENTRY_CLASS = "dr-fallback-entering";
-
-  const root = document.documentElement;
-
-  const TRANSITION_MAX_AGE = 10000;
-
-  let navigating = false;
-  let navigationTimer = null;
-  let entryTimer = null;
+  margin: 50px auto 0;
+  padding: 0 20px;
+}
 
 
-  /* =========================================================
-     02 — PATH NORMALIZATION
-     ========================================================= */
+/* PRIMARY NAVIGATION LINKS */
 
-  function normalizePath(path) {
+.collection-navigation a,
+.maison-primary-nav a {
+  position: relative;
+  display: inline-block;
 
-    if (typeof path !== "string") {
-      return "/";
-    }
+  padding-bottom: 9px;
 
-    let normalized = path.replace(
-      /\/index(?:3)?\.html$/i,
-      "/"
-    );
+  font-family:
+    "DR Avenir Next",
+    "Avenir Next",
+    Arial,
+    sans-serif;
 
-    if (!normalized.endsWith("/")) {
-      normalized += "/";
-    }
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
 
-    return normalized;
+  letter-spacing: .16em;
 
+  color: #655d56;
+  text-decoration: none;
+
+  white-space: nowrap;
+  opacity: .55;
+
+  transition:
+    opacity 300ms ease,
+    color 300ms ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* ACTIVE PRIMARY PAGE */
+
+.collection-navigation a.active,
+.collection-navigation a[aria-current="page"],
+.maison-primary-nav a.active,
+.maison-primary-nav a[aria-current="page"] {
+  opacity: 1;
+  color: #51463e;
+}
+
+
+/* PRIMARY UNDERLINE */
+
+.collection-navigation a::after,
+.maison-primary-nav a::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 1px;
+
+  background: #51463e;
+
+  opacity: 0;
+
+  transform: scaleX(0);
+  transform-origin: center;
+
+  transition:
+    transform 550ms cubic-bezier(.22, .61, .36, 1),
+    opacity 350ms ease;
+
+  pointer-events: none;
+}
+
+
+/* ACTIVE UNDERLINE */
+
+.collection-navigation a.active::after,
+.collection-navigation a[aria-current="page"]::after,
+.maison-primary-nav a.active::after,
+.maison-primary-nav a[aria-current="page"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+
+/* DESKTOP HOVER */
+
+@media (hover: hover) and (pointer: fine) {
+
+  .collection-navigation a:not(.active):not([aria-current="page"]):hover,
+  .maison-primary-nav a:not(.active):not([aria-current="page"]):hover {
+    opacity: .85;
   }
 
-
-  function getPageIndex(path) {
-
-    return PAGES.indexOf(
-      normalizePath(path)
-    );
-
+  .collection-navigation a:not(.active):not([aria-current="page"]):hover::after,
+  .maison-primary-nav a:not(.active):not([aria-current="page"]):hover::after {
+    opacity: .65;
+    transform: scaleX(1);
   }
 
+}
 
-  function getDestinationPath(destination) {
 
-    try {
+/* PRIMARY NAVIGATION FOCUS */
 
-      const url = new URL(
-        destination,
-        window.location.href
-      );
+.collection-navigation a:focus-visible,
+.maison-primary-nav a:focus-visible {
+  outline: 1px solid #51463e;
+  outline-offset: 5px;
+}
 
-      if (url.origin !== window.location.origin) {
-        return null;
-      }
 
-      return normalizePath(
-        url.pathname
-      );
+/* =========================================================
+   TRAVELING UNDERLINE
+   ========================================================= */
 
-    } catch (_) {
+.collection-navigation.dr-travel-nav,
+.maison-primary-nav.dr-travel-nav {
+  position: relative;
+}
 
-      return null;
 
-    }
+/* THE SINGLE MOVING LINE */
 
+.dr-traveling-underline {
+  position: absolute;
+
+  display: block;
+
+  height: 1px;
+
+  background: #51463e;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  z-index: 2;
+
+  will-change: left, width, opacity;
+}
+
+
+/* HIDE STATIC ACTIVE UNDERLINE
+   WHEN TRAVELING UNDERLINE IS ENABLED */
+
+.dr-travel-nav a.active::after,
+.dr-travel-nav a[aria-current="page"]::after {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+
+/* KEEP HOVER UNDERLINES ON INACTIVE LINKS */
+
+@media (hover: hover) and (pointer: fine) {
+
+  .dr-travel-nav a:not(.active):not([aria-current="page"]):hover::after {
+    opacity: .65;
+    transform: scaleX(1);
   }
 
+}
 
-  /* =========================================================
-     03 — STORAGE HELPERS
-     ========================================================= */
 
-  function store(key, value) {
+/* =========================================================
+   MOBILE PRIMARY NAVIGATION
+   ========================================================= */
 
-    try {
+@media (max-width: 760px) {
 
-      sessionStorage.setItem(
-        key,
-        String(value)
-      );
+  .collection-navigation,
+  .maison-primary-nav {
+    margin-top: 45px;
 
-    } catch (_) {}
+    gap: clamp(10px, 4vw, 22px);
 
+    padding: 0 12px;
   }
 
-
-  function retrieve(key) {
-
-    try {
-
-      return sessionStorage.getItem(
-        key
-      );
-
-    } catch (_) {
-
-      return null;
-
-    }
-
+  .collection-navigation a,
+  .maison-primary-nav a {
+    font-size: clamp(8px, 2.3vw, 9px);
+    letter-spacing: .08em;
   }
 
+}
 
-  function remove(key) {
 
-    try {
+/* MOBILE PRIMARY NAVIGATION TAP */
 
-      sessionStorage.removeItem(
-        key
-      );
+@media (hover: none) {
 
-    } catch (_) {}
-
+  .collection-navigation a:not(.active):not([aria-current="page"]):active,
+  .maison-primary-nav a:not(.active):not([aria-current="page"]):active {
+    opacity: 1;
   }
 
-
-  function clearTransitionStorage() {
-
-    remove(STORAGE.direction);
-    remove(STORAGE.fallback);
-    remove(STORAGE.destination);
-    remove(STORAGE.timestamp);
-
+  .collection-navigation a:not(.active):not([aria-current="page"]):active::after,
+  .maison-primary-nav a:not(.active):not([aria-current="page"]):active::after {
+    opacity: .65;
+    transform: scaleX(1);
   }
 
+}
 
-  /* =========================================================
-     04 — NAVIGATION DIRECTION
-     ========================================================= */
 
-  function getDirection(destination) {
+/* =========================================================
+   02 — UNIFIED FOOTER CONTAINER
+   ========================================================= */
 
-    const currentIndex = getPageIndex(
-      window.location.pathname
-    );
+.dr-unified-footer {
+  position: relative;
 
-    const destinationPath =
-      getDestinationPath(destination);
+  display: flex;
+  flex-direction: column;
 
-    if (!destinationPath) {
-      return null;
-    }
+  align-items: center;
+  justify-content: center;
 
-    const destinationIndex = getPageIndex(
-      destinationPath
-    );
+  width: 100%;
 
-    if (
-      currentIndex === -1 ||
-      destinationIndex === -1 ||
-      currentIndex === destinationIndex
-    ) {
-      return null;
-    }
+  min-height: 0;
 
-    return destinationIndex > currentIndex
-      ? "left"
-      : "right";
+  padding: 72px 24px 66px;
 
+  background: #f2ede6;
+
+  border-top: 1px solid #e0d5c8;
+
+  text-align: center;
+
+  font-family:
+    "DR Avenir Next",
+    "Avenir Next",
+    Arial,
+    sans-serif;
+}
+
+
+/* =========================================================
+   03 — FOOTER MONOGRAM & PAGE IDENTIFIER
+   ========================================================= */
+
+.dr-footer-end-mark {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 19px;
+}
+
+
+/* DISCREET MONOGRAM BUTTON */
+
+.dr-footer-monogram {
+  display: block;
+
+  width: clamp(54px, 5.5vw, 86px);
+  height: 100px;
+
+  padding: 0;
+  margin: 0;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+
+  color: inherit;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    opacity 350ms ease,
+    color 300ms ease;
+}
+
+
+/* MONOGRAM IMAGE */
+
+.dr-footer-monogram img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  border: none;
+  background: transparent;
+
+  pointer-events: none;
+}
+
+
+/* SUBTLE DESKTOP HOVER */
+
+@media (hover: hover) and (pointer: fine) {
+
+  .dr-footer-monogram:hover {
+    opacity: .72;
   }
 
+}
 
-  function setDirection(direction) {
 
-    const movingLeft = direction === "left";
+/* KEYBOARD FOCUS */
 
-    root.style.setProperty(
-      "--dr-swipe-out",
-      movingLeft ? "-22px" : "22px"
-    );
+.dr-footer-monogram:focus-visible {
+  outline: 1px solid #51463e;
+  outline-offset: 6px;
+}
 
-    root.style.setProperty(
-      "--dr-swipe-in",
-      movingLeft ? "22px" : "-22px"
-    );
 
+/* PAGE IDENTIFIER — DIDOT */
+
+.dr-footer-page-title {
+  display: block;
+
+  font-family:
+    "DR Didot",
+    Didot,
+    "Bodoni 72",
+    Georgia,
+    serif;
+
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+
+  line-height: 1.5;
+  letter-spacing: .16em;
+
+  color: #51463e;
+}
+
+
+/* =========================================================
+   04 — EDITORIAL DIVIDER
+   ========================================================= */
+
+.dr-footer-rule {
+  width: min(360px, 75vw);
+  height: 1px;
+
+  margin: 28px auto 0;
+
+  background: rgba(177, 155, 129, .29);
+}
+
+
+/* =========================================================
+   05 — ITALICIZED BRAND STATEMENT
+   ========================================================= */
+
+.dr-footer-tagline {
+  margin: 16px 0 0;
+
+  padding: 0 24px;
+
+  font-family:
+    "DR Avenir Next",
+    "Avenir Next",
+    Arial,
+    sans-serif;
+
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 400;
+
+  line-height: 1.8;
+  letter-spacing: .025em;
+
+  color: #84776d;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   06 — FOOTER NAVIGATION
+   ========================================================= */
+
+.dr-footer-nav {
+  display: flex;
+
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: clamp(16px, 3vw, 35px);
+
+  width: 100%;
+
+  margin-top: 35px;
+  padding: 0 20px;
+
+  font-family:
+    "DR Avenir Next",
+    "Avenir Next",
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 500;
+
+  line-height: 1.8;
+  letter-spacing: .15em;
+}
+
+
+/* DESKTOP: GROUPS SHARE ONE CONTINUOUS ROW */
+
+.dr-footer-nav-group {
+  display: contents;
+}
+
+
+/* =========================================================
+   07 — FOOTER LINKS
+   ========================================================= */
+
+.dr-footer-nav a {
+  position: relative;
+
+  display: inline-block;
+
+  padding-bottom: 5px;
+
+  font: inherit;
+
+  color: #655d56;
+
+  text-decoration: none;
+
+  white-space: nowrap;
+
+  opacity: .75;
+
+  transition:
+    opacity 300ms ease,
+    color 300ms ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================================
+   08 — CURRENT PAGE
+   BOLD, NON-CLICKABLE, NO UNDERLINE
+   ========================================================= */
+
+.dr-footer-current {
+  display: inline-block;
+
+  padding-bottom: 5px;
+
+  font: inherit;
+
+  font-weight: 600;
+
+  color: #51463e;
+
+  opacity: 1;
+
+  white-space: nowrap;
+
+  cursor: default;
+}
+
+
+/* =========================================================
+   09 — ANIMATED FOOTER UNDERLINE
+   ========================================================= */
+
+.dr-footer-nav a::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 1px;
+
+  background: currentColor;
+
+  opacity: 0;
+
+  transform: scaleX(0);
+  transform-origin: center;
+
+  transition:
+    transform 550ms cubic-bezier(.22, .61, .36, 1),
+    opacity 350ms ease;
+
+  pointer-events: none;
+}
+
+
+/* DESKTOP HOVER */
+
+@media (hover: hover) and (pointer: fine) {
+
+  .dr-footer-nav a:hover {
+    opacity: 1;
   }
 
-
-  /* =========================================================
-     05 — NATIVE TRANSITION SUPPORT
-
-     Cross-document transitions require browser support
-     and @view-transition { navigation: auto; } on
-     both participating documents.
-
-     The browser is responsible for running the native
-     transition. We avoid assuming that support for
-     document.startViewTransition() guarantees support
-     for cross-document transitions.
-
-     ========================================================= */
-
-  function supportsNativeTransitions() {
-
-    return (
-      typeof CSS !== "undefined" &&
-      typeof CSS.supports === "function" &&
-      CSS.supports(
-        "view-transition-name",
-        "none"
-      ) &&
-      typeof document.startViewTransition === "function" &&
-      typeof window.navigation !== "undefined"
-    );
-
+  .dr-footer-nav a:hover::after {
+    opacity: .7;
+    transform: scaleX(1);
   }
 
+}
 
-  /* =========================================================
-     06 — PREPARE NAVIGATION
 
-     Also called by dominic-ryan-swipe.js.
+/* FOOTER LINK FOCUS */
 
-     ========================================================= */
+.dr-footer-nav a:focus-visible {
+  outline: 1px solid #51463e;
+  outline-offset: 5px;
+}
 
-  function prepareNavigation(destination) {
 
-    const direction = getDirection(
-      destination
-    );
+/* =========================================================
+   10 — EXPLICIT RETURN TO TOP
+   ========================================================= */
 
-    if (!direction) {
-      return false;
-    }
+.dr-footer-return {
+  margin-top: 25px;
 
-    const destinationPath =
-      getDestinationPath(destination);
+  padding: 10px 0;
 
-    setDirection(direction);
+  appearance: none;
+  -webkit-appearance: none;
 
-    store(
-      STORAGE.direction,
-      direction
-    );
+  background: transparent;
 
-    store(
-      STORAGE.destination,
-      destinationPath
-    );
+  border: 0;
+  border-bottom: 1px solid #9d8873;
 
-    store(
-      STORAGE.timestamp,
-      Date.now()
-    );
+  color: #51463e;
 
-    return true;
+  cursor: pointer;
 
+  font-family:
+    "DR Avenir Next",
+    "Avenir Next",
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+  font-weight: 400;
+
+  line-height: 1.4;
+  letter-spacing: .2em;
+}
+
+
+/* =========================================================
+   11 — MOBILE FOOTER
+   TWO DELIBERATE, SINGLE-LINE ROWS
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .dr-unified-footer {
+    padding:
+      62px
+      12px
+      calc(65px + env(safe-area-inset-bottom));
   }
 
-
-  /* =========================================================
-     07 — FALLBACK EXIT ANIMATION
-     ========================================================= */
-
-  function animateExit() {
-
-    return new Promise(resolve => {
-
-      root.classList.remove(
-        ENTRY_CLASS
-      );
-
-      root.classList.add(
-        EXIT_CLASS
-      );
-
-      navigationTimer = window.setTimeout(
-        resolve,
-        DURATION
-      );
-
-    });
-
+  .dr-footer-page-title {
+    font-size: 11px;
+    letter-spacing: .14em;
   }
 
-
-  /* =========================================================
-     08 — NAVIGATE WITH TRANSITION
-     ========================================================= */
-
-  async function navigate(destination) {
-
-    if (navigating) {
-      return;
-    }
-
-    const destinationPath =
-      getDestinationPath(destination);
-
-    if (!destinationPath) {
-
-      window.location.assign(
-        destination
-      );
-
-      return;
-
-    }
-
-    const direction = getDirection(
-      destination
-    );
-
-    if (!direction) {
-
-      window.location.assign(
-        destination
-      );
-
-      return;
-
-    }
-
-    navigating = true;
-
-    prepareNavigation(
-      destination
-    );
-
-    /*
-       Native cross-document View Transitions
-       animate during normal navigation.
-    */
-
-    if (supportsNativeTransitions()) {
-
-      window.location.assign(
-        destination
-      );
-
-      return;
-
-    }
-
-    /*
-       Fallback:
-       Animate departure before navigation.
-    */
-
-    store(
-      STORAGE.fallback,
-      "1"
-    );
-
-    await animateExit();
-
-    window.location.assign(
-      destination
-    );
-
+  .dr-footer-tagline {
+    font-size: 10.5px;
+    line-height: 1.8;
+    letter-spacing: .01em;
+    padding: 0 12px;
   }
 
-
-  /* =========================================================
-     09 — FALLBACK ENTRY ANIMATION
-     ========================================================= */
-
-  function animateEntry() {
-
-    const destination = retrieve(
-      STORAGE.destination
-    );
-
-    const timestamp = Number(
-      retrieve(STORAGE.timestamp)
-    );
-
-    const direction = retrieve(
-      STORAGE.direction
-    );
-
-    const fallback = retrieve(
-      STORAGE.fallback
-    );
-
-    const currentPath = normalizePath(
-      window.location.pathname
-    );
-
-    const validTransition = (
-      destination === currentPath &&
-      Number.isFinite(timestamp) &&
-      timestamp > 0 &&
-      Date.now() - timestamp < TRANSITION_MAX_AGE &&
-      (direction === "left" || direction === "right")
-    );
-
-    if (!validTransition) {
-
-      clearTransitionStorage();
-      return;
-
-    }
-
-    setDirection(direction);
-
-    clearTransitionStorage();
-
-    if (fallback !== "1") {
-      return;
-    }
-
-    root.classList.remove(
-      EXIT_CLASS
-    );
-
-    root.classList.add(
-      ENTRY_CLASS
-    );
-
-    entryTimer = window.setTimeout(() => {
-
-      root.classList.remove(
-        ENTRY_CLASS
-      );
-
-      entryTimer = null;
-
-    }, DURATION + 50);
-
+  .dr-footer-nav {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 17px;
+    width: 100%;
+    margin-top: 38px;
+    padding: 0;
   }
 
-
-  /* =========================================================
-     10 — NAVIGATION-LINK HANDLING
-     ========================================================= */
-
-  function handleNavigationClick(event) {
-
-    if (event.defaultPrevented) {
-      return;
-    }
-
-    if (
-      event.button !== 0 ||
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey
-    ) {
-      return;
-    }
-
-    const target = event.target;
-
-    if (!(target instanceof Element)) {
-      return;
-    }
-
-    const link = target.closest(
-      "a[href]"
-    );
-
-    if (!link) {
-      return;
-    }
-
-    if (
-      link.hasAttribute("download") ||
-      (
-        link.target &&
-        link.target.toLowerCase() !== "_self"
-      )
-    ) {
-      return;
-    }
-
-    if (
-      link.hasAttribute("data-dr-contact-open") ||
-      link.closest("#dr-contact-overlay")
-    ) {
-      return;
-    }
-
-    const destination = link.href;
-
-    const destinationPath =
-      getDestinationPath(destination);
-
-    if (!destinationPath) {
-      return;
-    }
-
-    const destinationIndex =
-      getPageIndex(destinationPath);
-
-    const currentIndex =
-      getPageIndex(
-        window.location.pathname
-      );
-
-    if (
-      destinationIndex === -1 ||
-      currentIndex === -1 ||
-      destinationIndex === currentIndex
-    ) {
-      return;
-    }
-
-    event.preventDefault();
-
-    navigate(
-      destination
-    );
-
+  .dr-footer-nav-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    gap: clamp(7px, 2.5vw, 18px);
   }
 
-
-  /* =========================================================
-     11 — PAGE RESTORATION
-     ========================================================= */
-
-  function resetNavigation() {
-
-    navigating = false;
-
-    if (navigationTimer !== null) {
-
-      window.clearTimeout(
-        navigationTimer
-      );
-
-      navigationTimer = null;
-
-    }
-
-    if (entryTimer !== null) {
-
-      window.clearTimeout(
-        entryTimer
-      );
-
-      entryTimer = null;
-
-    }
-
-    root.classList.remove(
-      EXIT_CLASS
-    );
-
-    root.classList.remove(
-      ENTRY_CLASS
-    );
-
+  .dr-footer-nav a,
+  .dr-footer-current {
+    flex: 0 1 auto;
+    font-size: clamp(7px, 2vw, 9px);
+    letter-spacing: clamp(.015em, .15vw, .1em);
+    line-height: 1.6;
+    padding-bottom: 4px;
+    white-space: nowrap;
   }
 
-
-  /* =========================================================
-     12 — INITIALIZATION
-     ========================================================= */
-
-  function initialize() {
-
-    animateEntry();
-
-    document.addEventListener(
-      "click",
-      handleNavigationClick
-    );
-
-    window.addEventListener(
-      "pageshow",
-      event => {
-
-        if (event.persisted) {
-
-          resetNavigation();
-
-          clearTransitionStorage();
-
-        } else {
-
-          navigating = false;
-
-        }
-
-      }
-    );
-
+  .dr-footer-current {
+    font-weight: 600;
   }
 
-
-  /* =========================================================
-     13 — PUBLIC API
-     ========================================================= */
-
-  window.DRPageTransitions = {
-
-    prepareNavigation,
-    navigate,
-    getDirection,
-
-    isNavigating() {
-      return navigating;
-    }
-
-  };
-
-
-  /* =========================================================
-     14 — START
-     ========================================================= */
-
-  if (document.readyState === "loading") {
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      initialize,
-      { once: true }
-    );
-
-  } else {
-
-    initialize();
-
+  .dr-footer-nav a:active {
+    opacity: 1;
+    color: #51463e;
   }
 
-})();
+  .dr-footer-nav a:active::after {
+    opacity: .65;
+    transform: scaleX(1);
+  }
+
+  .dr-footer-return {
+    margin-top: 22px;
+  }
+
+}
+
+
+/* =========================================================
+   12 — EXTRA-NARROW MOBILE
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+  .dr-unified-footer {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .dr-footer-nav-group {
+    gap: 4px;
+  }
+
+  .dr-footer-nav a,
+  .dr-footer-current {
+    font-size: clamp(5.5px, 1.8vw, 6.5px);
+    letter-spacing: 0;
+  }
+
+}
+
+
+/* =========================================================
+   THE MAISON — HEADER LOGO AND NAME ALIGNMENT
+   ========================================================= */
+
+.dr-site-header .dr-brand-mark {
+  display: block;
+  width: 72px;
+  height: auto;
+  flex: none;
+}
+
+.dr-site-header .dr-brand-mark img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dr-site-header .dr-brand-name {
+  display: block;
+  margin: 3px 0 0;
+  font-family: "DR Didot", Didot, Georgia, serif;
+  font-size: clamp(18px, 1.7vw, 27px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: .24em;
+  color: #4e443d;
+}
+
+@media (max-width: 760px) {
+  .dr-site-header .dr-brand-mark {
+    width: 54px;
+  }
+}
+
+@media (max-width: 420px) {
+  .dr-site-header .dr-brand-name {
+    font-size: 18px;
+    letter-spacing: .17em;
+  }
+}
+
+
+/* =========================================================
+   13 — DESKTOP + MOBILE CROSS-PAGE TRANSITIONS
+   ========================================================= */
+
+@view-transition {
+  navigation: auto;
+}
+
+
+/* DIRECTION VARIABLES */
+
+:root {
+  --dr-swipe-out: -22px;
+  --dr-swipe-in: 22px;
+}
+
+
+/* NATIVE VIEW TRANSITIONS */
+
+::view-transition-old(root) {
+  animation:
+    280ms cubic-bezier(.22, .7, .2, 1)
+    both dr-page-out;
+}
+
+::view-transition-new(root) {
+  animation:
+    280ms cubic-bezier(.22, .7, .2, 1)
+    both dr-page-in;
+}
+
+
+/* NATIVE EXIT */
+
+@keyframes dr-page-out {
+
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: .88;
+    transform: translateX(var(--dr-swipe-out));
+  }
+
+}
+
+
+/* NATIVE ENTRY */
+
+@keyframes dr-page-in {
+
+  from {
+    opacity: .88;
+    transform: translateX(var(--dr-swipe-in));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+}
+
+
+/* JAVASCRIPT FALLBACK — EXIT */
+
+html.dr-fallback-leaving body {
+  animation:
+    280ms cubic-bezier(.22, .7, .2, 1)
+    both dr-fallback-out;
+}
+
+
+/* JAVASCRIPT FALLBACK — ENTRY */
+
+html.dr-fallback-entering body {
+  animation:
+    280ms cubic-bezier(.22, .7, .2, 1)
+    both dr-fallback-in;
+}
+
+
+/* FALLBACK EXIT KEYFRAMES */
+
+@keyframes dr-fallback-out {
+
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: .88;
+    transform: translateX(var(--dr-swipe-out));
+  }
+
+}
+
+
+/* FALLBACK ENTRY KEYFRAMES */
+
+@keyframes dr-fallback-in {
+
+  from {
+    opacity: .88;
+    transform: translateX(var(--dr-swipe-in));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+}
