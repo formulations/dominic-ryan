@@ -6,10 +6,11 @@
    Desktop + Mobile
 
    DESIGN
-   - 280ms directional page glide
-   - 400ms traveling navigation underline
+   - 650ms directional page glide
+   - 700ms traveling navigation underline
+   - Balanced, measured movement
+   - Position and width animate together
    - Single visible underline during native transitions
-   - No competing page animations
 
    RELIABILITY
    - Early pageswap / pagereveal registration
@@ -29,11 +30,11 @@
      01 — CONFIGURATION
      ========================================================= */
 
-  const PAGE_DURATION = 280;
-  const LINE_DURATION = 400;
+  const PAGE_DURATION = 650;
+  const LINE_DURATION = 700;
 
   const LINE_EASING =
-    "cubic-bezier(.22, 1, .36, 1)";
+    "cubic-bezier(.45, 0, .25, 1)";
 
   const PAGES = [
     "/",
@@ -139,7 +140,10 @@
   function store(key, value) {
 
     try {
-      sessionStorage.setItem(key, String(value));
+      sessionStorage.setItem(
+        key,
+        String(value)
+      );
     } catch (_) {}
 
   }
@@ -236,10 +240,11 @@
   /* =========================================================
      05 — NATIVE CAPABILITY
 
-     This detects the core View Transition API.
+     The browser must support the relevant
+     View Transition features.
 
-     Actual cross-document transitions are confirmed
-     through pageswap / pagereveal event.viewTransition.
+     Actual cross-document transitions are
+     confirmed through lifecycle events.
 
      ========================================================= */
 
@@ -530,6 +535,12 @@
 
   /* =========================================================
      10 — FALLBACK UNDERLINE MOVEMENT
+
+     Balanced interpolation.
+
+     Position and width change together
+     using the same easing and duration.
+
      ========================================================= */
 
   function animateFallbackUnderline(destination) {
@@ -582,16 +593,11 @@
       underlineAnimation.cancel();
     }
 
-    const distance =
-      to.left - from.left;
-
-    const stretch = Math.min(
-      Math.abs(distance) * 0.08,
-      12
-    );
-
-    const movingRight =
-      distance > 0;
+    /*
+       Direct interpolation prevents the
+       asymmetric stretching effect used
+       by the previous fallback.
+    */
 
     underlineAnimation =
       underlineElement.animate(
@@ -600,39 +606,13 @@
             left: `${from.left}px`,
             width: `${from.width}px`,
             top: `${from.top}px`,
-            opacity: 1,
-            offset: 0
-          },
-          {
-            left:
-              `${
-                from.left +
-                distance * 0.58 -
-                (movingRight ? 0 : stretch)
-              }px`,
-
-            width:
-              `${
-                from.width +
-                (to.width - from.width) * 0.58 +
-                stretch
-              }px`,
-
-            top:
-              `${
-                from.top +
-                (to.top - from.top) * 0.58
-              }px`,
-
-            opacity: 1,
-            offset: 0.58
+            opacity: 1
           },
           {
             left: `${to.left}px`,
             width: `${to.width}px`,
             top: `${to.top}px`,
-            opacity: 1,
-            offset: 1
+            opacity: 1
           }
         ],
         {
@@ -715,8 +695,7 @@
   /* =========================================================
      12 — NATIVE TRANSITION LIFECYCLE
 
-     These listeners are registered immediately,
-     before DOMContentLoaded.
+     Register listeners before DOMContentLoaded.
 
      ========================================================= */
 
@@ -752,7 +731,8 @@
       }
 
       /*
-         Outgoing snapshot preparation.
+         Prepare outgoing underline before
+         the browser captures its snapshot.
       */
 
       enableNativeUnderline();
@@ -791,14 +771,11 @@
         return;
       }
 
+      nativeTransitionActive = true;
+
       /*
          Incoming snapshot preparation.
-
-         This must occur synchronously inside
-         pagereveal.
       */
-
-      nativeTransitionActive = true;
 
       enableNativeUnderline();
 
@@ -923,10 +900,10 @@
     /*
        Native-capable browsers navigate immediately.
 
-       Cross-document transitions are coordinated
-       by pageswap / pagereveal.
+       The browser coordinates the cross-document
+       transition through pageswap / pagereveal.
 
-       No JS page animation is applied simultaneously.
+       No additional JS page animation runs.
     */
 
     if (supportsViewTransitionAPI()) {
@@ -937,8 +914,8 @@
     }
 
     /*
-       Controlled fallback for browsers without
-       the View Transition API.
+       Fallback for browsers without the
+       relevant native View Transition API.
     */
 
     store(STORAGE.fallback, "1");
@@ -1166,9 +1143,11 @@
      ========================================================= */
 
   /*
-     Register native lifecycle listeners immediately
-     above, then initialize the DOM-dependent elements
-     as soon as the parsed document is available.
+     Native lifecycle listeners are registered
+     immediately above.
+
+     DOM-dependent elements initialize once
+     the document is available.
   */
 
   if (document.readyState === "loading") {
