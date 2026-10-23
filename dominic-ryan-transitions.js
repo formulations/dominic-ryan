@@ -7,12 +7,14 @@
 
    Page:
    - 280ms directional glide
+   - Direction-aware navigation
+   - Native cross-document transitions
 
    Navigation underline:
    - 400ms continuous movement
    - Natural width interpolation
-   - Soft deceleration
-   - Native cross-document View Transition
+   - No competing crossfade
+   - Matching identity across documents
 
    Supports:
    - index.html
@@ -60,11 +62,13 @@
   const root = document.documentElement;
 
   let navigating = false;
+
   let navigationTimer = null;
   let entryTimer = null;
 
   let underlineElement = null;
   let underlineNavigation = null;
+  let underlineAnimation = null;
 
   let resizeObserver = null;
 
@@ -223,7 +227,7 @@
   }
 
   /* =========================================================
-     05 — NATIVE VIEW TRANSITION SUPPORT
+     05 — NATIVE TRANSITION SUPPORT
      ========================================================= */
 
   function supportsNativeTransitions() {
@@ -293,9 +297,18 @@
     const navRect = navigation.getBoundingClientRect();
 
     return {
-      left: linkRect.left - navRect.left,
+      left:
+        linkRect.left -
+        navRect.left -
+        navigation.clientLeft,
+
       width: linkRect.width,
-      top: linkRect.bottom - navRect.top - 1
+
+      top:
+        linkRect.bottom -
+        navRect.top -
+        navigation.clientTop -
+        1
     };
 
   }
@@ -421,8 +434,14 @@
   function enableNativeUnderline() {
 
     if (!underlineElement) {
+      initializeUnderline();
+    }
+
+    if (!underlineElement) {
       return;
     }
+
+    positionUnderline();
 
     root.classList.add(
       NATIVE_CLASS
@@ -439,7 +458,116 @@
   }
 
   /* =========================================================
-     10 — INCOMING PAGE TRANSITION
+     10 — FALLBACK UNDERLINE ANIMATION
+     ========================================================= */
+
+  function animateFallbackUnderline(destination) {
+
+    if (
+      !underlineElement ||
+      !underlineNavigation
+    ) {
+      return;
+    }
+
+    const destinationPath =
+      getDestinationPath(destination);
+
+    if (!destinationPath) {
+      return;
+    }
+
+    const currentLink =
+      getNavigationLink(
+        normalizePath(window.location.pathname)
+      );
+
+    const destinationLink =
+      getNavigationLink(destinationPath);
+
+    if (!currentLink || !destinationLink) {
+      return;
+    }
+
+    const from = getUnderlineGeometry(
+      currentLink,
+      underlineNavigation
+    );
+
+    const to = getUnderlineGeometry(
+      destinationLink,
+      underlineNavigation
+    );
+
+    if (!from || !to) {
+      return;
+    }
+
+    if (underlineAnimation) {
+      underlineAnimation.cancel();
+    }
+
+    const distance = to.left - from.left;
+
+    const stretch = Math.min(
+      Math.abs(distance) * 0.08,
+      12
+    );
+
+    const movingRight = distance > 0;
+
+    underlineAnimation = underlineElement.animate(
+      [
+        {
+          left: `${from.left}px`,
+          width: `${from.width}px`,
+          top: `${from.top}px`,
+          opacity: 1,
+          offset: 0
+        },
+        {
+          left:
+            `${
+              from.left +
+              distance * 0.58 -
+              (movingRight ? 0 : stretch)
+            }px`,
+
+          width:
+            `${
+              from.width +
+              (to.width - from.width) * 0.58 +
+              stretch
+            }px`,
+
+          top:
+            `${
+              from.top +
+              (to.top - from.top) * 0.58
+            }px`,
+
+          opacity: 1,
+          offset: 0.58
+        },
+        {
+          left: `${to.left}px`,
+          width: `${to.width}px`,
+          top: `${to.top}px`,
+          opacity: 1,
+          offset: 1
+        }
+      ],
+      {
+        duration: LINE_DURATION,
+        easing: LINE_EASING,
+        fill: "forwards"
+      }
+    );
+
+  }
+
+  /* =========================================================
+     11 — INCOMING TRANSITION
      ========================================================= */
 
   function prepareIncomingTransition() {
@@ -487,6 +615,8 @@
 
     setDirection(direction);
 
+    clearTransitionStorage();
+
     if (fallback === "1") {
 
       root.classList.add(
@@ -505,19 +635,17 @@
 
     }
 
-    clearTransitionStorage();
-
   }
 
   /* =========================================================
-     11 — BROWSER VIEW TRANSITION LIFECYCLE
+     12 — VIEW TRANSITION LIFECYCLE
      ========================================================= */
 
   function initializeViewTransitionEvents() {
 
     /*
-       pageswap fires on the outgoing document
-       before its visual snapshot is captured.
+       pageswap:
+       Outgoing document, before snapshot capture.
     */
 
     window.addEventListener(
@@ -534,11 +662,11 @@
     );
 
     /*
-       pagereveal fires on the incoming document
-       before its visual snapshot is revealed.
+       pagereveal:
+       Incoming document, before snapshot capture.
 
-       The underline is initialized and assigned
-       its matching View Transition name.
+       Ensure the underline exists, is positioned,
+       and has the matching transition name.
     */
 
     window.addEventListener(
@@ -549,12 +677,6 @@
           return;
         }
 
-        if (!underlineElement) {
-          initializeUnderline();
-        }
-
-        positionUnderline();
-
         enableNativeUnderline();
 
       }
@@ -563,7 +685,7 @@
   }
 
   /* =========================================================
-     12 — NAVIGATION PREPARATION
+     13 — NAVIGATION PREPARATION
      ========================================================= */
 
   function prepareNavigation(destination) {
@@ -584,108 +706,6 @@
     store(STORAGE.timestamp, Date.now());
 
     return true;
-
-  }
-
-  /* =========================================================
-     13 — FALLBACK UNDERLINE ANIMATION
-     ========================================================= */
-
-  function animateFallbackUnderline(destination) {
-
-    if (
-      !underlineElement ||
-      !underlineNavigation
-    ) {
-      return;
-    }
-
-    const destinationPath =
-      getDestinationPath(destination);
-
-    if (!destinationPath) {
-      return;
-    }
-
-    const destinationLink =
-      getNavigationLink(destinationPath);
-
-    if (!destinationLink) {
-      return;
-    }
-
-    const from = getUnderlineGeometry(
-      getNavigationLink(
-        normalizePath(window.location.pathname)
-      ),
-      underlineNavigation
-    );
-
-    const to = getUnderlineGeometry(
-      destinationLink,
-      underlineNavigation
-    );
-
-    if (!from || !to) {
-      return;
-    }
-
-    const distance = to.left - from.left;
-
-    const stretch = Math.min(
-      Math.abs(distance) * 0.08,
-      12
-    );
-
-    const movingRight = distance > 0;
-
-    underlineElement.animate(
-      [
-        {
-          left: `${from.left}px`,
-          width: `${from.width}px`,
-          top: `${from.top}px`,
-          opacity: 1,
-          offset: 0
-        },
-        {
-          left:
-            `${
-              from.left +
-              distance * 0.58 -
-              (movingRight ? 0 : stretch)
-            }px`,
-
-          width:
-            `${
-              from.width +
-              (to.width - from.width) * 0.58 +
-              stretch
-            }px`,
-
-          top:
-            `${
-              from.top +
-              (to.top - from.top) * 0.58
-            }px`,
-
-          opacity: 1,
-          offset: 0.58
-        },
-        {
-          left: `${to.left}px`,
-          width: `${to.width}px`,
-          top: `${to.top}px`,
-          opacity: 1,
-          offset: 1
-        }
-      ],
-      {
-        duration: LINE_DURATION,
-        easing: LINE_EASING,
-        fill: "forwards"
-      }
-    );
 
   }
 
@@ -750,10 +770,10 @@
     if (supportsNativeTransitions()) {
 
       /*
-         Do not animate the underline manually.
+         Native navigation begins immediately.
 
-         The browser will animate the named underline
-         between the outgoing and incoming documents.
+         The browser coordinates the page and
+         named underline transitions.
       */
 
       window.location.assign(destination);
@@ -763,8 +783,8 @@
     }
 
     /*
-       Fallback for browsers without native
-       cross-document View Transitions.
+       JavaScript fallback:
+       Animate the outgoing page before navigation.
     */
 
     store(STORAGE.fallback, "1");
@@ -873,6 +893,13 @@
 
       clearTimeout(entryTimer);
       entryTimer = null;
+
+    }
+
+    if (underlineAnimation) {
+
+      underlineAnimation.cancel();
+      underlineAnimation = null;
 
     }
 
