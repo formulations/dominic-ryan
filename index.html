@@ -4,6 +4,35 @@
 <head>
   <meta charset="UTF-8">
 
+  <!-- First-visit introduction: persist across refreshes and return visits. -->
+  <script>
+    (() => {
+      "use strict";
+      const VISITED_KEY = "dr-personal-message-intro-seen-v1";
+      let alreadyVisited = false;
+      try {
+        alreadyVisited = localStorage.getItem(VISITED_KEY) === "yes";
+        if (!alreadyVisited) localStorage.setItem(VISITED_KEY, "yes");
+      } catch (_) {
+        // When persistent storage is unavailable, retain once-per-tab behavior.
+        try {
+          alreadyVisited = sessionStorage.getItem(VISITED_KEY) === "yes";
+          if (!alreadyVisited) sessionStorage.setItem(VISITED_KEY, "yes");
+        } catch (_) {}
+      }
+      try {
+        if (alreadyVisited) {
+          sessionStorage.setItem("dr-intro-shown", "true");
+          sessionStorage.setItem("dr-envelope-v7-opened", "yes");
+        } else {
+          sessionStorage.removeItem("dr-intro-shown");
+          sessionStorage.removeItem("dr-envelope-v7-opened");
+        }
+      } catch (_) {}
+      window.drReturningVisitor = alreadyVisited;
+    })();
+  </script>
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
@@ -734,111 +763,6 @@
       margin-top:0 !important;
     }
     /* =========================================================
-   DOMINIC RYAN — CHAMPAGNE RIBBON
-   5.5-SECOND HORIZONTAL UNFURL
-   ========================================================= */
-
-.final-typewriter {
-  position: relative;
-  isolation: isolate;
-}
-
-/* Ribbon positioned behind the quote */
-
-.dr-quote-ribbon {
-  position: absolute;
-
-  top: -8px;
-  bottom: -8px;
-
-  left: calc(-1 * var(--dr-ribbon-edge-offset, 0px));
-  right: -20px;
-
-  z-index: 0;
-
-  pointer-events: none;
-
-  clip-path: inset(0 100% 0 0);
-}
-
-  z-index: 0;
-
-  pointer-events: none;
-
-  clip-path: inset(0 100% 0 0);
-}
-
-/* Champagne material with one diagonal-cut end */
-
-.dr-quote-ribbon-material {
-  position: absolute;
-  inset: 0;
-
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    calc(100% - 27px) 100%,
-    0 100%
-  );
-
-  background: linear-gradient(
-    180deg,
-    rgba(221, 207, 187, 0.26) 0%,
-    rgba(218, 202, 179, 0.39) 47%,
-    rgba(224, 209, 190, 0.28) 100%
-  );
-
-  box-shadow:
-    inset 0 1px rgba(255, 255, 255, 0.5),
-    inset 0 -1px rgba(108, 88, 69, 0.11);
-}
-
-/* Subtle material detail */
-
-.dr-quote-ribbon-material::before {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  top: 0;
-  bottom: 0;
-
-  width: 1px;
-
-  background: rgba(91, 72, 53, 0.14);
-}
-
-/* Begin unfurling */
-
-.dr-quote-ribbon.dr-ribbon-visible {
-  animation:
-    drRibbonUnfurl
-    5.5s
-    cubic-bezier(.38, .05, .62, .95)
-    forwards;
-}
-
-@keyframes drRibbonUnfurl {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-/* Keep the quote and ornament above the ribbon */
-
-.final-typewriter-text,
-.final-typewriter-ornament {
-  position: relative;
-  z-index: 1;
-}
-
-
-/* =========================================================
    FINAL SENTENCE — ELEGANT SIGNATURE-MATCHED REVEAL
    ========================================================= */
 
@@ -1623,8 +1547,8 @@ box-shadow:
 animation:none;
 
 transition:
-  opacity 4.2s cubic-bezier(.22,.61,.36,1),
-  box-shadow 4.2s cubic-bezier(.22,.61,.36,1);
+  opacity .65s cubic-bezier(.22,.61,.36,1),
+  box-shadow .65s cubic-bezier(.22,.61,.36,1);
 }
       .paper.mobile-paper-visible{
   opacity:1;
@@ -1635,13 +1559,12 @@ transition:
 }
 .paper-content{
   opacity:0;
-  animation:
-    textGlowIn
-    1.75s
-    cubic-bezier(.22,.61,.36,1)
-    .95s
-    forwards;
+  animation:none;
+  transform:translateY(12px);
+  transition:opacity .85s ease .16s, transform .85s cubic-bezier(.22,.61,.36,1) .16s;
 }
+.paper.mobile-paper-visible .paper-content {opacity:1;transform:translateY(0);}
+@media(max-width:760px){.paper.mobile-paper-visible{opacity:1;}}
 
       .paper p{
         font-size:13px;
@@ -1992,10 +1915,11 @@ transition:
 
 
   </style>
+<!-- SHARED NAVIGATION & TRANSITIONS -->
+
 <link rel="stylesheet" href="/dominic-ryan-navigation.css?v=5000">
 
 <script src="/dominic-ryan-transitions.js?v=5000" defer></script>
-
 <script src="/dominic-ryan-swipe.js?v=5000" defer></script>
 </head>
 
@@ -2160,9 +2084,6 @@ transition:
 
 
        <p class="final-typewriter">
-         <span class="dr-quote-ribbon" aria-hidden="true">
-  <span class="dr-quote-ribbon-material"></span>
-</span>
   <span class="final-typewriter-text">𝘼𝙛𝙩𝙚𝙧 𝙖𝙡𝙡, 𝙬𝙚 𝙨𝙥𝙚𝙣𝙙 𝙨𝙤 𝙢𝙪𝙘𝙝 𝙤𝙛 𝙡𝙞𝙛𝙚 𝙡𝙚𝙖𝙧𝙣𝙞𝙣𝙜 𝙝𝙤𝙬 𝙩𝙤 𝙨𝙚𝙚 𝙖𝙣𝙙 𝙞𝙣𝙩𝙚𝙧𝙥𝙧𝙚𝙩 𝙩𝙝𝙚 𝙬𝙤𝙧𝙡𝙙 ⸺ 𝙥𝙚𝙧𝙝𝙖𝙥𝙨 𝙩𝙝𝙚 𝙜𝙧𝙚𝙖𝙩𝙚𝙧 𝙬𝙞𝙨𝙙𝙤𝙢 𝙡𝙞𝙚𝙨 𝙞𝙣 𝙠𝙣𝙤𝙬𝙞𝙣𝙜 𝙬𝙝𝙚𝙣 𝙩𝙤 𝙨𝙞𝙢𝙥𝙡𝙮 𝙚𝙭𝙥𝙚𝙧𝙞𝙚𝙣𝙘𝙚 𝙞𝙩. </span><span
 class="final-typewriter-ornament"
     style="
@@ -2788,25 +2709,33 @@ document.addEventListener("visibilitychange", () => {
   updateSoundLabel();
 });
 
-/* MOBILE LETTER FADE TRIGGER */
+/* =======================================================
+   MOBILE LETTER FADE — ENVELOPE COORDINATION
+   ======================================================= */
 
 if (window.matchMedia("(max-width: 760px)").matches) {
-
-  const mobilePaper =
-    document.querySelector(".paper");
+  const mobilePaper = document.querySelector(".paper");
 
   if (mobilePaper) {
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
+    window.drEnvelopeRevealLetter = () => {
+      mobilePaper.classList.add("mobile-paper-visible");
+    };
 
-        setTimeout(() => {
-          mobilePaper.classList.add(
-            "mobile-paper-visible"
-          );
-        }, 450);
+    // Fallback: reveal the letter if the envelope never initializes.
+    window.addEventListener("load", () => {
 
-      });
+      setTimeout(() => {
+
+        const envelope =
+          document.getElementById("dr-envelope-inline");
+
+        if (!envelope && !document.getElementById("dr-envelope-inline")) {
+          mobilePaper.classList.add("mobile-paper-visible");
+        }
+
+      }, 700);
+
     });
 
   }
@@ -2827,41 +2756,6 @@ window.addEventListener("load", () => {
   window.scrollTo(0, 0);
 });
     /* =======================================================
-   CHAMPAGNE RIBBON — PAPER EDGE ALIGNMENT
-   ======================================================= */
-
-const drQuote = document.querySelector(".final-typewriter");
-const drRibbon = document.querySelector(".dr-quote-ribbon");
-
-function drAlignRibbon() {
-
-  if (!drQuote || !drRibbon) return;
-
-  const paper = drQuote.closest(".paper");
-
-  if (!paper) return;
-
-  const paperLeft = paper.getBoundingClientRect().left;
-  const quoteLeft = drQuote.getBoundingClientRect().left;
-
-  const offset = quoteLeft - paperLeft;
-
-  drQuote.style.setProperty(
-    "--dr-ribbon-edge-offset",
-    `${offset}px`
-  );
-
-}
-
-window.addEventListener("resize", drAlignRibbon);
-window.addEventListener("load", drAlignRibbon);
-
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(drAlignRibbon);
-}
-
-drAlignRibbon();
-/* =======================================================
    FINAL STATEMENT — ELEGANT SCROLL-TRIGGERED REVEAL
 
    ORIGINAL TYPEWRITER BEHAVIOR:
@@ -2908,13 +2802,6 @@ if (finalTypewriter) {
 
     // Begin gradual quote reveal
     finalText.classList.add("reveal-visible");
-    // Unfurl champagne ribbon alongside quote
-
-drAlignRibbon();
-
-if (drRibbon) {
-  drRibbon.classList.add("dr-ribbon-visible");
-}
 
     // Reveal ornament
     setTimeout(() => {
@@ -2988,6 +2875,11 @@ function handleFinalScroll() {
 
   if (revealStarted) return;
 
+  // Ignore automatic scrolling while the envelope is active.
+  if (document.getElementById("dr-envelope-inline")) {
+    return;
+  }
+
   hasScrolled = true;
 
   initializeFinalObserver();
@@ -3020,7 +2912,7 @@ function handleFinalScroll() {
 <script src="dominic-ryan-contact-addon.js" defer></script>
 
 <!-- BRANDED INTRODUCTION -->
-<script src="dominic-ryan-intro.js?v=4" defer></script>
+<script>if (!window.drReturningVisitor) { const intro = document.createElement("script"); intro.src = "/dominic-ryan-intro.js?v=10"; intro.async = false; document.head.appendChild(intro); }</script>
 
 <script>
 (() => {
@@ -3039,6 +2931,17 @@ function handleFinalScroll() {
 })();
 </script>
 
+<!-- MOBILE CORRESPONDENCE EXPERIENCE — VERSION 10 -->
+
+<script>
+  if (window.drReturningVisitor) {
+    document.querySelector(".paper")?.classList.add("mobile-paper-visible", "dr-letter-revealed");
+  } else {
+    const envelope = document.createElement("script");
+    envelope.src = "/dr-envelope-mobile.js?v=200";
+    document.body.appendChild(envelope);
+  }
+</script>
 </body>
 
 </html>
