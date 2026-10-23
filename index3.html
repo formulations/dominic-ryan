@@ -734,111 +734,6 @@
       margin-top:0 !important;
     }
     /* =========================================================
-   DOMINIC RYAN — CHAMPAGNE RIBBON
-   5.5-SECOND HORIZONTAL UNFURL
-   ========================================================= */
-
-.final-typewriter {
-  position: relative;
-  isolation: isolate;
-}
-
-/* Ribbon positioned behind the quote */
-
-.dr-quote-ribbon {
-  position: absolute;
-
-  top: -8px;
-  bottom: -8px;
-
-  left: calc(-1 * var(--dr-ribbon-edge-offset, 0px));
-  right: -20px;
-
-  z-index: 0;
-
-  pointer-events: none;
-
-  clip-path: inset(0 100% 0 0);
-}
-
-  z-index: 0;
-
-  pointer-events: none;
-
-  clip-path: inset(0 100% 0 0);
-}
-
-/* Champagne material with one diagonal-cut end */
-
-.dr-quote-ribbon-material {
-  position: absolute;
-  inset: 0;
-
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    calc(100% - 27px) 100%,
-    0 100%
-  );
-
-  background: linear-gradient(
-    180deg,
-    rgba(221, 207, 187, 0.26) 0%,
-    rgba(218, 202, 179, 0.39) 47%,
-    rgba(224, 209, 190, 0.28) 100%
-  );
-
-  box-shadow:
-    inset 0 1px rgba(255, 255, 255, 0.5),
-    inset 0 -1px rgba(108, 88, 69, 0.11);
-}
-
-/* Subtle material detail */
-
-.dr-quote-ribbon-material::before {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  top: 0;
-  bottom: 0;
-
-  width: 1px;
-
-  background: rgba(91, 72, 53, 0.14);
-}
-
-/* Begin unfurling */
-
-.dr-quote-ribbon.dr-ribbon-visible {
-  animation:
-    drRibbonUnfurl
-    5.5s
-    cubic-bezier(.38, .05, .62, .95)
-    forwards;
-}
-
-@keyframes drRibbonUnfurl {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-/* Keep the quote and ornament above the ribbon */
-
-.final-typewriter-text,
-.final-typewriter-ornament {
-  position: relative;
-  z-index: 1;
-}
-
-
-/* =========================================================
    FINAL SENTENCE — ELEGANT SIGNATURE-MATCHED REVEAL
    ========================================================= */
 
@@ -1623,8 +1518,8 @@ box-shadow:
 animation:none;
 
 transition:
-  opacity 4.2s cubic-bezier(.22,.61,.36,1),
-  box-shadow 4.2s cubic-bezier(.22,.61,.36,1);
+  opacity .65s cubic-bezier(.22,.61,.36,1),
+  box-shadow .65s cubic-bezier(.22,.61,.36,1);
 }
       .paper.mobile-paper-visible{
   opacity:1;
@@ -1635,13 +1530,12 @@ transition:
 }
 .paper-content{
   opacity:0;
-  animation:
-    textGlowIn
-    1.75s
-    cubic-bezier(.22,.61,.36,1)
-    .95s
-    forwards;
+  animation:none;
+  transform:translateY(12px);
+  transition:opacity .85s ease .16s, transform .85s cubic-bezier(.22,.61,.36,1) .16s;
 }
+.paper.mobile-paper-visible .paper-content {opacity:1;transform:translateY(0);}
+@media(max-width:760px){.paper.mobile-paper-visible{opacity:1;}}
 
       .paper p{
         font-size:13px;
@@ -2156,9 +2050,6 @@ transition:
 
 
        <p class="final-typewriter">
-         <span class="dr-quote-ribbon" aria-hidden="true">
-  <span class="dr-quote-ribbon-material"></span>
-</span>
   <span class="final-typewriter-text">𝘼𝙛𝙩𝙚𝙧 𝙖𝙡𝙡, 𝙬𝙚 𝙨𝙥𝙚𝙣𝙙 𝙨𝙤 𝙢𝙪𝙘𝙝 𝙤𝙛 𝙡𝙞𝙛𝙚 𝙡𝙚𝙖𝙧𝙣𝙞𝙣𝙜 𝙝𝙤𝙬 𝙩𝙤 𝙨𝙚𝙚 𝙖𝙣𝙙 𝙞𝙣𝙩𝙚𝙧𝙥𝙧𝙚𝙩 𝙩𝙝𝙚 𝙬𝙤𝙧𝙡𝙙 ⸺ 𝙥𝙚𝙧𝙝𝙖𝙥𝙨 𝙩𝙝𝙚 𝙜𝙧𝙚𝙖𝙩𝙚𝙧 𝙬𝙞𝙨𝙙𝙤𝙢 𝙡𝙞𝙚𝙨 𝙞𝙣 𝙠𝙣𝙤𝙬𝙞𝙣𝙜 𝙬𝙝𝙚𝙣 𝙩𝙤 𝙨𝙞𝙢𝙥𝙡𝙮 𝙚𝙭𝙥𝙚𝙧𝙞𝙚𝙣𝙘𝙚 𝙞𝙩. </span><span
 class="final-typewriter-ornament"
     style="
@@ -2805,7 +2696,7 @@ if (window.matchMedia("(max-width: 760px)").matches) {
         const envelope =
           document.getElementById("dr-envelope-editorial");
 
-        if (!envelope) {
+        if (!envelope && !document.getElementById("dr-envelope-inline")) {
           mobilePaper.classList.add("mobile-paper-visible");
         }
 
@@ -2831,41 +2722,6 @@ window.addEventListener("load", () => {
   window.scrollTo(0, 0);
 });
     /* =======================================================
-   CHAMPAGNE RIBBON — PAPER EDGE ALIGNMENT
-   ======================================================= */
-
-const drQuote = document.querySelector(".final-typewriter");
-const drRibbon = document.querySelector(".dr-quote-ribbon");
-
-function drAlignRibbon() {
-
-  if (!drQuote || !drRibbon) return;
-
-  const paper = drQuote.closest(".paper");
-
-  if (!paper) return;
-
-  const paperLeft = paper.getBoundingClientRect().left;
-  const quoteLeft = drQuote.getBoundingClientRect().left;
-
-  const offset = quoteLeft - paperLeft;
-
-  drQuote.style.setProperty(
-    "--dr-ribbon-edge-offset",
-    `${offset}px`
-  );
-
-}
-
-window.addEventListener("resize", drAlignRibbon);
-window.addEventListener("load", drAlignRibbon);
-
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(drAlignRibbon);
-}
-
-drAlignRibbon();
-/* =======================================================
    FINAL STATEMENT — ELEGANT SCROLL-TRIGGERED REVEAL
 
    ORIGINAL TYPEWRITER BEHAVIOR:
@@ -2912,13 +2768,6 @@ if (finalTypewriter) {
 
     // Begin gradual quote reveal
     finalText.classList.add("reveal-visible");
-    // Unfurl champagne ribbon alongside quote
-
-drAlignRibbon();
-
-if (drRibbon) {
-  drRibbon.classList.add("dr-ribbon-visible");
-}
 
     // Reveal ornament
     setTimeout(() => {
@@ -3029,7 +2878,7 @@ function handleFinalScroll() {
 <script src="dominic-ryan-contact-addon.js" defer></script>
 
 <!-- BRANDED INTRODUCTION -->
-<script src="dominic-ryan-intro.js?v=4" defer></script>
+<script>if (window.matchMedia("(min-width: 761px)").matches) { const s=document.createElement("script"); s.src="/dominic-ryan-intro.js?v=4"; s.defer=true; document.head.appendChild(s); }</script>
 
 <script>
 (() => {
@@ -3051,7 +2900,95 @@ function handleFinalScroll() {
 <script defer src="/dominic-ryan-swipe.js?v=1"></script>
 <!-- MOBILE CORRESPONDENCE EXPERIENCE -->
 
-<script defer src="/dr-envelope-mobile.js?v=3"></script>
+<!-- Preview: envelope logic embedded below; production uses /dr-envelope-mobile.js -->
+<script defer src="/dr-envelope-mobile.js?v=999-preview" data-disabled-preview="true" type="text/plain"></script>
+<script>
+/* DOMINIC RYAN — MOBILE ENVELOPE PREVIEW / v6 */
+(() => {
+  "use strict";
+  if (!matchMedia("(max-width:760px)").matches) return;
+  const paper = document.querySelector(".paper");
+  const hero = document.querySelector(".hero-composition");
+  if (!paper || !hero || document.getElementById("dr-envelope-inline")) return;
+  const KEY = "dr-envelope-preview-v6-opened";
+  // Always allow replay on the dedicated preview URL with ?replay=1.
+  let alreadyOpened = false;
+  try { alreadyOpened = sessionStorage.getItem(KEY) === "yes" && !new URLSearchParams(location.search).has("replay"); } catch (_) {}
+  if (alreadyOpened) { paper.classList.add("mobile-paper-visible"); return; }
+  const css = document.createElement("style");
+  css.id = "dr-envelope-inline-style";
+  css.textContent = `
+  @media(max-width:760px){
+    html.dr-envelope-active,body.dr-envelope-active{overflow:hidden!important;overscroll-behavior:none!important}
+    #dr-envelope-inline{position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(94vw,520px);margin:0 auto 0;min-height:min(610px,calc(100svh - 205px));border:1px solid rgba(172,150,128,.28);border-radius:8px;background:linear-gradient(160deg,#f4efe6,#f1eae0);box-shadow:0 16px 42px rgba(78,63,49,.055);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:clamp(24px,5vh,42px) 18px clamp(25px,4vh,40px);z-index:5;isolation:isolate;opacity:1;transition:opacity .65s ease,transform .65s ease}
+    #dr-envelope-inline .dr-envelope-heading{font:500 12px/1.4 'DR Avenir Next',sans-serif;letter-spacing:.2em;color:#74645a;text-align:center}
+    #dr-envelope-inline .dr-envelope-scene{width:min(100%,410px);aspect-ratio:1.48;position:relative;perspective:950px;flex:none;transform:translateY(0);transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+    #dr-envelope-inline .dr-env-back{position:absolute;inset:0;background:#eae2d7;border:1px solid #d8cbbd;box-shadow:0 12px 25px rgba(80,60,45,.08)}
+    #dr-envelope-inline .dr-env-sheet{position:absolute;left:7%;right:7%;top:19%;height:76%;background:#fbf8f2;border:1px solid #e7ded2;z-index:2;transform:translateY(0);box-shadow:0 3px 10px rgba(80,60,45,.06);transition:transform 1.15s cubic-bezier(.2,.7,.18,1),opacity .55s ease;display:flex;align-items:flex-start;justify-content:center;padding-top:20px;font:500 9px 'DR Avenir Next',sans-serif;letter-spacing:.15em;color:#998a7c}
+    #dr-envelope-inline .dr-env-fold-left,#dr-envelope-inline .dr-env-fold-right{position:absolute;inset:0;z-index:3;pointer-events:none}
+    #dr-envelope-inline .dr-env-fold-left{background:#f0e9df;clip-path:polygon(0 0,50% 50%,0 100%)}
+    #dr-envelope-inline .dr-env-fold-right{background:#eee6dc;clip-path:polygon(100% 0,50% 50%,100% 100%)}
+    #dr-envelope-inline .dr-env-front{position:absolute;inset:0;z-index:4;background:linear-gradient(180deg,#f8f3eb,#eee6db);clip-path:polygon(0 100%,50% 43%,100% 100%);border-bottom:1px solid #d8cbbd;pointer-events:none}
+    #dr-envelope-inline .dr-env-flap{position:absolute;inset:0;z-index:6;background:linear-gradient(180deg,#faf6ef,#eee6dc);clip-path:polygon(0 0,100% 0,50% 55%);transform-origin:50% 0;backface-visibility:hidden;transition:transform .9s cubic-bezier(.25,.7,.25,1);pointer-events:none}
+    #dr-envelope-inline .dr-env-seal{position:absolute;left:50%;top:50%;z-index:8;transform:translate(-50%,-50%);width:clamp(74px,20vw,100px);height:clamp(74px,20vw,100px);border:0;background:none;padding:0;cursor:pointer;touch-action:manipulation;transition:opacity .3s ease,transform .4s ease}
+    #dr-envelope-inline .dr-env-wax{position:absolute;inset:0;border-radius:48% 52% 49% 51% / 52% 47% 53% 48%;background:radial-gradient(circle at 32% 23%,#f7e8cf,#e0c6a2 52%,#bf986d 100%);box-shadow:0 7px 12px rgba(103,77,55,.22),inset 0 2px 2px #fff4dc,inset 0 -3px 5px rgba(106,76,48,.16)}
+    #dr-envelope-inline .dr-env-wax:before{content:'';position:absolute;inset:9%;border:2px solid rgba(255,247,229,.85);border-radius:50%;box-shadow:0 0 0 3px rgba(156,119,78,.14)}
+    #dr-envelope-inline .dr-env-wax:after{content:'';position:absolute;inset:17%;border:1px solid rgba(142,107,75,.28);border-radius:50%}
+    #dr-envelope-inline .dr-env-seal img{position:absolute;left:50%;top:50%;inset:auto;width:64%;height:64%;transform:translate(-50%,-50%);object-fit:contain;object-position:center;opacity:.68;filter:sepia(.6) saturate(.5) brightness(.85)}
+    #dr-envelope-inline .dr-env-prompt{display:flex;flex-direction:column;align-items:center;gap:12px;color:#88786c;font:500 clamp(10px,2.9vw,12px)/1.4 'DR Avenir Next',sans-serif;letter-spacing:.16em;text-align:center;transition:opacity .3s ease}
+    #dr-envelope-inline .dr-env-arrow{font:normal 30px/1 Georgia,serif;animation:drEnvBounce 1.45s ease-in-out infinite}
+    @keyframes drEnvBounce{0%,100%{transform:translateY(5px)}50%{transform:translateY(-5px)}}
+    #dr-envelope-inline.dr-opening .dr-env-seal{opacity:0;transform:translate(-50%,-65%) scale(.9);pointer-events:none}
+    #dr-envelope-inline.dr-opening .dr-env-flap{transform:rotateX(178deg);z-index:1}
+    #dr-envelope-inline.dr-opening .dr-env-sheet{transform:translateY(-78%);transition-delay:.45s}
+    #dr-envelope-inline.dr-opening .dr-envelope-scene{transform:translateY(7px)}
+    #dr-envelope-inline.dr-opening .dr-env-prompt{opacity:0}
+    #dr-envelope-inline.dr-handoff{opacity:0;transform:translate(-50%,-12px);pointer-events:none}
+    #dr-envelope-inline.dr-hidden{display:none}
+    .hero-composition{position:relative}
+    #dr-envelope-inline .dr-env-seal:focus-visible{outline:2px solid #88786c;outline-offset:5px;border-radius:50%}
+    @media(max-height:650px){#dr-envelope-inline{min-height:410px;padding:20px 16px}#dr-envelope-inline .dr-envelope-scene{width:min(100%,290px)}}
+    @media(prefers-reduced-motion:reduce){#dr-envelope-inline *,#dr-envelope-inline{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  }`;
+  document.head.appendChild(css);
+  const wrap = document.createElement("section");
+  wrap.id = "dr-envelope-inline";
+  wrap.setAttribute("aria-label", "Open a personal message");
+  wrap.innerHTML = `
+    <div class="dr-envelope-heading">A PERSONAL MESSAGE</div>
+    <div class="dr-envelope-scene">
+      <div class="dr-env-back"></div>
+      <div class="dr-env-sheet">A PERSONAL MESSAGE</div>
+      <div class="dr-env-fold-left"></div><div class="dr-env-fold-right"></div>
+      <div class="dr-env-front"></div><div class="dr-env-flap"></div>
+      <button class="dr-env-seal" type="button" aria-label="Tap the seal to open">
+        <span class="dr-env-wax"></span><img src="/dr-reveals-removebg-preview.png" alt="">
+      </button>
+    </div>
+    <div class="dr-env-prompt"><span class="dr-env-arrow" aria-hidden="true">↑</span><span>TAP THE SEAL TO OPEN</span></div>`;
+  hero.insertBefore(wrap,paper);
+  document.documentElement.classList.add("dr-envelope-active");
+  document.body.classList.add("dr-envelope-active");
+  const seal = wrap.querySelector(".dr-env-seal");
+  let opened = false;
+  seal.addEventListener("click", () => {
+    if(opened)return;
+    opened=true;
+    seal.disabled=true;
+    wrap.classList.add("dr-opening");
+    try{sessionStorage.setItem(KEY,"yes")}catch(_){}
+    setTimeout(() => {
+      // Paper appears in the envelope's location while the stationery rises.
+      document.documentElement.classList.remove("dr-envelope-active");
+      document.body.classList.remove("dr-envelope-active");
+      paper.classList.add("mobile-paper-visible");
+      if(typeof window.drEnvelopeRevealLetter === "function")window.drEnvelopeRevealLetter();
+      wrap.classList.add("dr-handoff");
+    }, 1650);
+    setTimeout(()=>wrap.remove(),2400);
+  });
+})();
+</script>
 </body>
 
 </html>
