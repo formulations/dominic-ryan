@@ -1,41 +1,49 @@
 /* =========================================================
    DOMINIC RYAN — MOBILE CORRESPONDENCE EXPERIENCE
+   FINAL REFINED VERSION
 
-   REFINED EDITION
+   Designed for:
+   Dominic Ryan | A Personal Message
 
-   Mobile only: 760px and below
+   MOBILE ONLY — 760px AND BELOW
 
-   DESIGN:
-   - Full-screen editorial envelope presentation
-   - Original header and navigation preserved
-   - Ivory correspondence envelope
-   - Champagne wax seal
-   - Custom DR monogram
-   - EB Garamond italic invitation
-   - Authentic letter-opening animation
+   FEATURES
+   ---------------------------------------------------------
+   01. Original website header/navigation preserved
+   02. Full-height editorial presentation
+   03. Layered ivory presentation background
+   04. Original envelope proportions and folded appearance
+   05. Champagne wax seal with illuminated DR monogram
+   06. Properly scaled and centered monogram
+   07. EB Garamond italic invitation
+   08. Original DR Avenir Next typography
+   09. Animated letter derived from actual letter content
+   10. Letter rises naturally from envelope
+   11. Envelope masks the lower portion during extraction
+   12. Continuous transition to original HTML letter
+   13. No automatic scrolling during opening
+   14. Background content hidden until opening completes
+   15. Scrolling disabled until opening completes
+   16. Envelope reappears on every page refresh
+   17. Desktop experience unaffected
 
-   BEHAVIOR:
-   - Envelope appears on every refresh
-   - No sessionStorage or localStorage restrictions
-   - Page scrolling locked until opening
-   - Other page content concealed until opening
-   - Letter emerges naturally from envelope
-   - Actual letter typography preserved
-   - No automatic scrolling to the top
-   - No duplicate text during transition
-   - Desktop remains unaffected
-
-   ASSETS:
+   REQUIRED EXISTING ASSETS
+   ---------------------------------------------------------
    /dr-envelope-logo.png
 
+   /AvenirNext-Regular.woff2
+   /AvenirNext-Medium.woff2
+   /AvenirNext-DemiBold.woff2
+
    /eb-garamond-latin-400-italic.woff2
+
    ========================================================= */
 
 (() => {
   "use strict";
 
   /* =========================================================
-     MOBILE ONLY
+     MOBILE DETECTION
      ========================================================= */
 
   const mobileQuery = window.matchMedia(
@@ -51,34 +59,28 @@
      ========================================================= */
 
   if (
-    document.getElementById(
-      "dr-envelope-experience"
-    )
+    document.getElementById("dr-envelope-experience")
   ) {
     return;
   }
 
   /* =========================================================
-     ELEMENT REFERENCES
+     ORIGINAL WEBSITE ELEMENTS
      ========================================================= */
 
   const hero = document.querySelector(
     ".hero-composition"
   );
 
-  const paper = document.querySelector(
+  const originalPaper = document.querySelector(
     ".hero-composition > .paper"
   );
 
-  const paperContent = paper?.querySelector(
-    ".paper-content"
+  const photoStage = document.querySelector(
+    ".hero-composition > .photo-stage"
   );
 
-  const photo = document.querySelector(
-    ".photo-stage"
-  );
-
-  const instagram = document.querySelector(
+  const instagramSection = document.querySelector(
     ".formulations-feed"
   );
 
@@ -86,15 +88,11 @@
     ".dr-unified-footer"
   );
 
-  const utilityNav = document.querySelector(
-    ".utility-nav"
+  const backToTop = document.getElementById(
+    "dr-back-to-top"
   );
 
-  const backToTop = document.querySelector(
-    ".dr-back-to-top"
-  );
-
-  if (!hero || !paper || !paperContent) {
+  if (!hero || !originalPaper) {
     return;
   }
 
@@ -107,20 +105,20 @@
     monogram:
       "/dr-envelope-logo.png",
 
-    monogramCrop:
-      0.76,
+    invitationFont:
+      "/eb-garamond-latin-400-italic.woff2",
 
     openingDuration:
-      1250,
+      1050,
 
     letterRiseDuration:
-      1650,
+      1750,
 
-    handoffDelay:
-      1800,
+    handoffDuration:
+      900,
 
-    completionDelay:
-      2450
+    monogramScale:
+      0.64
 
   };
 
@@ -132,877 +130,919 @@
 
   let completed = false;
 
-  let scrollPosition = window.scrollY;
+  let animationTimers = [];
 
-  let originalBodyPosition =
-    document.body.style.position;
+  let originalScrollY = window.scrollY;
 
-  let originalBodyTop =
-    document.body.style.top;
-
-  let originalBodyWidth =
-    document.body.style.width;
-
-  let originalBodyOverflow =
+  const originalBodyOverflow =
     document.body.style.overflow;
 
-  let originalHtmlOverflow =
+  const originalHtmlOverflow =
     document.documentElement.style.overflow;
 
-  const hiddenElements = [
-    photo,
-    instagram,
-    footer,
-    utilityNav,
-    backToTop
-  ].filter(Boolean);
+  const originalBodyTouchAction =
+    document.body.style.touchAction;
 
   /* =========================================================
-     FONT
+     FONT DEFINITIONS
      ========================================================= */
 
-  const fontStyle = document.createElement(
-    "style"
-  );
+  const style = document.createElement("style");
 
-  fontStyle.id =
-    "dr-envelope-garamond-font";
-
-  fontStyle.textContent = `
-
-    @font-face {
-
-      font-family:
-        "DR Envelope Garamond";
-
-      src:
-        url("/eb-garamond-latin-400-italic.woff2")
-        format("woff2");
-
-      font-style:italic;
-
-      font-weight:400;
-
-      font-display:swap;
-
-    }
-
-  `;
-
-  document.head.appendChild(fontStyle);
-
-  /* =========================================================
-     STYLES
-     ========================================================= */
-
-  const style = document.createElement(
-    "style"
-  );
-
-  style.id =
-    "dr-envelope-experience-styles";
+  style.id = "dr-envelope-mobile-styles";
 
   style.textContent = `
 
-    @media (max-width:760px) {
+    /* =====================================================
+       EXACT WEBSITE FONTS
+       ===================================================== */
 
-      /* ===============================================
-         LOCKED EXPERIENCE
-         =============================================== */
+    @font-face {
+      font-family: "DR Envelope Avenir";
+      src: url("/AvenirNext-Regular.woff2")
+        format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
 
-      html.dr-envelope-locked {
+    @font-face {
+      font-family: "DR Envelope Avenir";
+      src: url("/AvenirNext-Medium.woff2")
+        format("woff2");
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+    }
 
-        overflow:hidden !important;
+    @font-face {
+      font-family: "DR Envelope Avenir";
+      src: url("/AvenirNext-DemiBold.woff2")
+        format("woff2");
+      font-style: normal;
+      font-weight: 600 900;
+      font-display: swap;
+    }
 
-        overscroll-behavior:none;
+    @font-face {
+      font-family: "DR Envelope Garamond";
+      src: url("${CONFIG.invitationFont}")
+        format("woff2");
+      font-style: italic;
+      font-weight: 400;
+      font-display: swap;
+    }
 
+    /* =====================================================
+       MOBILE EXPERIENCE ONLY
+       ===================================================== */
+
+    @media (max-width: 760px) {
+
+      /* ===================================================
+         PAGE LOCK
+         =================================================== */
+
+      html.dr-envelope-locked,
+      body.dr-envelope-locked {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
       }
 
       body.dr-envelope-locked {
-
-        overflow:hidden !important;
-
-        overscroll-behavior:none;
-
+        touch-action: none;
       }
 
-      body.dr-envelope-locked
-      .dr-envelope-hidden-content {
+      /* ===================================================
+         HIDE SECONDARY WEBSITE CONTENT
+         =================================================== */
 
-        opacity:0 !important;
-
-        visibility:hidden !important;
-
-        pointer-events:none !important;
-
+      body.dr-envelope-active .photo-stage,
+      body.dr-envelope-active .formulations-feed,
+      body.dr-envelope-active .dr-unified-footer,
+      body.dr-envelope-active .dr-back-to-top {
+        visibility: hidden !important;
+        pointer-events: none !important;
       }
 
-      /* ===============================================
-         ORIGINAL LETTER
-         =============================================== */
+      /* ===================================================
+         ORIGINAL LETTER DURING INTRODUCTION
+         =================================================== */
 
-      .hero-composition > .paper.dr-envelope-waiting {
-
-        opacity:0 !important;
-
-        visibility:hidden !important;
-
-        pointer-events:none !important;
-
-        animation:none !important;
-
-        transition:none !important;
-
+      body.dr-envelope-active
+      .hero-composition > .paper {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        animation: none !important;
+        transition: none !important;
       }
 
-      .hero-composition > .paper.dr-envelope-waiting
+      body.dr-envelope-active
+      .hero-composition > .paper
       .paper-content {
-
-        opacity:0 !important;
-
-        animation:none !important;
-
-        transition:none !important;
-
+        opacity: 0 !important;
+        animation: none !important;
       }
 
-      .hero-composition > .paper.dr-envelope-revealed {
+      /* ===================================================
+         PRESENTATION POSITIONING
+         =================================================== */
 
-        opacity:1 !important;
-
-        visibility:visible !important;
-
-        pointer-events:auto !important;
-
-        animation:none !important;
-
-        transition:
-          opacity .8s
-          cubic-bezier(.22,.61,.36,1) !important;
-
+      body.dr-envelope-active .letter-wrap {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
       }
 
-      .hero-composition > .paper.dr-envelope-revealed
-      .paper-content {
-
-        opacity:1 !important;
-
-        transform:none !important;
-
-        animation:none !important;
-
-        transition:
-          opacity .8s ease !important;
-
+      body.dr-envelope-active .hero-composition {
+        position: relative;
+        display: block !important;
+        width: 100% !important;
+        min-height: 0;
+        transform: none !important;
       }
 
-      /* ===============================================
-         FULL-SCREEN CORRESPONDENCE STAGE
-         =============================================== */
+      /* ===================================================
+         MAIN EDITORIAL PRESENTATION
+
+         Three layers:
+         - Website background
+         - Ivory presentation panel
+         - Physical envelope
+         =================================================== */
 
       #dr-envelope-experience {
+        position: relative;
 
-        position:fixed;
+        width: 100%;
 
-        inset:0;
+        min-height: calc(
+          100svh - var(--dr-envelope-top, 0px)
+        );
 
-        z-index:9000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        display:flex;
+        padding:
+          clamp(18px, 4vw, 28px)
+          12px
+          clamp(22px, 5vw, 40px);
 
-        flex-direction:column;
+        isolation: isolate;
 
-        align-items:center;
+        opacity: 1;
 
-        justify-content:center;
+        transition:
+          opacity .75s ease,
+          transform .75s
+            cubic-bezier(.22,.61,.36,1);
+      }
 
-        width:100%;
+      /* ===================================================
+         PRESENTATION BACKGROUND
+         =================================================== */
 
-        height:100vh;
+      .dr-envelope-presentation {
+        position: relative;
 
-        height:100dvh;
+        width: 100%;
 
-        overflow:hidden;
+        min-height: min(
+          740px,
+          calc(
+            100svh -
+            var(--dr-envelope-top, 0px) -
+            42px
+          )
+        );
+
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+        justify-content: center;
+
+        padding:
+          clamp(36px, 7vw, 58px)
+          clamp(12px, 3vw, 24px)
+          clamp(38px, 7vw, 58px);
+
+        border:
+          1px solid
+          rgba(171, 150, 132, .32);
+
+        border-radius: 13px;
 
         background:
           linear-gradient(
-            180deg,
-            #f2ede6 0%,
-            #f1ece5 52%,
-            #eee8e1 100%
+            155deg,
+            #f8f5f0 0%,
+            #f4efe8 48%,
+            #f1ebe3 100%
           );
 
-        isolation:isolate;
+        box-shadow:
+          0 18px 50px
+            rgba(74, 60, 48, .065),
+          0 2px 9px
+            rgba(74, 60, 48, .025);
 
-        opacity:1;
-
-        transition:
-          opacity .8s
-          cubic-bezier(.22,.61,.36,1);
-
+        overflow: hidden;
       }
 
-      #dr-envelope-experience.dr-finishing {
+      /* Subtle illuminated paper surface */
 
-        opacity:0;
+      .dr-envelope-presentation::before {
+        content: "";
 
-        pointer-events:none;
+        position: absolute;
 
+        inset: 0;
+
+        pointer-events: none;
+
+        background:
+          radial-gradient(
+            ellipse at 50% 35%,
+            rgba(255,255,255,.48),
+            transparent 68%
+          );
+
+        z-index: 0;
       }
 
-      /* ===============================================
-         EDITORIAL COMPOSITION
-         =============================================== */
+      /* ===================================================
+         PRESENTATION TITLE
+         =================================================== */
 
-      .dr-envelope-composition {
+      .dr-envelope-heading {
+        position: relative;
+        z-index: 3;
 
-        position:relative;
-
-        width:100%;
-
-        max-width:760px;
-
-        display:flex;
-
-        flex-direction:column;
-
-        align-items:center;
-
-        justify-content:center;
-
-        transform:translateY(-1.5vh);
-
-      }
-
-      /* ===============================================
-         TITLE
-         =============================================== */
-
-      .dr-envelope-title {
-
-        margin:
-          0
-          0
-          clamp(48px,8vh,82px);
-
-        padding:0 18px;
+        margin: 0 0
+          clamp(42px, 8vw, 66px);
 
         font-family:
+          "DR Envelope Avenir",
           "DR Avenir Next",
-          "Avenir Next",
-          Arial,
           sans-serif;
 
         font-size:
-          clamp(12px,3.15vw,15px);
+          clamp(11px, 2.8vw, 14px);
 
-        font-weight:500;
+        font-weight: 500;
 
-        letter-spacing:.25em;
+        line-height: 1.5;
 
-        line-height:1.5;
+        letter-spacing: .24em;
 
-        text-align:center;
+        text-transform: uppercase;
 
-        color:#75645f;
+        text-align: center;
 
+        color: #756660;
       }
 
-      /* ===============================================
+      /* ===================================================
          ENVELOPE SCENE
-         =============================================== */
+         =================================================== */
 
       .dr-envelope-scene {
+        position: relative;
+        z-index: 2;
 
-        position:relative;
+        width: min(100%, 440px);
 
-        width:100%;
+        aspect-ratio: 1.65 / 1;
 
-        max-width:760px;
+        perspective: 1200px;
 
-        aspect-ratio:1.65 / 1;
-
-        perspective:1400px;
+        transform-style: preserve-3d;
 
         filter:
           drop-shadow(
-            0 20px 25px
-            rgba(78,63,49,.095)
+            0 20px 21px
+            rgba(72,57,47,.11)
           );
-
       }
 
-      /* ===============================================
+      /* ===================================================
          ENVELOPE BACK
-         =============================================== */
+         =================================================== */
 
       .dr-envelope-back {
+        position: absolute;
+        inset: 0;
 
-        position:absolute;
-
-        inset:0;
-
-        z-index:1;
+        z-index: 1;
 
         background:
           linear-gradient(
-            160deg,
-            #f9f6f1 0%,
-            #eee9e4 100%
+            145deg,
+            #f1ede8,
+            #e7dfd8
           );
 
+        border:
+          1px solid
+          rgba(172,150,132,.2);
       }
 
-      /* ===============================================
-         LETTER WINDOW
-         =============================================== */
+      /* ===================================================
+         LETTER EXTRACTION WINDOW
+         =================================================== */
 
       .dr-envelope-letter-window {
+        position: absolute;
 
-        position:absolute;
+        left: 5%;
+        right: 5%;
 
-        left:8%;
+        top: -92%;
 
-        right:8%;
+        height: 192%;
 
-        bottom:0;
+        z-index: 2;
 
-        height:100%;
+        overflow: hidden;
 
-        z-index:2;
-
-        overflow:visible;
-
-        pointer-events:none;
-
+        pointer-events: none;
       }
 
-      /* ===============================================
-         AUTHENTIC LETTER PREVIEW
-         =============================================== */
+      /* ===================================================
+         ANIMATED LETTER
 
-      .dr-envelope-letter-preview {
+         Same Avenir typography as original letter.
+         =================================================== */
 
-        position:absolute;
+      .dr-envelope-letter {
+        position: absolute;
 
-        left:0;
+        left: 0;
+        right: 0;
 
-        bottom:0;
+        top: 48%;
 
-        width:100%;
+        width: 100%;
 
-        height:auto;
-
-        min-height:100%;
-
-        padding:0;
-
-        background:#fbf8f2;
-
-        box-shadow:
-          0 8px 28px
-          rgba(69,54,44,.075);
-
-        opacity:0;
-
-        transform:
-          translateY(36%);
-
-        transition:
-          transform 1.65s
-          cubic-bezier(.22,.61,.36,1),
-          opacity .3s ease;
-
-        will-change:transform;
-
-        overflow:hidden;
-
-      }
-
-      .dr-envelope-letter-preview.dr-preview-ready {
-
-        opacity:1;
-
-      }
-
-      /* ===============================================
-         REAL LETTER TYPOGRAPHY
-
-         This preview is a clone of the actual
-         .paper-content, not a recreated letter.
-
-         The same typography and content are retained.
-         =============================================== */
-
-      .dr-envelope-letter-preview
-      .dr-envelope-letter-inner {
-
-        width:100%;
+        min-height: 155%;
 
         padding:
-          24px
-          24px
-          38px;
+          clamp(19px, 4.6vw, 30px)
+          clamp(18px, 4.5vw, 31px)
+          36px;
 
-        background:#fbf8f2;
+        background: #fbf8f2;
 
-        color:#51463e;
+        box-shadow:
+          0 7px 23px
+          rgba(70,57,47,.09);
 
+        transform:
+          translateY(0);
+
+        opacity: 0;
+
+        transition:
+          transform 1.75s
+            cubic-bezier(.22,.61,.36,1),
+          opacity .45s ease;
+
+        overflow: hidden;
       }
 
-      .dr-envelope-letter-preview
-      .paper-content {
+      .dr-envelope-letter-content {
+        font-family:
+          "DR Envelope Avenir",
+          "DR Avenir Next",
+          sans-serif !important;
 
-        opacity:1 !important;
+        font-weight: 400;
 
-        transform:none !important;
+        font-style: normal;
 
-        animation:none !important;
-
-        transition:none !important;
-
+        color: #5c524b;
       }
 
-      .dr-envelope-letter-preview
-      .signature {
+      .dr-envelope-letter-content
+      .message-label {
+        font-family:
+          "DR Envelope Avenir",
+          sans-serif !important;
 
-        opacity:1 !important;
+        font-size: 10px;
 
-        transform:none !important;
+        font-weight: 500;
 
-        filter:none !important;
+        letter-spacing: .08em;
 
-        animation:none !important;
+        line-height: 1.5;
 
+        margin-bottom: 17px;
+
+        color: #7a6f67;
       }
 
-      .dr-envelope-letter-preview
-      .final-typewriter-text,
+      .dr-envelope-letter-content h1 {
+        font-family:
+          "DR Envelope Avenir",
+          sans-serif !important;
 
-      .dr-envelope-letter-preview
+        font-size:
+          clamp(15px, 3.9vw, 20px);
+
+        font-weight: 500;
+
+        line-height: 1.35;
+
+        margin: 0 0 17px;
+
+        color: #51463e;
+      }
+
+      .dr-envelope-letter-content p {
+        font-family:
+          "DR Envelope Avenir",
+          sans-serif !important;
+
+        font-size:
+          clamp(10px, 2.7vw, 13px);
+
+        font-weight: 400;
+
+        line-height: 1.56;
+
+        margin: 0 0 15px;
+
+        color: #5c524b;
+      }
+
+      .dr-envelope-letter-content strong,
+      .dr-envelope-letter-content b {
+        font-family:
+          "DR Envelope Avenir",
+          sans-serif !important;
+
+        font-weight: 600 !important;
+      }
+
+      .dr-envelope-letter-content em,
+      .dr-envelope-letter-content i {
+        font-family:
+          "DR Envelope Avenir",
+          sans-serif !important;
+
+        font-style: italic;
+      }
+
+      .dr-envelope-letter-content
+      .final-typewriter-text {
+        opacity: 1 !important;
+        filter: none !important;
+        transition: none !important;
+      }
+
+      .dr-envelope-letter-content
       .final-typewriter-ornament {
-
-        opacity:1 !important;
-
-        filter:none !important;
-
-        transition:none !important;
-
+        opacity: 1 !important;
       }
 
-      /* ===============================================
+      .dr-envelope-letter-content
+      .signature {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+
+      /* ===================================================
          ENVELOPE SIDE FOLDS
-         =============================================== */
+         =================================================== */
 
       .dr-envelope-fold-left {
+        position: absolute;
+        inset: 0;
 
-        position:absolute;
-
-        inset:0;
-
-        z-index:4;
+        z-index: 4;
 
         background:
           linear-gradient(
-            140deg,
-            #e9e4df,
-            #f0ebe6
+            120deg,
+            #eee9e4,
+            #e6dfda
           );
 
         clip-path:
           polygon(
             0 0,
-            51% 50%,
+            53% 51%,
             0 100%
           );
-
       }
 
       .dr-envelope-fold-right {
+        position: absolute;
+        inset: 0;
 
-        position:absolute;
-
-        inset:0;
-
-        z-index:4;
+        z-index: 4;
 
         background:
           linear-gradient(
-            220deg,
-            #eae5e0,
-            #f0ebe6
+            240deg,
+            #ede8e3,
+            #e5ddd7
           );
 
         clip-path:
           polygon(
             100% 0,
-            49% 50%,
+            47% 51%,
             100% 100%
           );
-
       }
 
-      /* ===============================================
-         FRONT POCKET
-
-         The pocket remains in front of the letter
-         during the entire opening sequence.
-         =============================================== */
+      /* ===================================================
+         ENVELOPE FRONT POCKET
+         =================================================== */
 
       .dr-envelope-front {
+        position: absolute;
+        inset: 0;
 
-        position:absolute;
-
-        inset:0;
-
-        z-index:5;
+        z-index: 5;
 
         background:
           linear-gradient(
             180deg,
-            #f1ece7,
-            #e7e2de
+            #eee9e4,
+            #e7dfd9
           );
 
         clip-path:
           polygon(
             0 100%,
-            50% 50%,
+            50% 49%,
             100% 100%
           );
-
       }
 
-      /* ===============================================
-         ENVELOPE FLAP
-         =============================================== */
+      /* ===================================================
+         ENVELOPE TOP FLAP
+         =================================================== */
 
       .dr-envelope-flap {
+        position: absolute;
+        inset: 0;
 
-        position:absolute;
-
-        top:0;
-
-        left:0;
-
-        width:100%;
-
-        height:100%;
-
-        z-index:7;
+        z-index: 7;
 
         background:
           linear-gradient(
             180deg,
-            #fbf9f6,
-            #eee9e4
+            #f7f5f2,
+            #e9e3dd
           );
 
         clip-path:
           polygon(
             0 0,
             100% 0,
-            50% 50%
+            50% 52%
           );
 
         transform-origin:
-          center top;
+          50% 0;
 
-        transform:
-          rotateX(0deg);
-
-        backface-visibility:hidden;
+        backface-visibility:
+          hidden;
 
         transition:
-          transform 1.25s
-          cubic-bezier(.22,.61,.36,1),
-          z-index 0s linear 1.1s;
-
-      }
-
-      /* ===============================================
-         WAX SEAL
-         =============================================== */
-
-      .dr-envelope-seal {
-
-        position:absolute;
-
-        top:50%;
-
-        left:50%;
-
-        z-index:10;
-
-        width:
-          clamp(94px,22vw,124px);
-
-        height:
-          clamp(94px,22vw,124px);
-
-        padding:0;
-
-        border:0;
-
-        border-radius:50%;
-
-        cursor:pointer;
-
-        transform:
-          translate(-50%,-50%);
-
-        background:
-          radial-gradient(
-            circle at 36% 25%,
-            #fff3dc 0%,
-            #e9d1af 34%,
-            #c6a07c 77%,
-            #ad8666 100%
-          );
-
-        box-shadow:
-          0 13px 24px
-          rgba(73,51,35,.2),
-          inset 0 2px 5px
-          rgba(255,255,255,.65),
-          inset 0 -4px 7px
-          rgba(113,76,48,.19);
-
-        display:flex;
-
-        align-items:center;
-
-        justify-content:center;
-
-        -webkit-tap-highlight-color:transparent;
-
-        transition:
-          opacity .35s ease,
-          transform .45s
-          cubic-bezier(.22,.61,.36,1);
-
-      }
-
-      .dr-envelope-seal::before {
-
-        content:"";
-
-        position:absolute;
-
-        inset:9%;
-
-        border-radius:50%;
-
-        border:
-          2px solid
-          rgba(255,248,232,.9);
-
-        box-shadow:
-          inset 0 1px 2px
-          rgba(114,82,58,.16);
-
-        pointer-events:none;
-
-      }
-
-      /* ===============================================
-         MONOGRAM
-
-         No oversized image scaling.
-
-         The image is centered within its own
-         clipping region.
-
-         Only the lower R tail is intentionally
-         removed by the prepared canvas image.
-         =============================================== */
-
-      .dr-envelope-monogram {
-
-        position:relative;
-
-        z-index:2;
-
-        width:69%;
-
-        height:69%;
-
-        display:block;
-
-        object-fit:contain;
-
-        opacity:.9;
+          transform 1.05s
+            cubic-bezier(.22,.61,.36,1);
 
         filter:
           drop-shadow(
-            0 1px 1px
-            rgba(255,250,239,.4)
+            0 2px 2px
+            rgba(91,72,59,.06)
           );
-
-        pointer-events:none;
-
       }
 
-      /* ===============================================
+      /* ===================================================
+         WAX SEAL
+         =================================================== */
+
+      .dr-envelope-seal {
+        position: absolute;
+
+        z-index: 9;
+
+        left: 50%;
+        top: 50%;
+
+        width:
+          clamp(80px, 21vw, 100px);
+
+        aspect-ratio: 1;
+
+        padding: 0;
+
+        border: 0;
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background:
+          radial-gradient(
+            circle at 35% 25%,
+            #fff2d5 0%,
+            #ead1aa 34%,
+            #cda77f 73%,
+            #b98c68 100%
+          );
+
+        box-shadow:
+          inset 0 2px 4px
+            rgba(255,255,255,.62),
+          inset 0 -5px 9px
+            rgba(117,77,46,.18),
+          0 8px 18px
+            rgba(70,48,33,.2),
+          0 0 18px
+            rgba(247,222,175,.28);
+
+        transform:
+          translate(-50%, -50%);
+
+        cursor: pointer;
+
+        -webkit-tap-highlight-color:
+          transparent;
+
+        transition:
+          opacity .3s ease,
+          transform .4s ease,
+          box-shadow .4s ease;
+      }
+
+      .dr-envelope-seal::before {
+        content: "";
+
+        position: absolute;
+
+        inset: 9%;
+
+        border-radius: 50%;
+
+        border:
+          1.5px solid
+          rgba(255,249,230,.9);
+
+        box-shadow:
+          0 0 0 2px
+            rgba(165,120,82,.12),
+          inset 0 1px 3px
+            rgba(111,77,48,.11);
+
+        pointer-events: none;
+      }
+
+      /* ===================================================
+         MONOGRAM
+
+         Intentionally smaller than the inner ring.
+
+         The image is not stretched to fill the seal.
+         =================================================== */
+
+      .dr-envelope-monogram-frame {
+        position: absolute;
+
+        width: 53%;
+        height: 53%;
+
+        left: 50%;
+        top: 49%;
+
+        transform:
+          translate(-50%, -50%);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        overflow: hidden;
+
+        border-radius: 2px;
+
+        pointer-events: none;
+      }
+
+      .dr-envelope-monogram {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        object-fit: contain;
+
+        object-position:
+          center center;
+
+        opacity: .83;
+
+        filter:
+          sepia(.18)
+          saturate(.72)
+          brightness(.89);
+
+        transform: none;
+
+        pointer-events: none;
+      }
+
+      /* ===================================================
          INVITATION
-         =============================================== */
+         =================================================== */
 
-      .dr-envelope-invitation {
+      .dr-envelope-prompt {
+        position: relative;
+        z-index: 3;
 
-        display:flex;
+        display: flex;
+        flex-direction: column;
 
-        flex-direction:column;
-
-        align-items:center;
-
-        justify-content:center;
-
-        gap:19px;
+        align-items: center;
 
         margin-top:
-          clamp(46px,8vh,82px);
+          clamp(34px, 7vw, 49px);
 
-        color:#82716d;
+        gap: 12px;
 
+        text-align: center;
+
+        color: #88736e;
       }
 
       .dr-envelope-arrow {
-
-        width:25px;
-
-        height:39px;
-
-        display:block;
+        width: 23px;
+        height: 33px;
 
         animation:
           drEnvelopeArrowFloat
-          2.6s
-          ease-in-out
-          infinite;
+          2.4s ease-in-out infinite;
+      }
 
+      .dr-envelope-arrow svg {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        stroke: currentColor;
+        stroke-width: 1.35;
+
+        fill: none;
+
+        stroke-linecap: round;
+        stroke-linejoin: round;
       }
 
       @keyframes drEnvelopeArrowFloat {
-
-        0%,100% {
-
-          transform:translateY(3px);
-
+        0%, 100% {
+          transform: translateY(3px);
         }
 
         50% {
-
-          transform:translateY(-3px);
-
+          transform: translateY(-3px);
         }
-
       }
 
-      .dr-envelope-invitation-text {
+      .dr-envelope-invitation {
+        margin: 0;
 
         font-family:
           "DR Envelope Garamond",
           Georgia,
           serif;
 
-        font-style:italic;
-
-        font-weight:400;
-
         font-size:
-          clamp(29px,7vw,43px);
+          clamp(24px, 6.3vw, 35px);
 
-        line-height:1.15;
+        font-style: italic;
+        font-weight: 400;
 
-        letter-spacing:.005em;
+        line-height: 1.2;
 
-        text-align:center;
+        letter-spacing: 0;
 
+        color: #88736e;
       }
 
-      /* ===============================================
-         OPENING
-         =============================================== */
-
-      #dr-envelope-experience.dr-opening
-      .dr-envelope-flap {
-
-        transform:
-          rotateX(178deg);
-
-        z-index:1;
-
-      }
+      /* ===================================================
+         OPENING ANIMATION
+         =================================================== */
 
       #dr-envelope-experience.dr-opening
       .dr-envelope-seal {
-
-        opacity:0;
+        opacity: 0;
 
         transform:
-          translate(-50%,-50%)
-          scale(.9);
+          translate(-50%, -50%)
+          scale(.82);
 
-        pointer-events:none;
-
+        pointer-events: none;
       }
 
       #dr-envelope-experience.dr-opening
-      .dr-envelope-letter-preview {
-
+      .dr-envelope-flap {
         transform:
-          translateY(-54%);
-
+          rotateX(178deg);
       }
 
       #dr-envelope-experience.dr-opening
-      .dr-envelope-invitation {
-
-        opacity:0;
-
-        transition:
-          opacity .45s ease;
-
-      }
-
-      /* ===============================================
-         HANDOFF
-         =============================================== */
-
-      #dr-envelope-experience.dr-handoff
-      .dr-envelope-letter-preview {
-
-        opacity:0;
+      .dr-envelope-prompt {
+        opacity: 0;
 
         transition:
-          opacity .25s ease;
-
+          opacity .35s ease;
       }
 
-      /* ===============================================
-         REDUCED MOTION
-         =============================================== */
+      #dr-envelope-experience.dr-letter-rising
+      .dr-envelope-letter {
+        opacity: 1;
 
-      @media (
-        prefers-reduced-motion:reduce
-      ) {
+        transform:
+          translateY(-58%);
+      }
 
-        .dr-envelope-flap,
+      /* ===================================================
+         FINAL HANDOFF
+         =================================================== */
 
-        .dr-envelope-letter-preview,
+      #dr-envelope-experience.dr-handoff {
+        opacity: 0;
 
-        .dr-envelope-seal,
+        pointer-events: none;
 
-        #dr-envelope-experience {
+        transform:
+          translateY(0);
+      }
 
-          transition-duration:.15s !important;
+      /* ===================================================
+         ORIGINAL LETTER REVEAL
+         =================================================== */
 
+      body.dr-envelope-complete
+      .hero-composition > .paper {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        animation: none !important;
+
+        transition:
+          opacity .9s
+          cubic-bezier(.22,.61,.36,1) !important;
+      }
+
+      body.dr-envelope-complete
+      .hero-composition > .paper
+      .paper-content {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+      }
+
+      /* ===================================================
+         SMALL MOBILE REFINEMENTS
+         =================================================== */
+
+      @media (max-width: 390px) {
+
+        .dr-envelope-presentation {
+          padding-left: 10px;
+          padding-right: 10px;
         }
 
+        .dr-envelope-heading {
+          letter-spacing: .2em;
+        }
+
+        .dr-envelope-invitation {
+          font-size: 25px;
+        }
+
+      }
+
+      /* ===================================================
+         REDUCED MOTION
+         =================================================== */
+
+      @media (prefers-reduced-motion: reduce) {
+
         .dr-envelope-arrow {
-
-          animation:none !important;
-
+          animation: none;
         }
 
       }
@@ -1014,7 +1054,101 @@
   document.head.appendChild(style);
 
   /* =========================================================
-     CREATE EXPERIENCE
+     SAVE ORIGINAL PAGE STATE
+     ========================================================= */
+
+  const originalDisplay = new Map();
+
+  [
+    photoStage,
+    instagramSection,
+    footer,
+    backToTop
+  ].forEach(element => {
+
+    if (!element) {
+      return;
+    }
+
+    originalDisplay.set(
+      element,
+      element.style.display
+    );
+
+  });
+
+  /* =========================================================
+     PREPARE THE ORIGINAL LETTER
+     ========================================================= */
+
+  originalPaper.classList.remove(
+    "mobile-paper-visible"
+  );
+
+  originalPaper.classList.remove(
+    "dr-letter-revealed"
+  );
+
+  /* =========================================================
+     PREVENT PAGE SCROLLING
+     ========================================================= */
+
+  function lockScrolling() {
+
+    originalScrollY = window.scrollY;
+
+    document.documentElement.classList.add(
+      "dr-envelope-locked"
+    );
+
+    document.body.classList.add(
+      "dr-envelope-locked"
+    );
+
+    document.documentElement.style.overflow =
+      "hidden";
+
+    document.body.style.overflow =
+      "hidden";
+
+    document.body.style.touchAction =
+      "none";
+
+  }
+
+  function unlockScrolling() {
+
+    document.documentElement.classList.remove(
+      "dr-envelope-locked"
+    );
+
+    document.body.classList.remove(
+      "dr-envelope-locked"
+    );
+
+    document.documentElement.style.overflow =
+      originalHtmlOverflow;
+
+    document.body.style.overflow =
+      originalBodyOverflow;
+
+    document.body.style.touchAction =
+      originalBodyTouchAction;
+
+  }
+
+  /* =========================================================
+     ACTIVATE INTRODUCTION
+     ========================================================= */
+
+  document.body.classList.add(
+    "dr-envelope-active"
+  );
+
+  lockScrolling();
+
+  /* =========================================================
+     CREATE PRESENTATION
      ========================================================= */
 
   const experience = document.createElement(
@@ -1026,18 +1160,21 @@
 
   experience.setAttribute(
     "aria-label",
-    "Open a personal message from Dominic Ryan"
+    "Open Dominic Ryan's personal message"
   );
 
   experience.innerHTML = `
 
-    <div class="dr-envelope-composition">
+    <div class="dr-envelope-presentation">
 
-      <h2 class="dr-envelope-title">
-        A PERSONAL MESSAGE
+      <h2 class="dr-envelope-heading">
+        A Personal Message
       </h2>
 
-      <div class="dr-envelope-scene">
+      <div
+        class="dr-envelope-scene"
+        aria-label="Sealed correspondence"
+      >
 
         <div
           class="dr-envelope-back"
@@ -1049,12 +1186,10 @@
           aria-hidden="true"
         >
 
-          <div
-            class="dr-envelope-letter-preview"
-          >
+          <div class="dr-envelope-letter">
 
             <div
-              class="dr-envelope-letter-inner"
+              class="dr-envelope-letter-content"
             ></div>
 
           </div>
@@ -1084,40 +1219,46 @@
         <button
           class="dr-envelope-seal"
           type="button"
-          aria-label="Open personal message"
+          aria-label="Open the personal message"
         >
 
-          <img
-            class="dr-envelope-monogram"
-            alt=""
+          <span
+            class="dr-envelope-monogram-frame"
+            aria-hidden="true"
           >
+
+            <img
+              class="dr-envelope-monogram"
+              src="${CONFIG.monogram}"
+              alt=""
+            >
+
+          </span>
 
         </button>
 
       </div>
 
-      <div class="dr-envelope-invitation">
+      <div class="dr-envelope-prompt">
 
-        <svg
+        <span
           class="dr-envelope-arrow"
-          viewBox="0 0 24 40"
-          fill="none"
           aria-hidden="true"
         >
 
-          <path
-            d="M12 38V3M2 13L12 3L22 13"
-            stroke="currentColor"
-            stroke-width="1.4"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
+          <svg viewBox="0 0 24 36">
 
-        </svg>
+            <path d="M12 34V3"></path>
 
-        <div class="dr-envelope-invitation-text">
+            <path d="M3 12L12 3L21 12"></path>
+
+          </svg>
+
+        </span>
+
+        <p class="dr-envelope-invitation">
           Tap the seal to open
-        </div>
+        </p>
 
       </div>
 
@@ -1125,469 +1266,233 @@
 
   `;
 
-  document.body.appendChild(experience);
-
   /* =========================================================
-     LETTER PREVIEW
-
-     Clone the actual paper content.
-
-     This ensures the wording, formatting,
-     and underlying typography remain aligned
-     with the real personal letter.
+     INSERT ENVELOPE INTO EXISTING WEBSITE
      ========================================================= */
 
-  const previewInner =
-    experience.querySelector(
-      ".dr-envelope-letter-inner"
-    );
-
-  const preview =
-    experience.querySelector(
-      ".dr-envelope-letter-preview"
-    );
-
-  const clonedContent =
-    paperContent.cloneNode(true);
-
-  clonedContent.removeAttribute("id");
-
-  previewInner.appendChild(clonedContent);
-
-  /* =========================================================
-     MATCH ACTUAL LETTER TYPOGRAPHY
-
-     Copy computed typography from the real letter
-     to corresponding elements in the preview.
-
-     This prevents a different-looking letter.
-     ========================================================= */
-
-  function matchTypography() {
-
-    const sourceElements = [
-      paperContent,
-      ...paperContent.querySelectorAll("*")
-    ];
-
-    const cloneElements = [
-      clonedContent,
-      ...clonedContent.querySelectorAll("*")
-    ];
-
-    const properties = [
-
-      "font-family",
-
-      "font-size",
-
-      "font-weight",
-
-      "font-style",
-
-      "line-height",
-
-      "letter-spacing",
-
-      "color",
-
-      "text-transform",
-
-      "text-decoration",
-
-      "text-align"
-
-    ];
-
-    sourceElements.forEach(
-      (source, index) => {
-
-        const target =
-          cloneElements[index];
-
-        if (!target) {
-          return;
-        }
-
-        const computed =
-          window.getComputedStyle(source);
-
-        properties.forEach(property => {
-
-          target.style.setProperty(
-            property,
-            computed.getPropertyValue(property)
-          );
-
-        });
-
-      }
-    );
-
-  }
-
-  matchTypography();
-
-  /* =========================================================
-     MONOGRAM PREPARATION
-
-     Important:
-     - Uses the new uploaded PNG
-     - Detects visible image bounds
-     - Removes transparent padding
-     - Preserves the D
-     - Preserves the upper R
-     - Crops the lower R tail
-     - Centers the remaining visible design
-
-     The source file is not modified.
-     ========================================================= */
-
-  const monogramElement =
-    experience.querySelector(
-      ".dr-envelope-monogram"
-    );
-
-  function prepareMonogram() {
-
-    const source = new Image();
-
-    source.decoding = "async";
-
-    source.onload = () => {
-
-      try {
-
-        const sourceCanvas =
-          document.createElement("canvas");
-
-        sourceCanvas.width =
-          source.naturalWidth;
-
-        sourceCanvas.height =
-          source.naturalHeight;
-
-        const sourceContext =
-          sourceCanvas.getContext(
-            "2d",
-            {
-              willReadFrequently:true
-            }
-          );
-
-        sourceContext.drawImage(
-          source,
-          0,
-          0
-        );
-
-        const width =
-          sourceCanvas.width;
-
-        const height =
-          sourceCanvas.height;
-
-        const pixels =
-          sourceContext.getImageData(
-            0,
-            0,
-            width,
-            height
-          ).data;
-
-        let minX = width;
-
-        let minY = height;
-
-        let maxX = 0;
-
-        let maxY = 0;
-
-        let found = false;
-
-        for (
-          let y = 0;
-          y < height;
-          y++
-        ) {
-
-          for (
-            let x = 0;
-            x < width;
-            x++
-          ) {
-
-            const alpha =
-              pixels[
-                (y * width + x) * 4 + 3
-              ];
-
-            if (alpha > 35) {
-
-              found = true;
-
-              minX = Math.min(minX,x);
-
-              minY = Math.min(minY,y);
-
-              maxX = Math.max(maxX,x);
-
-              maxY = Math.max(maxY,y);
-
-            }
-
-          }
-
-        }
-
-        if (!found) {
-
-          monogramElement.src =
-            CONFIG.monogram;
-
-          return;
-
-        }
-
-        const visibleWidth =
-          maxX - minX + 1;
-
-        const visibleHeight =
-          maxY - minY + 1;
-
-        /* Crop the lower R tail, not the D. */
-
-        const croppedHeight =
-          Math.round(
-            visibleHeight *
-            CONFIG.monogramCrop
-          );
-
-        const outputSize = 400;
-
-        const output =
-          document.createElement("canvas");
-
-        output.width =
-          outputSize;
-
-        output.height =
-          outputSize;
-
-        const context =
-          output.getContext("2d");
-
-        const padding = 35;
-
-        const available =
-          outputSize - padding * 2;
-
-        const scale =
-          Math.min(
-            available / visibleWidth,
-            available / croppedHeight
-          );
-
-        const drawWidth =
-          visibleWidth * scale;
-
-        const drawHeight =
-          croppedHeight * scale;
-
-        const drawX =
-          (outputSize - drawWidth) / 2;
-
-        const drawY =
-          (outputSize - drawHeight) / 2;
-
-        context.drawImage(
-
-          sourceCanvas,
-
-          minX,
-
-          minY,
-
-          visibleWidth,
-
-          croppedHeight,
-
-          drawX,
-
-          drawY,
-
-          drawWidth,
-
-          drawHeight
-
-        );
-
-        monogramElement.src =
-          output.toDataURL("image/png");
-
-      } catch (_) {
-
-        monogramElement.src =
-          CONFIG.monogram;
-
-      }
-
-    };
-
-    source.onerror = () => {
-
-      monogramElement.src =
-        CONFIG.monogram;
-
-    };
-
-    source.src =
-      CONFIG.monogram;
-
-  }
-
-  prepareMonogram();
-
-  /* =========================================================
-     CONCEAL OTHER PAGE ELEMENTS
-
-     Header and navigation remain untouched.
-     ========================================================= */
-
-  hiddenElements.forEach(element => {
-
-    element.classList.add(
-      "dr-envelope-hidden-content"
-    );
-
-  });
-
-  /* =========================================================
-     CONCEAL ORIGINAL LETTER
-     ========================================================= */
-
-  paper.classList.add(
-    "dr-envelope-waiting"
-  );
-
-  paper.classList.remove(
-    "mobile-paper-visible"
+  hero.insertBefore(
+    experience,
+    originalPaper
   );
 
   /* =========================================================
-     SCROLL LOCK
-
-     The user cannot scroll the page until the
-     envelope has finished opening.
+     ADJUST HEIGHT TO AVAILABLE MOBILE VIEWPORT
      ========================================================= */
 
-  function lockScroll() {
-
-    scrollPosition =
-      window.scrollY;
-
-    document.documentElement.classList.add(
-      "dr-envelope-locked"
-    );
-
-    document.body.classList.add(
-      "dr-envelope-locked"
-    );
-
-    document.body.style.position =
-      "fixed";
-
-    document.body.style.top =
-      `-${scrollPosition}px`;
-
-    document.body.style.width =
-      "100%";
-
-    document.body.style.overflow =
-      "hidden";
-
-    document.documentElement.style.overflow =
-      "hidden";
-
-  }
-
-  function unlockScroll() {
-
-    document.documentElement.classList.remove(
-      "dr-envelope-locked"
-    );
-
-    document.body.classList.remove(
-      "dr-envelope-locked"
-    );
-
-    document.body.style.position =
-      originalBodyPosition;
-
-    document.body.style.top =
-      originalBodyTop;
-
-    document.body.style.width =
-      originalBodyWidth;
-
-    document.body.style.overflow =
-      originalBodyOverflow;
-
-    document.documentElement.style.overflow =
-      originalHtmlOverflow;
-
-    /* Restore position without a visible jump. */
-
-    window.scrollTo({
-      top:scrollPosition,
-      left:0,
-      behavior:"instant"
-    });
-
-  }
-
-  lockScroll();
-
-  /* =========================================================
-     PREVIEW READY
-     ========================================================= */
-
-  requestAnimationFrame(() => {
-
-    preview.classList.add(
-      "dr-preview-ready"
-    );
-
-  });
-
-  /* =========================================================
-     REVEAL ORIGINAL PAGE
-     ========================================================= */
-
-  function revealOriginalPage() {
+  function updatePresentationHeight() {
 
     if (completed) {
       return;
     }
 
-    completed = true;
+    const rect =
+      experience.getBoundingClientRect();
 
-    paper.classList.remove(
-      "dr-envelope-waiting"
+    const top = Math.max(
+      0,
+      rect.top
     );
 
-    paper.classList.add(
-      "mobile-paper-visible",
-      "dr-envelope-revealed"
+    experience.style.setProperty(
+      "--dr-envelope-top",
+      `${top}px`
     );
 
-    hiddenElements.forEach(element => {
+  }
 
-      element.classList.remove(
-        "dr-envelope-hidden-content"
-      );
+  updatePresentationHeight();
 
+  window.addEventListener(
+    "resize",
+    updatePresentationHeight,
+    { passive: true }
+  );
+
+  /* =========================================================
+     CLONE ORIGINAL LETTER CONTENT
+
+     IMPORTANT:
+     The animation uses the actual letter HTML.
+
+     This preserves:
+     - Existing wording
+     - Original stylized Dominic Ryan lettering
+     - Existing paragraph structure
+     - Bold and italic markup
+     ========================================================= */
+
+  const originalContent =
+    originalPaper.querySelector(
+      ".paper-content"
+    );
+
+  const animatedContent =
+    experience.querySelector(
+      ".dr-envelope-letter-content"
+    );
+
+  if (
+    originalContent &&
+    animatedContent
+  ) {
+
+    const clonedContent =
+      originalContent.cloneNode(true);
+
+    animatedContent.innerHTML =
+      clonedContent.innerHTML;
+
+    /* Remove duplicate IDs from preview. */
+
+    animatedContent
+      .querySelectorAll("[id]")
+      .forEach(element => {
+        element.removeAttribute("id");
+      });
+
+  }
+
+  /* =========================================================
+     FORCE FONT CONSISTENCY
+
+     Ensures the animated preview uses the same Avenir
+     family as the original personal letter.
+     ========================================================= */
+
+  function synchronizeLetterTypography() {
+
+    if (
+      !originalContent ||
+      !animatedContent
+    ) {
+      return;
+    }
+
+    const originalElements =
+      originalContent.querySelectorAll("*");
+
+    const animatedElements =
+      animatedContent.querySelectorAll("*");
+
+    const count = Math.min(
+      originalElements.length,
+      animatedElements.length
+    );
+
+    for (
+      let index = 0;
+      index < count;
+      index++
+    ) {
+
+      const source =
+        originalElements[index];
+
+      const target =
+        animatedElements[index];
+
+      const computed =
+        window.getComputedStyle(source);
+
+      target.style.fontFamily =
+        '"DR Envelope Avenir", "DR Avenir Next", sans-serif';
+
+      target.style.fontWeight =
+        computed.fontWeight;
+
+      target.style.fontStyle =
+        computed.fontStyle;
+
+      target.style.letterSpacing =
+        computed.letterSpacing;
+
+    }
+
+  }
+
+  synchronizeLetterTypography();
+
+  /* =========================================================
+     LOAD FONTS BEFORE INTERACTION
+     ========================================================= */
+
+  if (document.fonts) {
+
+    document.fonts.load(
+      '400 14px "DR Envelope Avenir"'
+    ).catch(() => {});
+
+    document.fonts.load(
+      '500 14px "DR Envelope Avenir"'
+    ).catch(() => {});
+
+    document.fonts.load(
+      '600 14px "DR Envelope Avenir"'
+    ).catch(() => {});
+
+    document.fonts.load(
+      'italic 28px "DR Envelope Garamond"'
+    ).catch(() => {});
+
+  }
+
+  /* =========================================================
+     ANIMATION ELEMENTS
+     ========================================================= */
+
+  const seal = experience.querySelector(
+    ".dr-envelope-seal"
+  );
+
+  const animatedLetter =
+    experience.querySelector(
+      ".dr-envelope-letter"
+    );
+
+  /* =========================================================
+     TIMER MANAGEMENT
+     ========================================================= */
+
+  function schedule(callback, delay) {
+
+    const timer = window.setTimeout(
+      callback,
+      delay
+    );
+
+    animationTimers.push(timer);
+
+    return timer;
+
+  }
+
+  function clearAnimationTimers() {
+
+    animationTimers.forEach(timer => {
+      window.clearTimeout(timer);
     });
+
+    animationTimers = [];
+
+  }
+
+  /* =========================================================
+     REVEAL ORIGINAL LETTER
+     ========================================================= */
+
+  function revealOriginalLetter() {
+
+    document.body.classList.add(
+      "dr-envelope-complete"
+    );
+
+    originalPaper.classList.add(
+      "mobile-paper-visible"
+    );
+
+    originalPaper.classList.add(
+      "dr-letter-revealed"
+    );
 
     if (
       typeof window.drEnvelopeRevealLetter ===
@@ -1601,17 +1506,49 @@
   }
 
   /* =========================================================
-     OPEN ENVELOPE
+     COMPLETE HANDOFF
+
+     No scrollTo().
+     No automatic scroll animation.
+     No jump to top.
+
+     The original page remains in its natural position.
      ========================================================= */
 
-  const seal =
-    experience.querySelector(
-      ".dr-envelope-seal"
+  function completeOpening() {
+
+    if (completed) {
+      return;
+    }
+
+    completed = true;
+
+    revealOriginalLetter();
+
+    document.body.classList.remove(
+      "dr-envelope-active"
     );
+
+    experience.remove();
+
+    unlockScrolling();
+
+    window.removeEventListener(
+      "resize",
+      updatePresentationHeight
+    );
+
+    clearAnimationTimers();
+
+  }
+
+  /* =========================================================
+     OPENING SEQUENCE
+     ========================================================= */
 
   function openEnvelope() {
 
-    if (opened) {
+    if (opened || completed) {
       return;
     }
 
@@ -1619,57 +1556,62 @@
 
     seal.disabled = true;
 
+    /* -----------------------------------------------------
+       PHASE 1 — BREAK SEAL AND OPEN FLAP
+       ----------------------------------------------------- */
+
     experience.classList.add(
       "dr-opening"
     );
 
-    /* Begin with the original flap opening. */
+    /* -----------------------------------------------------
+       PHASE 2 — LETTER RISES FROM ENVELOPE
 
-    setTimeout(() => {
+       Lower portion remains hidden behind envelope folds.
+       ----------------------------------------------------- */
 
-      preview.classList.add(
-        "dr-preview-ready"
+    schedule(() => {
+
+      experience.classList.add(
+        "dr-letter-rising"
       );
 
-    }, 150);
+    }, 570);
 
-    /* Fade preview before showing the actual letter. */
+    /* -----------------------------------------------------
+       PHASE 3 — PREPARE ACTUAL LETTER
 
-    setTimeout(() => {
+       The full original letter is revealed as the
+       presentation fades away.
+       ----------------------------------------------------- */
+
+    schedule(() => {
+
+      revealOriginalLetter();
 
       experience.classList.add(
         "dr-handoff"
       );
 
-    }, CONFIG.handoffDelay);
+    }, 2100);
 
-    /* Reveal the full, original personal letter. */
+    /* -----------------------------------------------------
+       PHASE 4 — REMOVE PRESENTATION
 
-    setTimeout(() => {
+       Original page becomes fully interactive.
+       ----------------------------------------------------- */
 
-      revealOriginalPage();
+    schedule(() => {
 
-    }, CONFIG.handoffDelay + 180);
+      completeOpening();
 
-    /* Remove envelope and restore scrolling. */
-
-    setTimeout(() => {
-
-      experience.classList.add(
-        "dr-finishing"
-      );
-
-    }, CONFIG.completionDelay - 500);
-
-    setTimeout(() => {
-
-      experience.remove();
-
-      unlockScroll();
-
-    }, CONFIG.completionDelay);
+    }, 3000);
 
   }
+
+  /* =========================================================
+     SEAL INTERACTION
+     ========================================================= */
 
   seal.addEventListener(
     "click",
@@ -1677,42 +1619,58 @@
   );
 
   /* =========================================================
-     RESPONSIVE SAFETY
-
-     If the viewport changes to desktop,
-     remove the mobile-only experience.
+     DESKTOP RESIZE SAFETY
      ========================================================= */
 
-  function handleViewportChange(event) {
+  function handleBreakpointChange(event) {
 
     if (event.matches) {
       return;
     }
 
-    revealOriginalPage();
-
-    experience.remove();
-
-    unlockScroll();
+    completeOpening();
 
   }
 
   mobileQuery.addEventListener(
     "change",
-    handleViewportChange
+    handleBreakpointChange
   );
 
   /* =========================================================
-     EVERY REFRESH
+     PAGE RESTORATION SAFETY
+     ========================================================= */
 
-     No sessionStorage.
+  window.addEventListener(
+    "pageshow",
+    event => {
 
-     No localStorage.
+      if (
+        event.persisted &&
+        !completed
+      ) {
 
-     No cookies.
+        updatePresentationHeight();
 
-     The envelope initializes on every mobile
-     page load, including private browsing.
+      }
+
+    }
+  );
+
+  /* =========================================================
+     IMPORTANT:
+     NO SESSION STORAGE
+
+     The envelope intentionally appears every time the
+     page is loaded or refreshed.
+
+     This includes:
+     - Normal browsing
+     - Private browsing
+     - New tabs
+     - New sessions
+     - Repeated refreshes
+
      ========================================================= */
 
 })();
