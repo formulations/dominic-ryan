@@ -14,6 +14,13 @@
    - Native cross-document View Transitions
    - JavaScript animation fallback
 
+   MOTION SYSTEM
+   - Page transition: 650ms
+   - Traveling underline: 700ms
+   - Balanced, measured movement
+   - Position and width animate together
+   - Direction-aware page movement
+
    ========================================================= */
 
 
@@ -150,11 +157,13 @@
 /* =========================================================
    02 — CONTINUOUS TRAVELING NAVIGATION UNDERLINE
 
-   A single underline is positioned beneath the
+   One underline is positioned beneath the
    active navigation label.
 
    Native cross-document View Transitions interpolate
    its position and dimensions between pages.
+
+   Duration: 700ms
 
    ========================================================= */
 
@@ -187,11 +196,7 @@
 
 
 /* HIDE ORIGINAL ACTIVE UNDERLINE
-   WHEN TRAVELING UNDERLINE IS AVAILABLE
-
-   Explicitly suppress the original pseudo-element
-   to avoid duplicate underlines on The Maison.
-*/
+   WHEN TRAVELING UNDERLINE IS AVAILABLE */
 
 .collection-navigation.dr-travel-nav a.active::after,
 .collection-navigation.dr-travel-nav a[aria-current="page"]::after,
@@ -840,10 +845,13 @@
    16 — CROSS-DOCUMENT VIEW TRANSITIONS
 
    Page:
-   280ms directional glide
+   650ms directional glide
 
    Navigation underline:
-   400ms continuous position and width interpolation
+   700ms position and width interpolation
+
+   Character:
+   Balanced — measured throughout
 
    ========================================================= */
 
@@ -855,9 +863,18 @@
 }
 
 
-/* DIRECTION VARIABLES */
+/* SHARED MOTION VARIABLES */
 
 :root {
+  --dr-page-duration: 650ms;
+  --dr-line-duration: 700ms;
+
+  --dr-page-easing:
+    cubic-bezier(.45, 0, .25, 1);
+
+  --dr-line-easing:
+    cubic-bezier(.45, 0, .25, 1);
+
   --dr-swipe-out: -22px;
   --dr-swipe-in: 22px;
 }
@@ -869,13 +886,15 @@
 
 ::view-transition-old(root) {
   animation:
-    280ms cubic-bezier(.22, .7, .2, 1)
+    var(--dr-page-duration)
+    var(--dr-page-easing)
     both dr-page-out;
 }
 
 ::view-transition-new(root) {
   animation:
-    280ms cubic-bezier(.22, .7, .2, 1)
+    var(--dr-page-duration)
+    var(--dr-page-easing)
     both dr-page-in;
 }
 
@@ -886,11 +905,8 @@
 
 
 /*
-   The underline receives a matching identity
-   in both documents.
-
-   JavaScript applies the dr-native-underline class
-   during the cross-document transition lifecycle.
+   JavaScript assigns the matching identity
+   before the browser captures each snapshot.
 */
 
 html.dr-native-underline .dr-traveling-underline {
@@ -899,30 +915,34 @@ html.dr-native-underline .dr-traveling-underline {
 
 
 /*
-   The browser interpolates the underline's
-   position and dimensions over 400ms.
+   Position and width interpolate together.
 
-   The underline moves independently of the
-   page's 280ms transition.
+   The browser moves the named transition group
+   between the outgoing and incoming geometry.
+
+   Duration: 700ms
 */
 
 ::view-transition-group(dr-navigation-underline) {
-  animation-duration: 400ms;
+  animation-duration: var(--dr-line-duration);
+
   animation-timing-function:
-    cubic-bezier(.22, 1, .36, 1);
+    var(--dr-line-easing);
+
   animation-fill-mode: both;
+
   z-index: 2;
 }
 
 
 /*
-   A single visible underline snapshot.
+   SINGLE VISIBLE UNDERLINE
 
-   The outgoing image is hidden. The incoming
-   image is displayed throughout the transition.
+   Hide the outgoing snapshot and display the
+   incoming snapshot.
 
-   The group still interpolates from the
-   outgoing geometry to the incoming geometry.
+   This prevents two overlapping underline
+   images from appearing simultaneously.
 */
 
 ::view-transition-old(dr-navigation-underline) {
@@ -980,21 +1000,27 @@ html.dr-native-underline .dr-traveling-underline {
 
 html.dr-fallback-leaving body {
   animation:
-    280ms cubic-bezier(.22, .7, .2, 1)
+    var(--dr-page-duration)
+    var(--dr-page-easing)
     both dr-fallback-out;
 }
 
 
-/* JAVASCRIPT FALLBACK — ENTRY */
+/* =========================================================
+   JAVASCRIPT FALLBACK — ENTRY
+   ========================================================= */
 
 html.dr-fallback-entering body {
   animation:
-    280ms cubic-bezier(.22, .7, .2, 1)
+    var(--dr-page-duration)
+    var(--dr-page-easing)
     both dr-fallback-in;
 }
 
 
-/* FALLBACK EXIT KEYFRAMES */
+/* =========================================================
+   FALLBACK EXIT KEYFRAMES
+   ========================================================= */
 
 @keyframes dr-fallback-out {
 
@@ -1011,7 +1037,9 @@ html.dr-fallback-entering body {
 }
 
 
-/* FALLBACK ENTRY KEYFRAMES */
+/* =========================================================
+   FALLBACK ENTRY KEYFRAMES
+   ========================================================= */
 
 @keyframes dr-fallback-in {
 
