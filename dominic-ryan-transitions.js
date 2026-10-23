@@ -9,10 +9,10 @@
    - 280ms directional glide
 
    Navigation underline:
-   - 400ms directional movement
-   - Subtle stretch and contraction
+   - 400ms continuous movement
+   - Natural width interpolation
    - Soft deceleration
-   - Coordinated across page changes
+   - Native cross-document View Transition
 
    Supports:
    - index.html
@@ -20,6 +20,7 @@
    - Mobile swipe navigation
    - Desktop navigation
    - Browser back/forward restoration
+   - JavaScript fallback
 
    ========================================================= */
 
@@ -32,9 +33,6 @@
 
   const PAGE_DURATION = 280;
   const LINE_DURATION = 400;
-
-  const PAGE_EASING =
-    "cubic-bezier(.22, .7, .2, 1)";
 
   const LINE_EASING =
     "cubic-bezier(.22, 1, .36, 1)";
@@ -49,12 +47,13 @@
     direction: "drSwipeDirection",
     fallback: "drFallbackTransition",
     destination: "drTransitionDestination",
-    timestamp: "drTransitionTimestamp",
-    underline: "drTransitionUnderline"
+    timestamp: "drTransitionTimestamp"
   };
 
   const EXIT_CLASS = "dr-fallback-leaving";
   const ENTRY_CLASS = "dr-fallback-entering";
+
+  const NATIVE_CLASS = "dr-native-underline";
 
   const TRANSITION_MAX_AGE = 10000;
 
@@ -66,9 +65,10 @@
 
   let underlineElement = null;
   let underlineNavigation = null;
-  let underlineAnimation = null;
 
   let resizeObserver = null;
+
+  let incomingTransition = false;
 
   /* =========================================================
      02 — PATH NORMALIZATION
@@ -168,7 +168,6 @@
     remove(STORAGE.fallback);
     remove(STORAGE.destination);
     remove(STORAGE.timestamp);
-    remove(STORAGE.underline);
 
   }
 
@@ -224,7 +223,26 @@
   }
 
   /* =========================================================
-     05 — NAVIGATION UNDERLINE
+     05 — NATIVE VIEW TRANSITION SUPPORT
+     ========================================================= */
+
+  function supportsNativeTransitions() {
+
+    return (
+      typeof CSS !== "undefined" &&
+      typeof CSS.supports === "function" &&
+      CSS.supports(
+        "view-transition-name",
+        "none"
+      ) &&
+      typeof document.startViewTransition === "function" &&
+      typeof window.navigation !== "undefined"
+    );
+
+  }
+
+  /* =========================================================
+     06 — PRIMARY NAVIGATION
      ========================================================= */
 
   function getPrimaryNavigation() {
@@ -260,6 +278,10 @@
     return null;
 
   }
+
+  /* =========================================================
+     07 — UNDERLINE GEOMETRY
+     ========================================================= */
 
   function getUnderlineGeometry(link, navigation) {
 
@@ -326,7 +348,15 @@
 
   }
 
+  /* =========================================================
+     08 — INITIALIZE UNDERLINE
+     ========================================================= */
+
   function initializeUnderline() {
+
+    if (underlineElement) {
+      return;
+    }
 
     const navigation = getPrimaryNavigation();
 
@@ -385,310 +415,34 @@
   }
 
   /* =========================================================
-     06 — UNDERLINE ANIMATION
+     09 — NATIVE UNDERLINE IDENTITY
      ========================================================= */
 
-  function animateUnderline(destination) {
+  function enableNativeUnderline() {
 
-    if (
-      !underlineElement ||
-      !underlineNavigation
-    ) {
+    if (!underlineElement) {
       return;
     }
 
-    const currentPath = normalizePath(
-      window.location.pathname
+    root.classList.add(
+      NATIVE_CLASS
     );
 
-    const destinationPath =
-      getDestinationPath(destination);
+  }
 
-    if (!destinationPath) {
-      return;
-    }
+  function disableNativeUnderline() {
 
-    const currentLink =
-      getNavigationLink(currentPath);
-
-    const destinationLink =
-      getNavigationLink(destinationPath);
-
-    if (!currentLink || !destinationLink) {
-      return;
-    }
-
-    const from = getUnderlineGeometry(
-      currentLink,
-      underlineNavigation
-    );
-
-    const to = getUnderlineGeometry(
-      destinationLink,
-      underlineNavigation
-    );
-
-    if (!from || !to) {
-      return;
-    }
-
-    if (underlineAnimation) {
-      underlineAnimation.cancel();
-    }
-
-    const distance = to.left - from.left;
-
-    /*
-       A very restrained extension of the line
-       during movement.
-
-       Maximum stretch: 12px.
-    */
-
-    const stretch = Math.min(
-      Math.abs(distance) * 0.08,
-      12
-    );
-
-    const movingRight = distance > 0;
-
-    const midpoint = {
-      left:
-        from.left +
-        distance * 0.58 -
-        (movingRight ? 0 : stretch),
-
-      width:
-        from.width +
-        (to.width - from.width) * 0.58 +
-        stretch,
-
-      top:
-        from.top +
-        (to.top - from.top) * 0.58
-    };
-
-    underlineAnimation = underlineElement.animate(
-      [
-        {
-          left: `${from.left}px`,
-          width: `${from.width}px`,
-          top: `${from.top}px`,
-          opacity: 1,
-          offset: 0
-        },
-        {
-          left: `${midpoint.left}px`,
-          width: `${midpoint.width}px`,
-          top: `${midpoint.top}px`,
-          opacity: 1,
-          offset: 0.58
-        },
-        {
-          left: `${to.left}px`,
-          width: `${to.width}px`,
-          top: `${to.top}px`,
-          opacity: 1,
-          offset: 1
-        }
-      ],
-      {
-        duration: LINE_DURATION,
-        easing: LINE_EASING,
-        fill: "forwards"
-      }
-    );
-
-    store(
-      STORAGE.underline,
-      destinationPath
+    root.classList.remove(
+      NATIVE_CLASS
     );
 
   }
 
   /* =========================================================
-     07 — INCOMING UNDERLINE
+     10 — INCOMING PAGE TRANSITION
      ========================================================= */
 
-  function animateIncomingUnderline(direction) {
-
-    if (
-      !underlineElement ||
-      !underlineNavigation
-    ) {
-      return;
-    }
-
-    const currentPath = normalizePath(
-      window.location.pathname
-    );
-
-    const currentLink =
-      getNavigationLink(currentPath);
-
-    if (!currentLink) {
-      return;
-    }
-
-    const to = getUnderlineGeometry(
-      currentLink,
-      underlineNavigation
-    );
-
-    if (!to) {
-      return;
-    }
-
-    const enteringFromRight =
-      direction === "left";
-
-    const offset = enteringFromRight
-      ? -10
-      : 10;
-
-    const stretch = 8;
-
-    underlineElement.animate(
-      [
-        {
-          transform: `translateX(${offset}px)`,
-          width: `${to.width + stretch}px`,
-          opacity: 0.9
-        },
-        {
-          transform: "translateX(0)",
-          width: `${to.width}px`,
-          opacity: 1
-        }
-      ],
-      {
-        duration: LINE_DURATION,
-        easing: LINE_EASING,
-        fill: "none"
-      }
-    );
-
-  }
-
-  /* =========================================================
-     08 — NATIVE TRANSITION DETECTION
-     ========================================================= */
-
-  function supportsNativeTransitions() {
-
-    return (
-      typeof CSS !== "undefined" &&
-      typeof CSS.supports === "function" &&
-      CSS.supports(
-        "view-transition-name",
-        "none"
-      ) &&
-      typeof document.startViewTransition === "function" &&
-      typeof window.navigation !== "undefined"
-    );
-
-  }
-
-  /* =========================================================
-     09 — PREPARE NAVIGATION
-     ========================================================= */
-
-  function prepareNavigation(destination) {
-
-    const direction = getDirection(destination);
-
-    if (!direction) {
-      return false;
-    }
-
-    const destinationPath =
-      getDestinationPath(destination);
-
-    setDirection(direction);
-
-    store(STORAGE.direction, direction);
-    store(STORAGE.destination, destinationPath);
-    store(STORAGE.timestamp, Date.now());
-
-    animateUnderline(destination);
-
-    return true;
-
-  }
-
-  /* =========================================================
-     10 — FALLBACK PAGE EXIT
-     ========================================================= */
-
-  function animateExit() {
-
-    return new Promise(resolve => {
-
-      root.classList.remove(ENTRY_CLASS);
-      root.classList.add(EXIT_CLASS);
-
-      navigationTimer = window.setTimeout(
-        resolve,
-        PAGE_DURATION
-      );
-
-    });
-
-  }
-
-  /* =========================================================
-     11 — NAVIGATION
-     ========================================================= */
-
-  async function navigate(destination) {
-
-    if (navigating) {
-      return;
-    }
-
-    const destinationPath =
-      getDestinationPath(destination);
-
-    if (!destinationPath) {
-
-      window.location.assign(destination);
-      return;
-
-    }
-
-    const direction = getDirection(destination);
-
-    if (!direction) {
-
-      window.location.assign(destination);
-      return;
-
-    }
-
-    navigating = true;
-
-    prepareNavigation(destination);
-
-    if (supportsNativeTransitions()) {
-
-      window.location.assign(destination);
-      return;
-
-    }
-
-    store(STORAGE.fallback, "1");
-
-    await animateExit();
-
-    window.location.assign(destination);
-
-  }
-
-  /* =========================================================
-     12 — INCOMING PAGE
-     ========================================================= */
-
-  function animateEntry() {
+  function prepareIncomingTransition() {
 
     const destination = retrieve(
       STORAGE.destination
@@ -729,32 +483,302 @@
 
     }
 
+    incomingTransition = true;
+
     setDirection(direction);
 
-    clearTransitionStorage();
+    if (fallback === "1") {
 
-    positionUnderline();
+      root.classList.add(
+        ENTRY_CLASS
+      );
 
-    animateIncomingUnderline(direction);
+      entryTimer = window.setTimeout(() => {
 
-    if (fallback !== "1") {
-      return;
+        root.classList.remove(
+          ENTRY_CLASS
+        );
+
+        entryTimer = null;
+
+      }, PAGE_DURATION + 50);
+
     }
 
-    root.classList.remove(EXIT_CLASS);
-    root.classList.add(ENTRY_CLASS);
-
-    entryTimer = window.setTimeout(() => {
-
-      root.classList.remove(ENTRY_CLASS);
-      entryTimer = null;
-
-    }, PAGE_DURATION + 50);
+    clearTransitionStorage();
 
   }
 
   /* =========================================================
-     13 — CLICK HANDLING
+     11 — BROWSER VIEW TRANSITION LIFECYCLE
+     ========================================================= */
+
+  function initializeViewTransitionEvents() {
+
+    /*
+       pageswap fires on the outgoing document
+       before its visual snapshot is captured.
+    */
+
+    window.addEventListener(
+      "pageswap",
+      event => {
+
+        if (!event.viewTransition) {
+          return;
+        }
+
+        enableNativeUnderline();
+
+      }
+    );
+
+    /*
+       pagereveal fires on the incoming document
+       before its visual snapshot is revealed.
+
+       The underline is initialized and assigned
+       its matching View Transition name.
+    */
+
+    window.addEventListener(
+      "pagereveal",
+      event => {
+
+        if (!event.viewTransition) {
+          return;
+        }
+
+        if (!underlineElement) {
+          initializeUnderline();
+        }
+
+        positionUnderline();
+
+        enableNativeUnderline();
+
+      }
+    );
+
+  }
+
+  /* =========================================================
+     12 — NAVIGATION PREPARATION
+     ========================================================= */
+
+  function prepareNavigation(destination) {
+
+    const direction = getDirection(destination);
+
+    if (!direction) {
+      return false;
+    }
+
+    const destinationPath =
+      getDestinationPath(destination);
+
+    setDirection(direction);
+
+    store(STORAGE.direction, direction);
+    store(STORAGE.destination, destinationPath);
+    store(STORAGE.timestamp, Date.now());
+
+    return true;
+
+  }
+
+  /* =========================================================
+     13 — FALLBACK UNDERLINE ANIMATION
+     ========================================================= */
+
+  function animateFallbackUnderline(destination) {
+
+    if (
+      !underlineElement ||
+      !underlineNavigation
+    ) {
+      return;
+    }
+
+    const destinationPath =
+      getDestinationPath(destination);
+
+    if (!destinationPath) {
+      return;
+    }
+
+    const destinationLink =
+      getNavigationLink(destinationPath);
+
+    if (!destinationLink) {
+      return;
+    }
+
+    const from = getUnderlineGeometry(
+      getNavigationLink(
+        normalizePath(window.location.pathname)
+      ),
+      underlineNavigation
+    );
+
+    const to = getUnderlineGeometry(
+      destinationLink,
+      underlineNavigation
+    );
+
+    if (!from || !to) {
+      return;
+    }
+
+    const distance = to.left - from.left;
+
+    const stretch = Math.min(
+      Math.abs(distance) * 0.08,
+      12
+    );
+
+    const movingRight = distance > 0;
+
+    underlineElement.animate(
+      [
+        {
+          left: `${from.left}px`,
+          width: `${from.width}px`,
+          top: `${from.top}px`,
+          opacity: 1,
+          offset: 0
+        },
+        {
+          left:
+            `${
+              from.left +
+              distance * 0.58 -
+              (movingRight ? 0 : stretch)
+            }px`,
+
+          width:
+            `${
+              from.width +
+              (to.width - from.width) * 0.58 +
+              stretch
+            }px`,
+
+          top:
+            `${
+              from.top +
+              (to.top - from.top) * 0.58
+            }px`,
+
+          opacity: 1,
+          offset: 0.58
+        },
+        {
+          left: `${to.left}px`,
+          width: `${to.width}px`,
+          top: `${to.top}px`,
+          opacity: 1,
+          offset: 1
+        }
+      ],
+      {
+        duration: LINE_DURATION,
+        easing: LINE_EASING,
+        fill: "forwards"
+      }
+    );
+
+  }
+
+  /* =========================================================
+     14 — FALLBACK PAGE EXIT
+     ========================================================= */
+
+  function animateExit() {
+
+    return new Promise(resolve => {
+
+      root.classList.remove(
+        ENTRY_CLASS
+      );
+
+      root.classList.add(
+        EXIT_CLASS
+      );
+
+      navigationTimer = window.setTimeout(
+        resolve,
+        PAGE_DURATION
+      );
+
+    });
+
+  }
+
+  /* =========================================================
+     15 — NAVIGATION
+     ========================================================= */
+
+  async function navigate(destination) {
+
+    if (navigating) {
+      return;
+    }
+
+    const destinationPath =
+      getDestinationPath(destination);
+
+    if (!destinationPath) {
+
+      window.location.assign(destination);
+      return;
+
+    }
+
+    const direction = getDirection(destination);
+
+    if (!direction) {
+
+      window.location.assign(destination);
+      return;
+
+    }
+
+    navigating = true;
+
+    prepareNavigation(destination);
+
+    if (supportsNativeTransitions()) {
+
+      /*
+         Do not animate the underline manually.
+
+         The browser will animate the named underline
+         between the outgoing and incoming documents.
+      */
+
+      window.location.assign(destination);
+
+      return;
+
+    }
+
+    /*
+       Fallback for browsers without native
+       cross-document View Transitions.
+    */
+
+    store(STORAGE.fallback, "1");
+
+    animateFallbackUnderline(destination);
+
+    await animateExit();
+
+    window.location.assign(destination);
+
+  }
+
+  /* =========================================================
+     16 — CLICK HANDLING
      ========================================================= */
 
   function handleNavigationClick(event) {
@@ -776,7 +800,9 @@
       return;
     }
 
-    const link = target.closest("a[href]");
+    const link = target.closest(
+      "a[href]"
+    );
 
     if (!link) {
       return;
@@ -810,7 +836,9 @@
       getPageIndex(destinationPath);
 
     const currentIndex =
-      getPageIndex(window.location.pathname);
+      getPageIndex(
+        window.location.pathname
+      );
 
     if (
       destinationIndex === -1 ||
@@ -827,7 +855,7 @@
   }
 
   /* =========================================================
-     14 — RESTORATION
+     17 — RESTORATION
      ========================================================= */
 
   function resetNavigation() {
@@ -848,29 +876,26 @@
 
     }
 
-    if (underlineAnimation) {
-
-      underlineAnimation.cancel();
-      underlineAnimation = null;
-
-    }
-
     root.classList.remove(EXIT_CLASS);
     root.classList.remove(ENTRY_CLASS);
+
+    disableNativeUnderline();
 
     positionUnderline();
 
   }
 
   /* =========================================================
-     15 — INITIALIZATION
+     18 — INITIALIZATION
      ========================================================= */
 
   function initialize() {
 
     initializeUnderline();
 
-    animateEntry();
+    prepareIncomingTransition();
+
+    initializeViewTransitionEvents();
 
     document.addEventListener(
       "click",
@@ -910,7 +935,7 @@
   }
 
   /* =========================================================
-     16 — PUBLIC API
+     19 — PUBLIC API
      ========================================================= */
 
   window.DRPageTransitions = {
@@ -926,7 +951,7 @@
   };
 
   /* =========================================================
-     17 — START
+     20 — START
      ========================================================= */
 
   if (document.readyState === "loading") {
