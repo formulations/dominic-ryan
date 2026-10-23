@@ -737,3 +737,117 @@
     letter-spacing: .17em;
   }
 }
+/* =========================================================
+   13 — MOBILE CROSS-PAGE TRANSITIONS
+
+   Native View Transitions with JavaScript fallback.
+
+   Applies to:
+   - A Personal Message
+   - The Maison
+   - Explore the Collection
+
+   Desktop remains unchanged.
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  @view-transition {
+    navigation: auto;
+  }
+
+  /* =======================================================
+     NATIVE VIEW TRANSITIONS
+     ======================================================= */
+
+  ::view-transition-old(root) {
+    animation:
+      280ms cubic-bezier(.22, .7, .2, 1)
+      both dr-page-out;
+  }
+
+  ::view-transition-new(root) {
+    animation:
+      280ms cubic-bezier(.22, .7, .2, 1)
+      both dr-page-in;
+  }
+
+  @keyframes dr-page-out {
+    to {
+      opacity: .88;
+
+      transform:
+        translateX(
+          var(--dr-swipe-out, -22px)
+        );
+    }
+  }
+
+  @keyframes dr-page-in {
+    from {
+      opacity: .88;
+
+      transform:
+        translateX(
+          var(--dr-swipe-in, 22px)
+        );
+    }
+  }
+
+  /* =======================================================
+     JAVASCRIPT FALLBACK
+     ======================================================= */
+
+  html.dr-fallback-leaving body {
+    animation:
+      280ms cubic-bezier(.22, .7, .2, 1)
+      both dr-fallback-out;
+  }
+
+  html.dr-fallback-entering body {
+    animation:
+      280ms cubic-bezier(.22, .7, .2, 1)
+      both dr-fallback-in;
+  }
+
+  @keyframes dr-fallback-out {
+    to {
+      opacity: .88;
+
+      transform:
+        translateX(
+          var(--dr-swipe-out, -22px)
+        );
+    }
+  }
+
+  @keyframes dr-fallback-in {
+    from {
+      opacity: .88;
+
+      transform:
+        translateX(
+          var(--dr-swipe-in, 22px)
+        );
+    }
+  }
+
+}
+
+/* =========================================================
+   ACCESSIBILITY — REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+
+  html.dr-fallback-leaving body,
+  html.dr-fallback-entering body {
+    animation: none !important;
+  }
+
+}
