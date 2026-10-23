@@ -1,4 +1,3 @@
-
 /* =========================================================
    DOMINIC RYAN — MOBILE SWIPE NAVIGATION
 
@@ -6,18 +5,31 @@
 
    Mobile only.
 
+   Supports:
+   - /
+   - /index.html
+   - /index3.html
+   - /maison/
+   - /formulations/
+
    Preserves existing navigation and transitions.
 
-   Excludes ONLY SociableKIT Instagram Highlights
-   and its expanded story viewer from page swiping.
+   Excludes interactive elements, the contact form,
+   SociableKIT Instagram Highlights, and story viewers.
    ========================================================= */
 
 (() => {
   "use strict";
 
+  /* =========================================================
+     DEVICE DETECTION
+     ========================================================= */
+
   const MOBILE = "(max-width: 760px)";
 
-  if (!window.matchMedia(MOBILE).matches) return;
+  if (!window.matchMedia(MOBILE).matches) {
+    return;
+  }
 
   /* =========================================================
      PAGE ORDER
@@ -29,19 +41,43 @@
     "/formulations/"
   ];
 
-  const normalize = path => {
-    const cleaned = path.replace(/\/index\.html$/i, "/");
+  /* =========================================================
+     PATH NORMALIZATION
+
+     Treat index3.html as the homepage during testing.
+     Continue supporting index.html after publication.
+     ========================================================= */
+
+  function normalize(path) {
+    let cleaned = path;
+
+    try {
+      cleaned = decodeURIComponent(path);
+    } catch (_) {}
+
+    cleaned = cleaned.replace(
+      /\/index(?:3)?\.html$/i,
+      "/"
+    );
+
+    if (!cleaned.startsWith("/")) {
+      cleaned = `/${cleaned}`;
+    }
 
     return cleaned.endsWith("/")
       ? cleaned
       : `${cleaned}/`;
-  };
+  }
 
-  const current = pages.indexOf(
-    normalize(window.location.pathname)
+  const currentPath = normalize(
+    window.location.pathname
   );
 
-  if (current === -1) return;
+  const current = pages.indexOf(currentPath);
+
+  if (current === -1) {
+    return;
+  }
 
   /* =========================================================
      TRANSITION STYLING
@@ -109,7 +145,9 @@
       "drSwipeDirection"
     );
 
-    sessionStorage.removeItem("drSwipeDirection");
+    sessionStorage.removeItem(
+      "drSwipeDirection"
+    );
   } catch (_) {}
 
   if (incomingDirection === "left") {
@@ -137,7 +175,9 @@
   const MIN_DISTANCE = 85;
   const MAX_VERTICAL_DRIFT = 65;
 
-  /* Preserve the original exclusions. */
+  /* =========================================================
+     EXCLUDED INTERACTIVE ELEMENTS
+     ========================================================= */
 
   const EXCLUDED = [
     "input",
@@ -147,15 +187,16 @@
     "[role='slider']",
     "[data-no-swipe]",
     ".dr-contact-overlay",
+    "#dr-contact-overlay",
     "video",
 
-    /* SociableKIT Highlights only */
+    /* SociableKIT Instagram Highlights */
 
     ".instagram-highlights",
     ".sk-ww-instagram-story-highlights",
     "[data-embed-id='25723348']",
 
-    /* Expanded SociableKIT story elements */
+    /* Expanded story viewer */
 
     ".sk-story-viewer-layout",
     ".sk-story-frame",
@@ -172,6 +213,33 @@
     );
   }
 
+  /* =========================================================
+     CONTACT MODAL PROTECTION
+     ========================================================= */
+
+  function contactIsOpen() {
+    const overlay = document.getElementById(
+      "dr-contact-overlay"
+    );
+
+    if (!overlay) {
+      return false;
+    }
+
+    const styles = window.getComputedStyle(overlay);
+
+    return (
+      styles.display !== "none" &&
+      styles.visibility !== "hidden" &&
+      styles.pointerEvents !== "none" &&
+      styles.opacity !== "0"
+    );
+  }
+
+  /* =========================================================
+     TOUCH START
+     ========================================================= */
+
   document.addEventListener(
     "touchstart",
     event => {
@@ -180,7 +248,8 @@
 
       if (
         navigating ||
-        event.touches.length !== 1
+        event.touches.length !== 1 ||
+        contactIsOpen()
       ) {
         return;
       }
@@ -209,6 +278,7 @@
       if (
         !tracking ||
         navigating ||
+        contactIsOpen() ||
         !event.changedTouches.length
       ) {
         return;
@@ -243,23 +313,42 @@
 
       const next = current + direction;
 
-      if (next < 0 || next >= pages.length) {
+      if (
+        next < 0 ||
+        next >= pages.length
+      ) {
         return;
       }
 
       navigating = true;
 
+      /* =====================================================
+         OUTGOING TRANSITION DIRECTION
+         ===================================================== */
+
       document.documentElement.style.setProperty(
         "--dr-swipe-out",
-        direction === 1 ? "-14px" : "14px"
+        direction === 1
+          ? "-14px"
+          : "14px"
       );
+
+      /* =====================================================
+         INCOMING TRANSITION DIRECTION
+         ===================================================== */
 
       try {
         sessionStorage.setItem(
           "drSwipeDirection",
-          direction === 1 ? "left" : "right"
+          direction === 1
+            ? "left"
+            : "right"
         );
       } catch (_) {}
+
+      /* =====================================================
+         NAVIGATE
+         ===================================================== */
 
       window.location.assign(pages[next]);
 
