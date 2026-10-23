@@ -3,24 +3,32 @@
 
    A Personal Message ↔ The Maison ↔ Explore the Collection
 
-   Features:
-   - Mobile-only swipe navigation
-   - Native View Transitions
-   - JavaScript animation fallback
-   - Direction-aware animations
-   - index3.html testing support
-   - Contact modal protection
-   - SociableKIT Highlights protection
+   Mobile only: 760px and below.
 
-   Navigation animations are not conditional on
-   the device's Reduce Motion preference.
+   Coordinates with:
+   - dominic-ryan-transitions.js
+   - dominic-ryan-navigation.css
+
+   Features:
+   - Direction-aware swipe navigation
+   - Native View Transitions via transition controller
+   - JavaScript animation fallback via transition controller
+   - index3.html testing support
+   - Vertical scrolling protection
+   - Contact modal protection
+   - SociableKIT Instagram Highlights protection
+   - Expanded Instagram story viewer protection
+   - Double-navigation prevention
+   - No Reduce Motion checks
+
    ========================================================= */
 
 (() => {
   "use strict";
 
+
   /* =========================================================
-     DEVICE DETECTION
+     01 — MOBILE ONLY
      ========================================================= */
 
   const MOBILE = "(max-width: 760px)";
@@ -29,8 +37,9 @@
     return;
   }
 
+
   /* =========================================================
-     PAGE ORDER
+     02 — PAGE ORDER
      ========================================================= */
 
   const pages = [
@@ -39,11 +48,13 @@
     "/formulations/"
   ];
 
+
   /* =========================================================
-     PATH NORMALIZATION
+     03 — PATH NORMALIZATION
      ========================================================= */
 
   function normalize(path) {
+
     let cleaned = path;
 
     try {
@@ -62,103 +73,25 @@
     return cleaned.endsWith("/")
       ? cleaned
       : `${cleaned}/`;
+
   }
+
 
   const currentPath = normalize(
     window.location.pathname
   );
 
-  const current = pages.indexOf(currentPath);
+  const current = pages.indexOf(
+    currentPath
+  );
 
   if (current === -1) {
     return;
   }
 
-  /* =========================================================
-     BROWSER CAPABILITY
-     ========================================================= */
-
-  const nativeTransitions =
-    typeof CSS !== "undefined" &&
-    CSS.supports(
-      "view-transition-name",
-      "none"
-    ) &&
-    "startViewTransition" in document;
 
   /* =========================================================
-     DIRECTION PERSISTENCE
-     ========================================================= */
-
-  const DIRECTION_KEY = "drSwipeDirection";
-  const FALLBACK_KEY = "drFallbackTransition";
-
-  let incomingDirection = null;
-  let fallbackEntry = false;
-
-  try {
-    incomingDirection = sessionStorage.getItem(
-      DIRECTION_KEY
-    );
-
-    fallbackEntry =
-      sessionStorage.getItem(FALLBACK_KEY) === "true";
-
-    sessionStorage.removeItem(DIRECTION_KEY);
-    sessionStorage.removeItem(FALLBACK_KEY);
-  } catch (_) {}
-
-  /* =========================================================
-     INCOMING DIRECTION
-     ========================================================= */
-
-  if (incomingDirection === "left") {
-    document.documentElement.style.setProperty(
-      "--dr-swipe-in",
-      "22px"
-    );
-  } else if (incomingDirection === "right") {
-    document.documentElement.style.setProperty(
-      "--dr-swipe-in",
-      "-22px"
-    );
-  }
-
-  /* =========================================================
-     FALLBACK ENTRY ANIMATION
-     ========================================================= */
-
-  if (
-    fallbackEntry &&
-    !nativeTransitions
-  ) {
-    const startEntry = () => {
-
-      document.documentElement.classList.add(
-        "dr-fallback-entering"
-      );
-
-      window.setTimeout(() => {
-        document.documentElement.classList.remove(
-          "dr-fallback-entering"
-        );
-      }, 300);
-
-    };
-
-    if (document.readyState === "loading") {
-      document.addEventListener(
-        "DOMContentLoaded",
-        startEntry,
-        { once: true }
-      );
-    } else {
-      startEntry();
-    }
-  }
-
-  /* =========================================================
-     TOUCH TRACKING
+     04 — TOUCH TRACKING
      ========================================================= */
 
   let startX = 0;
@@ -170,25 +103,32 @@
   const MIN_DISTANCE = 85;
   const MAX_VERTICAL_DRIFT = 65;
 
+
   /* =========================================================
-     EXCLUSIONS
+     05 — EXCLUDED INTERACTIVE ELEMENTS
      ========================================================= */
 
   const EXCLUDED = [
+
     "input",
     "textarea",
     "select",
+
     "[contenteditable]",
     "[role='slider']",
+
     "[data-no-swipe]",
+
     ".dr-contact-overlay",
     "#dr-contact-overlay",
+
     "video",
 
     /* SociableKIT Instagram Highlights */
 
     ".instagram-highlights",
     ".sk-ww-instagram-story-highlights",
+
     "[data-embed-id='25723348']",
 
     /* Expanded story viewer */
@@ -199,20 +139,26 @@
     ".sk-story-stage-wrap",
     ".sk-highlight-story-shell",
     ".sk-story-nav-btn"
+
   ].join(",");
 
+
   function isExcluded(target) {
+
     return (
       target instanceof Element &&
       !!target.closest(EXCLUDED)
     );
+
   }
 
+
   /* =========================================================
-     CONTACT MODAL PROTECTION
+     06 — CONTACT MODAL PROTECTION
      ========================================================= */
 
   function contactIsOpen() {
+
     const overlay = document.getElementById(
       "dr-contact-overlay"
     );
@@ -221,7 +167,9 @@
       return false;
     }
 
-    const styles = window.getComputedStyle(overlay);
+    const styles = window.getComputedStyle(
+      overlay
+    );
 
     return (
       styles.display !== "none" &&
@@ -229,77 +177,77 @@
       styles.pointerEvents !== "none" &&
       styles.opacity !== "0"
     );
+
   }
 
+
   /* =========================================================
-     NAVIGATION ENGINE
+     07 — NAVIGATION COORDINATION
      ========================================================= */
 
-  function navigate(next, direction) {
+  function navigate(next) {
 
     if (navigating) {
       return;
     }
 
-    navigating = true;
-
     const destination = pages[next];
 
-    const outgoing =
-      direction === 1 ? "-22px" : "22px";
-
-    const incoming =
-      direction === 1 ? "22px" : "-22px";
-
-    document.documentElement.style.setProperty(
-      "--dr-swipe-out",
-      outgoing
-    );
-
-    document.documentElement.style.setProperty(
-      "--dr-swipe-in",
-      incoming
-    );
-
-    try {
-      sessionStorage.setItem(
-        DIRECTION_KEY,
-        direction === 1 ? "left" : "right"
-      );
-    } catch (_) {}
-
-    /* =======================================================
-       NATIVE VIEW TRANSITIONS
-       ======================================================= */
-
-    if (nativeTransitions) {
-      window.location.assign(destination);
+    if (!destination) {
       return;
     }
 
-    /* =======================================================
-       JAVASCRIPT FALLBACK
-       ======================================================= */
+    const transitions =
+      window.DRPageTransitions;
 
-    try {
-      sessionStorage.setItem(
-        FALLBACK_KEY,
-        "true"
+    if (
+      !transitions ||
+      typeof transitions.navigate !== "function"
+    ) {
+
+      /*
+         Preserve navigation if the transition
+         controller fails to load.
+      */
+
+      navigating = true;
+
+      window.location.assign(
+        destination
       );
-    } catch (_) {}
 
-    document.documentElement.classList.add(
-      "dr-fallback-leaving"
+      return;
+    }
+
+    if (
+      typeof transitions.isNavigating === "function" &&
+      transitions.isNavigating()
+    ) {
+      return;
+    }
+
+    navigating = true;
+
+    /*
+       The transition controller handles:
+
+       - Navigation direction
+       - Outgoing animation
+       - Native View Transitions
+       - JavaScript fallback
+       - Incoming animation
+       - Destination navigation
+    */
+
+    transitions.navigate(
+      destination
     );
-
-    window.setTimeout(() => {
-      window.location.assign(destination);
-    }, 280);
 
   }
 
+
   /* =========================================================
-     TOUCH START
+     08 — TOUCH START
      ========================================================= */
 
   document.addEventListener(
@@ -329,8 +277,9 @@
     { passive: true }
   );
 
+
   /* =========================================================
-     TOUCH END
+     09 — TOUCH END
      ========================================================= */
 
   document.addEventListener(
@@ -354,18 +303,44 @@
       const deltaY =
         event.changedTouches[0].clientY - startY;
 
+
+      /* Minimum horizontal distance */
+
       if (
-        Math.abs(deltaX) < MIN_DISTANCE ||
-        Math.abs(deltaY) > MAX_VERTICAL_DRIFT ||
-        Math.abs(deltaX) < Math.abs(deltaY) * 1.5
+        Math.abs(deltaX) < MIN_DISTANCE
       ) {
         return;
       }
+
+
+      /* Prevent vertical gestures */
+
+      if (
+        Math.abs(deltaY) > MAX_VERTICAL_DRIFT
+      ) {
+        return;
+      }
+
+
+      /* Require clear horizontal intent */
+
+      if (
+        Math.abs(deltaX) <
+        Math.abs(deltaY) * 1.5
+      ) {
+        return;
+      }
+
+
+      /* Determine swipe direction */
 
       const direction =
         deltaX < 0 ? 1 : -1;
 
       const next = current + direction;
+
+
+      /* Prevent navigation beyond boundaries */
 
       if (
         next < 0 ||
@@ -374,34 +349,46 @@
         return;
       }
 
-      navigate(next, direction);
+
+      /* Delegate navigation to transition controller */
+
+      navigate(
+        next
+      );
 
     },
     { passive: true }
   );
 
+
   /* =========================================================
-     TOUCH CANCELLATION
+     10 — TOUCH CANCELLATION
      ========================================================= */
 
   document.addEventListener(
     "touchcancel",
     () => {
+
       tracking = false;
+
     },
     { passive: true }
   );
 
+
   /* =========================================================
-     SAFARI PAGE RESTORATION
+     11 — SAFARI PAGE RESTORATION
      ========================================================= */
 
   window.addEventListener(
     "pageshow",
     () => {
+
       navigating = false;
       tracking = false;
+
     }
   );
+
 
 })();
