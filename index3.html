@@ -4,6 +4,16 @@
 <head>
   <meta charset="UTF-8">
 
+  <!-- Replay the DR introduction and mobile envelope on every page load. -->
+  <script>
+    try {
+      sessionStorage.removeItem("dr-intro-shown");
+      sessionStorage.removeItem("dr-envelope-v7-opened");
+    } catch (_) {
+      /* Animations still run when session storage is unavailable. */
+    }
+  </script>
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
@@ -2694,7 +2704,7 @@ if (window.matchMedia("(max-width: 760px)").matches) {
       setTimeout(() => {
 
         const envelope =
-          document.getElementById("dr-envelope-editorial");
+          document.getElementById("dr-envelope-inline");
 
         if (!envelope && !document.getElementById("dr-envelope-inline")) {
           mobilePaper.classList.add("mobile-paper-visible");
@@ -2842,7 +2852,7 @@ function handleFinalScroll() {
   if (revealStarted) return;
 
   // Ignore automatic scrolling while the envelope is active.
-  if (document.getElementById("dr-envelope-editorial")) {
+  if (document.getElementById("dr-envelope-inline")) {
     return;
   }
 
@@ -2878,7 +2888,7 @@ function handleFinalScroll() {
 <script src="dominic-ryan-contact-addon.js" defer></script>
 
 <!-- BRANDED INTRODUCTION -->
-<script>if (window.matchMedia("(min-width: 761px)").matches) { const s=document.createElement("script"); s.src="/dominic-ryan-intro.js?v=9"; s.defer=true; document.head.appendChild(s); }</script>
+<script src="/dominic-ryan-intro.js?v=10"></script>
 
 <script>
 (() => {
