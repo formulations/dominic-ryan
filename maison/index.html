@@ -890,7 +890,7 @@ if(curtain){
 @media (max-width:760px) {
   .maison-continue {
     display:flex; position:absolute; z-index:40;
-    bottom:calc(20px + env(safe-area-inset-bottom, 0px)); left:50%; transform:translateX(-50%);
+    top:var(--explore-floor-top, auto); bottom:auto; left:50%; transform:translateX(-50%);
     flex-direction:column; align-items:center; justify-content:center; gap:5px;
     padding:13px 18px; border:0; background:transparent;
     color:#67574a; font:500 9px/1.5 "DR Avenir Next","Avenir Next",Arial,sans-serif;
@@ -918,8 +918,9 @@ if(curtain){
   const threshold=document.getElementById('threshold');
   const film=document.getElementById('film');
   const scene=threshold?.querySelector('.scene');
+  const floor=scene?.querySelector('.floor');
   const prelude=film?.querySelector('.film-prelude');
-  if(!button||!threshold||!film||!scene||!prelude)return;
+  if(!button||!threshold||!film||!scene||!floor||!prelude)return;
 
   let revealTimer=null;
   let ready=false;
@@ -942,10 +943,18 @@ if(curtain){
     // No viewport-height or fixed-pixel progress gate can prevent the prompt.
     const revealReached=progress>=.76;
 
-    // Keep the button entirely within the architectural scene and viewport.
-    const floorVisible=sceneRect.bottom>=buttonRect.bottom &&
-      buttonRect.top>=Math.max(0,sceneRect.top) &&
-      buttonRect.bottom<=viewport;
+    // Position the complete invitation within the actual rendered floor, not
+    // relative to Safari/Brave/Instagram browser chrome or a vh bottom offset.
+    // getBoundingClientRect includes the floor's perspective transform.
+    const floorRect=floor.getBoundingClientRect();
+    const visibleBottom=Math.min(sceneRect.bottom,window.visualViewport?.height??viewport);
+    const floorTop=Math.max(floorRect.top,sceneRect.top,0);
+    const floorBottom=Math.min(floorRect.bottom,visibleBottom);
+    const available=Math.max(0,floorBottom-floorTop);
+    const invitationHeight=button.offsetHeight;
+    const floorVisible=available>=invitationHeight+8;
+    const centeredTop=floorTop+(available-invitationHeight)/2;
+    button.style.setProperty('--explore-floor-top',`${(centeredTop-sceneRect.top).toFixed(2)}px`);
 
     // Hold the prompt until the actual introduction is entering the screen.
     // The fade is relative to the visible viewport, not the phone model.
