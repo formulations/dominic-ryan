@@ -911,47 +911,72 @@ if(curtain){
 }
 </style>
 <script>
-/* Mobile EXPLORE: anchored to the architectural floor; fade with the introduction. */
+/* Mobile EXPLORE — adaptive reveal and introduction-aware fade. */
 (()=>{
   'use strict';
   const button=document.getElementById('maison-continue');
   const threshold=document.getElementById('threshold');
   const film=document.getElementById('film');
-  if(!button||!threshold||!film)return;
-  /* Keep the invitation inside the architectural scene so it cannot overlay later sections. */
+  const scene=threshold?.querySelector('.scene');
+  const prelude=film?.querySelector('.film-prelude');
+  if(!button||!threshold||!film||!scene||!prelude)return;
+
   let revealTimer=null;
   let ready=false;
+  const clamp=(value)=>Math.max(0,Math.min(1,value));
+
   function update(){
     const mobile=matchMedia('(max-width:760px)').matches;
-    const max=Math.max(1,threshold.getBoundingClientRect().bottom+scrollY-innerHeight);
+    const viewport=window.innerHeight;
+    const thresholdRect=threshold.getBoundingClientRect();
+    const sceneRect=scene.getBoundingClientRect();
+    const buttonRect=button.getBoundingClientRect();
+    const introductionTop=prelude.getBoundingClientRect().top;
+
+    // Match the existing door/title scroll calculation exactly.
+    const max=Math.max(1,thresholdRect.bottom+window.scrollY-viewport);
     const anticipation=Math.min(mobile?75:110,max*.45);
-    const progress=Math.max(0,Math.min(1,(scrollY-anticipation)/Math.max(1,max-anticipation)));
-    const scene=threshold.querySelector('.scene');
-    const sceneBottom=scene.getBoundingClientRect().bottom;
-    // Follow the actual introduction boundary, not an arbitrary scroll distance.
-    // Remain visible until the introduction approaches; fade as its heading enters.
-    const introductionTop=film.getBoundingClientRect().top;
-    const fadeStart=innerHeight+20;
-    const fadeEnd=innerHeight-95;
-    const introductionFade=Math.max(0,Math.min(1,(introductionTop-fadeEnd)/(fadeStart-fadeEnd)));
-    // Never let the invitation escape the warm architectural floor.
-    const floorFade=Math.max(0,Math.min(1,(sceneBottom-(innerHeight-75))/55));
-    const fade=Math.min(introductionFade,floorFade);
-    const atReveal=mobile&&progress>=.80&&introductionTop>fadeEnd;
-    if(!atReveal){
-      clearTimeout(revealTimer);revealTimer=null;ready=false;
+    const progress=clamp((window.scrollY-anticipation)/Math.max(1,max-anticipation));
+
+    // Begin as the final title settles, without requiring an extra scroll.
+    // No viewport-height or fixed-pixel progress gate can prevent the prompt.
+    const revealReached=progress>=.76;
+
+    // Keep the button entirely within the architectural scene and viewport.
+    const floorVisible=sceneRect.bottom>=buttonRect.bottom &&
+      buttonRect.top>=Math.max(0,sceneRect.top) &&
+      buttonRect.bottom<=viewport;
+
+    // Hold the prompt until the actual introduction is entering the screen.
+    // The fade is relative to the visible viewport, not the phone model.
+    const fadeLength=Math.max(56,Math.min(90,viewport*.09));
+    const fade=clamp((introductionTop-(viewport-fadeLength))/fadeLength);
+    const eligible=mobile&&revealReached&&floorVisible&&fade>0;
+
+    if(!eligible){
+      clearTimeout(revealTimer);
+      revealTimer=null;
+      ready=false;
     }else if(!ready&&revealTimer===null){
-      revealTimer=setTimeout(()=>{revealTimer=null;ready=true;update()},200);
+      revealTimer=setTimeout(()=>{
+        revealTimer=null;
+        ready=true;
+        update();
+      },200);
     }
-    const visible=atReveal&&ready&&fade>0;
+
+    const visible=eligible&&ready;
     button.style.setProperty('--continue-opacity',fade.toFixed(3));
     button.classList.toggle('is-visible',visible);
     button.setAttribute('aria-hidden',String(!visible));
     button.tabIndex=visible?0:-1;
   }
+
   button.addEventListener('click',()=>film.scrollIntoView({behavior:'smooth',block:'start'}));
-  addEventListener('scroll',update,{passive:true});
-  addEventListener('resize',update);
+  window.addEventListener('scroll',update,{passive:true});
+  window.addEventListener('resize',update);
+  window.visualViewport?.addEventListener('resize',update);
+  window.addEventListener('pageshow',update);
   update();
 })();
 </script>
