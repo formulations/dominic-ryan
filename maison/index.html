@@ -855,9 +855,7 @@ if(curtain){
 
 
 <style>
-/* MOBILE EXPLORE — stationary invitation with an independently moving arrow. */
-.maison-continue { display:none; }
-@media (max-width:760px) {
+/* EXPLORE — stationary floor invitation on mobile and desktop. */
   .maison-continue {
     display:flex; position:absolute; z-index:40;
     top:var(--explore-floor-top, auto); bottom:auto; left:50%; transform:translateX(-50%);
@@ -874,14 +872,11 @@ if(curtain){
     0%,12%,70%,100% {transform:translate3d(0,0,0)}
     35% {transform:translate3d(0,5px,0)}
   }
-}
 /* Deliberately keep the invitation and arrow animated under all motion preferences. */
-@media (max-width:760px) {
-  .maison-continue span { animation:drContinueArrow 2.6s ease-in-out infinite !important; animation-play-state:running !important; }
-}
+.maison-continue span { animation:drContinueArrow 2.6s ease-in-out infinite !important; animation-play-state:running !important; }
 </style>
 <script>
-/* Mobile EXPLORE — adaptive reveal and introduction-aware fade. */
+/* Universal EXPLORE — adaptive reveal and introduction-aware fade. */
 (()=>{
   'use strict';
   const button=document.getElementById('maison-continue');
@@ -930,7 +925,7 @@ if(curtain){
     // The fade is relative to the visible viewport, not the phone model.
     const fadeLength=Math.max(56,Math.min(90,viewport*.09));
     const fade=clamp((introductionTop-(viewport-fadeLength))/fadeLength);
-    const eligible=mobile&&revealReached&&floorVisible&&fade>0;
+    const eligible=revealReached&&floorVisible&&fade>0;
 
     if(!eligible){
       clearTimeout(revealTimer);
