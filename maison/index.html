@@ -886,9 +886,7 @@ if(curtain){
 
 <!-- Mobile entrance invitation: deliberately outside the 3D/clipped scene. -->
 <button class="maison-continue" id="maison-continue" type="button" aria-label="Continue to the introduction" aria-hidden="true" tabindex="-1">
-  <span class="maison-continue-line" aria-hidden="true"></span>
   <span class="maison-continue-word">CONTINUE</span>
-  <span class="maison-continue-line" aria-hidden="true"></span>
   <svg class="maison-continue-arrow" viewBox="0 0 16 45" fill="none" aria-hidden="true" focusable="false">
     <path d="M8 1V42M1.5 35.5L8 42L14.5 35.5" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
@@ -898,9 +896,8 @@ if(curtain){
 .maison-continue{display:none}
 @media(max-width:760px){
   .maison-continue{
-    display:grid;grid-template-columns:clamp(27px,8vw,46px) auto clamp(27px,8vw,46px);
-    column-gap:12px;row-gap:8px;align-items:center;justify-content:center;
-    position:fixed;left:50%;top:75%;z-index:85;
+    display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;
+    position:fixed;left:50%;top:82%;z-index:85;
     width:max-content;max-width:calc(100vw - 44px);
     padding:9px 12px 5px;margin:0;border:0;border-radius:0;
     background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;
@@ -915,28 +912,27 @@ if(curtain){
     transform:translate(-50%,-50%) translateY(0);
     transition:opacity .55s ease,transform .55s ease,visibility 0s;
   }
-  .maison-continue-line{height:1px;background:rgba(137,121,103,.38);width:100%}
   .maison-continue-word{
     font:400 8px/1.4 "DR Avenir Next","Avenir Next",Arial,sans-serif;
     letter-spacing:.28em;white-space:nowrap;color:#887b6c;
   }
   .maison-continue-arrow{
-    grid-column:1/-1;justify-self:center;display:block;
-    width:13px;height:36px;overflow:visible;
+    display:block;flex:none;
+    width:17px;height:46px;overflow:visible;
     animation:maisonContinueDrift 2.7s ease-in-out infinite;
   }
   .maison-continue:focus-visible{outline:1px solid #9d8873;outline-offset:5px}
 }
 @keyframes maisonContinueDrift{
-  0%,100%{transform:translateY(-2px)}
-  50%{transform:translateY(3px)}
+  0%,100%{transform:translateY(-3px)}
+  50%{transform:translateY(7px)}
 }
 @media(prefers-reduced-motion:reduce){
   .maison-continue,.maison-continue-arrow{animation:none!important;transition:none!important}
 }
 </style>
 <script>
-/* Position the invitation against the actual architectural scene, not browser chrome.
+/* Keep the invitation fixed at the architectural floor while the doors are open.
    Use the SAME progress formula as the door animation; leave desktop untouched. */
 (()=>{
   'use strict';
@@ -956,11 +952,12 @@ if(curtain){
     const anticipation=Math.min(75,max*.45);
     const p=Math.max(0,Math.min(1,(window.scrollY-anticipation)/Math.max(1,max-anticipation)));
     const rect=scene.getBoundingClientRect();
-    /* Place at 90% of the visible architectural scene, visually on its floor. */
-    const top=rect.top+rect.height*.90;
+    /* Anchor the prompt to a stable floor position within the viewport.
+       Do not follow the scene's bottom edge as the sticky phase ends. */
+    const top=Math.min(viewport-68,Math.min(rect.height,viewport)*.84);
     button.style.top=top+'px';
-    /* Don't let the prompt linger over the next section or disappear at 97%. */
-    const visible=p>=.83&&top>0&&top<viewport-18&&rect.bottom>viewport*.18&&film.getBoundingClientRect().top>viewport*.35;
+    /* Fade out before the architectural scene leaves, avoiding any scroll-follow effect. */
+    const visible=p>=.78&&rect.bottom>=viewport*.97&&film.getBoundingClientRect().top>=viewport*.95;
     button.classList.toggle('is-visible',visible);
     button.setAttribute('aria-hidden',String(!visible));
     button.tabIndex=visible?0:-1;
