@@ -4,32 +4,62 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- First-visit introduction: persist across refreshes and return visits. -->
+  <!-- Homepage arrival and one-time mobile envelope controls. -->
   <script>
     (() => {
       "use strict";
-      const VISITED_KEY = "dr-personal-message-intro-seen-v1";
-      let alreadyVisited = false;
+
+      const ENVELOPE_KEY = "dr-personal-message-intro-seen-v1";
+      let returningVisitor = false;
       try {
-        alreadyVisited = localStorage.getItem(VISITED_KEY) === "yes";
-        if (!alreadyVisited) localStorage.setItem(VISITED_KEY, "yes");
+        returningVisitor = localStorage.getItem(ENVELOPE_KEY) === "yes";
+        if (!returningVisitor) localStorage.setItem(ENVELOPE_KEY, "yes");
       } catch (_) {
-        // When persistent storage is unavailable, retain once-per-tab behavior.
         try {
-          alreadyVisited = sessionStorage.getItem(VISITED_KEY) === "yes";
-          if (!alreadyVisited) sessionStorage.setItem(VISITED_KEY, "yes");
+          returningVisitor = sessionStorage.getItem(ENVELOPE_KEY) === "yes";
+          if (!returningVisitor) sessionStorage.setItem(ENVELOPE_KEY, "yes");
         } catch (_) {}
       }
+
+      let navigationType = "navigate";
       try {
-        if (alreadyVisited) {
-          sessionStorage.setItem("dr-intro-shown", "true");
-          sessionStorage.setItem("dr-envelope-v7-opened", "yes");
-        } else {
-          sessionStorage.removeItem("dr-intro-shown");
-          sessionStorage.removeItem("dr-envelope-v7-opened");
+        const navigation = performance.getEntriesByType("navigation")[0];
+        if (navigation?.type) navigationType = navigation.type;
+        else if (performance.navigation) {
+          navigationType = performance.navigation.type === 1 ? "reload" :
+            performance.navigation.type === 2 ? "back_forward" : "navigate";
         }
       } catch (_) {}
-      window.drReturningVisitor = alreadyVisited;
+
+      // Read the existing transitions script's state BEFORE its deferred
+      // initialization consumes and clears it. No transitions edits required.
+      let internalArrival = false;
+      try {
+        const destination = sessionStorage.getItem("drTransitionDestination");
+        const timestamp = Number(sessionStorage.getItem("drTransitionTimestamp"));
+        const validAge = timestamp > 0 &&
+          Date.now() - timestamp >= 0 && Date.now() - timestamp < 10000;
+        if (destination === "/" && validAge) internalArrival = true;
+      } catch (_) {}
+
+      // Fallback for ordinary same-site links not handled by transitions.
+      try {
+        if (document.referrer) {
+          const previous = new URL(document.referrer);
+          const previousPath = previous.pathname.replace(/\/index(?:3)?\.html$/i, "/");
+          if (previous.origin === location.origin && previousPath !== "/") {
+            internalArrival = true;
+          }
+        }
+      } catch (_) {}
+
+      window.drPlayHomeIntro = navigationType === "navigate" && !internalArrival;
+      window.drReturningVisitor = returningVisitor;
+
+      try {
+        if (returningVisitor) sessionStorage.setItem("dr-envelope-v7-opened", "yes");
+        else sessionStorage.removeItem("dr-envelope-v7-opened");
+      } catch (_) {}
     })();
   </script>
 
@@ -2912,7 +2942,7 @@ function handleFinalScroll() {
 <script src="dominic-ryan-contact-addon.js" defer></script>
 
 <!-- BRANDED INTRODUCTION -->
-<script>if (!window.drReturningVisitor) { const intro = document.createElement("script"); intro.src = "/dominic-ryan-intro.js?v=10"; intro.async = false; document.head.appendChild(intro); }</script>
+<script src="/dominic-ryan-intro.js?v=12"></script>
 
 <script>
 (() => {
@@ -2934,7 +2964,7 @@ function handleFinalScroll() {
 <!-- MOBILE CORRESPONDENCE EXPERIENCE — VERSION 10 -->
 
 <script>
-  if (window.drReturningVisitor) {
+  if (window.drReturningVisitor || !window.matchMedia("(max-width: 760px)").matches) {
     document.querySelector(".paper")?.classList.add("mobile-paper-visible", "dr-letter-revealed");
   } else {
     const envelope = document.createElement("script");
