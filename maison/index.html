@@ -889,7 +889,7 @@ if(curtain){
 .maison-continue { display:none; }
 @media (max-width:760px) {
   .maison-continue {
-    display:flex; position:fixed; z-index:85;
+    display:flex; position:absolute; z-index:40;
     bottom:calc(20px + env(safe-area-inset-bottom, 0px)); left:50%; transform:translateX(-50%);
     flex-direction:column; align-items:center; justify-content:center; gap:5px;
     padding:13px 18px; border:0; background:transparent;
@@ -898,25 +898,24 @@ if(curtain){
     opacity:0; pointer-events:none;
     transition:opacity .3s ease;
   }
-  .maison-continue.is-visible {opacity:1;pointer-events:auto}
-  .maison-continue span {display:inline-block;font-size:15px;line-height:1;animation:drContinueArrow 2.9s ease-in-out infinite}
+  .maison-continue.is-visible {opacity:var(--continue-opacity,1);pointer-events:auto}
+  .maison-continue span {display:inline-block;font-size:15px;line-height:1;animation:drContinueArrow 2.8s cubic-bezier(.45,0,.25,1) infinite}
   @keyframes drContinueArrow {
-    0%,12%,72%,100% {transform:translateY(0)}
-    37% {transform:translateY(3px)}
+    0%,10%,75%,100% {transform:translate3d(0,0,0)}
+    38% {transform:translate3d(0,4px,0)}
   }
 }
 @media(prefers-reduced-motion:reduce){.maison-continue,.maison-continue span{animation:none!important;transition:none!important}}
 </style>
 <script>
-/* Mobile CONTINUE: visible near the completed reveal; fades as the introduction approaches. */
+/* Mobile CONTINUE: anchored to the architectural floor, never the viewport. */
 (()=>{
   'use strict';
   const button=document.getElementById('maison-continue');
   const threshold=document.getElementById('threshold');
   const film=document.getElementById('film');
   if(!button||!threshold||!film)return;
-  /* Keep fixed positioning relative to the viewport, not the 3D scene. */
-  document.body.appendChild(button);
+  /* Keep the invitation inside the architectural scene so it cannot overlay later sections. */
   let revealTimer=null;
   let ready=false;
   function update(){
@@ -924,13 +923,18 @@ if(curtain){
     const max=Math.max(1,threshold.getBoundingClientRect().bottom+scrollY-innerHeight);
     const anticipation=Math.min(mobile?75:110,max*.45);
     const progress=Math.max(0,Math.min(1,(scrollY-anticipation)/Math.max(1,max-anticipation)));
-    const atReveal=mobile&&progress>=.80&&film.getBoundingClientRect().top>0;
+    const scene=threshold.querySelector('.scene');
+    const sceneBottom=scene.getBoundingClientRect().bottom;
+    const floorTravel=Math.max(0,innerHeight-sceneBottom);
+    const fade=Math.max(0,Math.min(1,(90-floorTravel)/55));
+    const atReveal=mobile&&progress>=.80&&floorTravel<90;
     if(!atReveal){
       clearTimeout(revealTimer);revealTimer=null;ready=false;
     }else if(!ready&&revealTimer===null){
       revealTimer=setTimeout(()=>{revealTimer=null;ready=true;update()},200);
     }
     const visible=atReveal&&ready;
+    button.style.setProperty('--continue-opacity',fade.toFixed(3));
     button.classList.toggle('is-visible',visible);
     button.setAttribute('aria-hidden',String(!visible));
     button.tabIndex=visible?0:-1;
