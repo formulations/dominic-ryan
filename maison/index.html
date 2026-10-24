@@ -915,6 +915,8 @@ if(curtain){
   const threshold=document.getElementById('threshold');
   const film=document.getElementById('film');
   if(!button||!threshold||!film)return;
+  /* Keep fixed positioning relative to the viewport, not the 3D scene. */
+  document.body.appendChild(button);
   let revealTimer=null;
   let ready=false;
   function update(){
@@ -922,7 +924,7 @@ if(curtain){
     const max=Math.max(1,threshold.getBoundingClientRect().bottom+scrollY-innerHeight);
     const anticipation=Math.min(mobile?75:110,max*.45);
     const progress=Math.max(0,Math.min(1,(scrollY-anticipation)/Math.max(1,max-anticipation)));
-    const atReveal=mobile&&progress>=.90&&film.getBoundingClientRect().top>innerHeight*.45;
+    const atReveal=mobile&&progress>=.80&&film.getBoundingClientRect().top>0;
     if(!atReveal){
       clearTimeout(revealTimer);revealTimer=null;ready=false;
     }else if(!ready&&revealTimer===null){
