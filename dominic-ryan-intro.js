@@ -88,9 +88,7 @@
 
   const logo = document.createElement("img");
 
-  // Request a fresh animation for each eligible arrival.
-  // This prevents a cached completed animation from
-  // being reused instead of playing from the beginning.
+  // Request a fresh animation on each eligible arrival.
 
   logo.src =
     "dr-reveal-ivory-mobile.apng?v=1&arrival=" +
