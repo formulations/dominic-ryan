@@ -885,38 +885,50 @@ if(curtain){
 
 
 <style>
-/* MOBILE CONTINUE — discreet next-chapter prompt, using the established Avenir Next. */
+/* MOBILE CONTINUE — stationary invitation with an independently moving arrow. */
 .maison-continue { display:none; }
 @media (max-width:760px) {
   .maison-continue {
     display:flex; position:fixed; z-index:85;
-    bottom:calc(20px + env(safe-area-inset-bottom, 0px)); left:50%; transform:translateX(-50%) translateY(5px);
-    align-items:center; justify-content:center; gap:11px;
+    bottom:calc(20px + env(safe-area-inset-bottom, 0px)); left:50%; transform:translateX(-50%);
+    flex-direction:column; align-items:center; justify-content:center; gap:5px;
     padding:13px 18px; border:0; background:transparent;
     color:#67574a; font:500 9px/1.5 "DR Avenir Next","Avenir Next",Arial,sans-serif;
     letter-spacing:.22em; white-space:nowrap; cursor:pointer;
     opacity:0; pointer-events:none;
-    transition:opacity .65s ease,transform .65s ease;
+    transition:opacity .3s ease;
   }
-  .maison-continue.is-visible {opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
-  .maison-continue span {display:inline-block;animation:drEntryArrowFloat 2.5s ease-in-out infinite;font-size:15px;line-height:1}
+  .maison-continue.is-visible {opacity:1;pointer-events:auto}
+  .maison-continue span {display:inline-block;font-size:15px;line-height:1;animation:drContinueArrow 2.9s ease-in-out infinite}
+  @keyframes drContinueArrow {
+    0%,12%,72%,100% {transform:translateY(0)}
+    37% {transform:translateY(3px)}
+  }
 }
 @media(prefers-reduced-motion:reduce){.maison-continue,.maison-continue span{animation:none!important;transition:none!important}}
 </style>
 <script>
-/* Mobile CONTINUE: reveal as the doors finish opening; remain visible until introduction arrives. */
+/* Mobile CONTINUE: short post-reveal pause, no scroll interruption. */
 (()=>{
   'use strict';
   const button=document.getElementById('maison-continue');
   const threshold=document.getElementById('threshold');
   const film=document.getElementById('film');
   if(!button||!threshold||!film)return;
+  let revealTimer=null;
+  let ready=false;
   function update(){
     const mobile=matchMedia('(max-width:760px)').matches;
     const max=Math.max(1,threshold.getBoundingClientRect().bottom+scrollY-innerHeight);
     const anticipation=Math.min(mobile?75:110,max*.45);
     const progress=Math.max(0,Math.min(1,(scrollY-anticipation)/Math.max(1,max-anticipation)));
-    const visible=mobile&&progress>=.82&&film.getBoundingClientRect().top>innerHeight*.65;
+    const atReveal=mobile&&progress>=.98&&film.getBoundingClientRect().top>innerHeight*.92;
+    if(!atReveal){
+      clearTimeout(revealTimer);revealTimer=null;ready=false;
+    }else if(!ready&&revealTimer===null){
+      revealTimer=setTimeout(()=>{revealTimer=null;ready=true;update()},200);
+    }
+    const visible=atReveal&&ready;
     button.classList.toggle('is-visible',visible);
     button.setAttribute('aria-hidden',String(!visible));
     button.tabIndex=visible?0:-1;
