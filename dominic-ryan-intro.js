@@ -7,17 +7,14 @@
   "use strict";
 
   /* =========================================================
-     SESSION CONTROL
+     INTRODUCTION CONTROL
      ========================================================= */
 
-  try {
-    if (sessionStorage.getItem("dr-intro-shown")) {
-      return;
-    }
+  // The homepage determines whether the introduction
+  // should play based on how the visitor arrived.
 
-    sessionStorage.setItem("dr-intro-shown", "true");
-  } catch (_) {
-    // Continue if session storage is unavailable.
+  if (window.drPlayHomeIntro !== true) {
+    return;
   }
 
   /* =========================================================
@@ -66,13 +63,12 @@
 
     /* MOBILE */
 
-@media (max-width: 760px) {
-  .dr-intro img {
-    width: min(40vw, 120px);
-    transform: translate(15px, -15px);
-  }
-}
-
+    @media (max-width: 760px) {
+      .dr-intro img {
+        width: min(40vw, 120px);
+        transform: translate(15px, -15px);
+      }
+    }
   `;
 
   document.head.appendChild(style);
@@ -92,7 +88,14 @@
 
   const logo = document.createElement("img");
 
-  logo.src = "dr-reveal-ivory-mobile.apng?v=1";
+  // Request a fresh animation for each eligible arrival.
+  // This prevents a cached completed animation from
+  // being reused instead of playing from the beginning.
+
+  logo.src =
+    "dr-reveal-ivory-mobile.apng?v=1&arrival=" +
+    Date.now();
+
   logo.alt = "Dominic Ryan";
   logo.setAttribute("fetchpriority", "high");
 
@@ -105,11 +108,13 @@
      ========================================================= */
 
   // Begin fading after the animation finishes.
+
   window.setTimeout(() => {
     intro.classList.add("is-finished");
   }, 2550);
 
   // Remove the overlay after the fade.
+
   window.setTimeout(() => {
     intro.remove();
     style.remove();
