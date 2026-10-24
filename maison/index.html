@@ -908,7 +908,7 @@ if(curtain){
 @media(prefers-reduced-motion:reduce){.maison-continue,.maison-continue span{animation:none!important;transition:none!important}}
 </style>
 <script>
-/* Mobile CONTINUE: short post-reveal pause, no scroll interruption. */
+/* Mobile CONTINUE: visible near the completed reveal; fades as the introduction approaches. */
 (()=>{
   'use strict';
   const button=document.getElementById('maison-continue');
@@ -922,7 +922,7 @@ if(curtain){
     const max=Math.max(1,threshold.getBoundingClientRect().bottom+scrollY-innerHeight);
     const anticipation=Math.min(mobile?75:110,max*.45);
     const progress=Math.max(0,Math.min(1,(scrollY-anticipation)/Math.max(1,max-anticipation)));
-    const atReveal=mobile&&progress>=.98&&film.getBoundingClientRect().top>innerHeight*.92;
+    const atReveal=mobile&&progress>=.90&&film.getBoundingClientRect().top>innerHeight*.45;
     if(!atReveal){
       clearTimeout(revealTimer);revealTimer=null;ready=false;
     }else if(!ready&&revealTimer===null){
