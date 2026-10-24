@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
   <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -65,6 +66,40 @@
     @media(max-width:420px){.name{font-size:18px;letter-spacing:.17em}}
     
   </style>
+<!-- DOMINIC RYAN — FORMULATIONS SCROLL RESET -->
+
+<script>
+(() => {
+  "use strict";
+
+  /* Prevent the browser from restoring a previous scroll position. */
+
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+
+  function resetScroll() {
+    const previousBehavior =
+      document.documentElement.style.scrollBehavior;
+
+    document.documentElement.style.scrollBehavior = "auto";
+
+    window.scrollTo(0, 0);
+
+    document.documentElement.style.scrollBehavior =
+      previousBehavior;
+  }
+
+  /* Reset when the page is opened or restored from history. */
+
+  window.addEventListener("pageshow", resetScroll);
+
+  /* Reset after the initial page load. */
+
+  window.addEventListener("load", resetScroll);
+})();
+</script>
+
 <!-- DOMINIC RYAN — SHARED NAVIGATION & PAGE TRANSITIONS -->
 
 <link rel="stylesheet" href="/dominic-ryan-navigation.css?v=5000">
@@ -73,6 +108,7 @@
 
 <script src="/dominic-ryan-swipe.js?v=5000" defer></script>
 
+</head>
 </head>
 <body id="top">
   <div class="background-dr" aria-hidden="true"><img src="/dr-reveals-removebg-preview.png" alt=""></div>
