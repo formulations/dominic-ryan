@@ -899,13 +899,16 @@ if(curtain){
     transition:opacity .3s ease;
   }
   .maison-continue.is-visible {opacity:var(--continue-opacity,1);pointer-events:auto}
-  .maison-continue span {display:inline-block;font-size:15px;line-height:1;animation:drContinueArrow 2.8s cubic-bezier(.45,0,.25,1) infinite}
+  .maison-continue span {display:inline-block;font-size:15px;line-height:1;animation:drContinueArrow 2.6s ease-in-out infinite;will-change:transform}
   @keyframes drContinueArrow {
-    0%,10%,75%,100% {transform:translate3d(0,0,0)}
-    38% {transform:translate3d(0,4px,0)}
+    0%,12%,70%,100% {transform:translate3d(0,0,0)}
+    35% {transform:translate3d(0,5px,0)}
   }
 }
-@media(prefers-reduced-motion:reduce){.maison-continue,.maison-continue span{animation:none!important;transition:none!important}}
+/* Deliberately keep the invitation and arrow animated under all motion preferences. */
+@media (max-width:760px) {
+  .maison-continue span { animation:drContinueArrow 2.6s ease-in-out infinite !important; animation-play-state:running !important; }
+}
 </style>
 <script>
 /* Mobile CONTINUE: anchored to the architectural floor, never the viewport. */
@@ -933,13 +936,13 @@ if(curtain){
     }else if(!ready&&revealTimer===null){
       revealTimer=setTimeout(()=>{revealTimer=null;ready=true;update()},200);
     }
-    const visible=atReveal&&ready;
+    const visible=atReveal&&ready&&fade>0;
     button.style.setProperty('--continue-opacity',fade.toFixed(3));
     button.classList.toggle('is-visible',visible);
     button.setAttribute('aria-hidden',String(!visible));
     button.tabIndex=visible?0:-1;
   }
-  button.addEventListener('click',()=>film.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'}));
+  button.addEventListener('click',()=>film.scrollIntoView({behavior:'smooth',block:'start'}));
   addEventListener('scroll',update,{passive:true});
   addEventListener('resize',update);
   update();
