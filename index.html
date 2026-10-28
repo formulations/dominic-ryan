@@ -2959,15 +2959,15 @@ if (finalTypewriter) {
     // Begin gradual quote reveal
     finalText.classList.add("reveal-visible");
 
-    // Reveal ornament
-    setTimeout(() => {
-      finalOrnament.classList.add("ornament-visible");
-    }, 3300);
+// Reveal ornament
+setTimeout(() => {
+  finalOrnament.classList.add("ornament-visible");
+}, 1200);
 
-    // Reveal signature shortly afterward
-    setTimeout(() => {
-      finalSignature.classList.add("signature-visible");
-    }, 3500);
+// Reveal signature alongside the final sentence
+setTimeout(() => {
+  finalSignature.classList.add("signature-visible");
+}, 0);
 
     // Stop observing after reveal begins
     if (finalRevealObserver) {
