@@ -114,6 +114,61 @@
     .formulations-main{width:min(1180px,92vw);margin:0 auto;padding:78px 0 0;flex:1 0 auto}
     .collection-heading{margin-bottom:47px;text-align:center}
     .collection-heading h1{margin:0;font:400 clamp(35px,5vw,59px)/1.2 "DR Didot",Didot,Georgia,serif;letter-spacing:.20em;color:var(--ink)}
+    
+
+/* FORMULATIONS — CLICKABLE HEADING */
+
+.collection-heading h1 a {
+  position: relative;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.collection-heading h1 a:visited,
+.collection-heading h1 a:hover,
+.collection-heading h1 a:active {
+  color: inherit;
+}
+
+/* DESKTOP — ANIMATED UNDERLINE */
+
+@media (hover: hover) and (pointer: fine) {
+  .collection-heading h1 a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -5px;
+    height: 1px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform .3s ease;
+  }
+
+  .collection-heading h1 a:hover::after,
+  .collection-heading h1 a:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
+
+/* KEYBOARD FOCUS */
+
+.collection-heading h1 a:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 8px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .collection-heading h1 a:focus-visible {
+    outline: none;
+  }
+}
+
+
     .collection-heading-rule{width:36px;height:1px;margin:25px auto 0;background:rgba(81,70,62,.25)}
     .instagram-collection,.instagram-grid{width:100%;margin:0 auto}
     .instagram-highlights{display:flex;justify-content:center;width:100%;margin:0 auto 35px}
