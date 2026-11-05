@@ -66,6 +66,25 @@ if (window.drPlayHomeIntro) {
       } catch (_) {}
     })();
   </script>
+  <!-- HIDE ACTIVE NAVIGATION UNDERLINE DURING INTRODUCTION -->
+<style>
+  html.dr-home-intro-pending .collection-navigation a.active::after,
+  html.dr-home-intro-pending .collection-navigation a[aria-current="page"]::after,
+  html.dr-home-intro-pending .maison-primary-nav a.active::after,
+  html.dr-home-intro-pending .maison-primary-nav a[aria-current="page"]::after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  html.dr-home-intro-pending .dr-traveling-underline {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  html.dr-home-intro-pending::view-transition-group(dr-navigation-underline) {
+    opacity: 0 !important;
+  }
+</style>
 
   <meta
     name="viewport"
