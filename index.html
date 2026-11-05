@@ -66,6 +66,29 @@ if (window.drPlayHomeIntro) {
       } catch (_) {}
     })();
   </script>
+  <!-- =========================================================
+     DOMINIC RYAN — INTRODUCTION NAVIGATION UNDERLINE CONTROL
+     Hide active underline until branded introduction completes.
+     ========================================================= -->
+
+<style>
+  /* Hide the original active-page underline during introduction */
+
+  html.dr-home-intro-pending .collection-navigation a.active::after,
+  html.dr-home-intro-pending .collection-navigation a[aria-current="page"]::after,
+  html.dr-home-intro-pending .maison-primary-nav a.active::after,
+  html.dr-home-intro-pending .maison-primary-nav a[aria-current="page"]::after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  /* Hide the traveling navigation underline during introduction */
+
+  html.dr-home-intro-pending .dr-traveling-underline {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+</style>
   <!-- HIDE ACTIVE NAVIGATION UNDERLINE DURING INTRODUCTION -->
 <style>
   html.dr-home-intro-pending .collection-navigation a.active::after,
