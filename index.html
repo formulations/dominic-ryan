@@ -55,6 +55,10 @@
 
       window.drPlayHomeIntro = navigationType === "navigate" && !internalArrival;
       window.drReturningVisitor = returningVisitor;
+      // Hide the active navigation underline while the intro is playing.
+if (window.drPlayHomeIntro) {
+  document.documentElement.classList.add("dr-home-intro-pending");
+}
 
       try {
         if (returningVisitor) sessionStorage.setItem("dr-envelope-v7-opened", "yes");
