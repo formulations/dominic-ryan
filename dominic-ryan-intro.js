@@ -13,9 +13,10 @@
   // The homepage determines whether the introduction
   // should play based on how the visitor arrived.
 
-  if (window.drPlayHomeIntro !== true) {
-    return;
-  }
+if (window.drPlayHomeIntro !== true) {
+  document.documentElement.classList.remove("dr-home-intro-pending");
+  return;
+}
 
   /* =========================================================
      STYLING
@@ -111,11 +112,15 @@
     intro.classList.add("is-finished");
   }, 2550);
 
-  // Remove the overlay after the fade.
+// Remove the overlay after the fade.
 
-  window.setTimeout(() => {
-    intro.remove();
-    style.remove();
-  }, 3350);
+window.setTimeout(() => {
+  intro.remove();
+  style.remove();
+
+  // Restore the navigation underline after the introduction finishes.
+  document.documentElement.classList.remove("dr-home-intro-pending");
+
+}, 3350);
 
 })();
