@@ -206,17 +206,15 @@
   </style>
 
 <script>
-/* Fit the mobile tagline within the header, clear of the contact button. */
+/* Keep the original mobile header tagline on one line without changing desktop sizing. */
 (() => {
   const fit = () => {
     const tagline = document.querySelector('.header .tagline');
     if (!tagline) return;
     tagline.style.fontSize = '';
-    tagline.style.width = '';
     if (window.innerWidth > 760) return;
-    const left = tagline.getBoundingClientRect().left;
-    const available = Math.max(1, Math.min(tagline.clientWidth, window.innerWidth - 92 - left));
-    tagline.style.width = available + 'px';
+    const available = tagline.clientWidth;
+    if (!available) return;
     const natural = parseFloat(getComputedStyle(tagline).fontSize);
     if (!natural || tagline.scrollWidth <= available) return;
     let low = 1, high = natural;
@@ -231,7 +229,6 @@
   document.addEventListener('DOMContentLoaded', () => {
     fit();
     window.addEventListener('resize', fit, {passive:true});
-    window.addEventListener('load', fit);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   });
 })();
