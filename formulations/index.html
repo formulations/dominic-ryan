@@ -196,8 +196,9 @@
 
     /* Collection: keep the existing header tagline on one mobile line. */
     @media(max-width:760px){
+      .brand{min-width:0;flex:1 1 auto}
       .brand-copy{min-width:0;flex:1 1 auto}
-      .tagline{white-space:nowrap;max-width:none;width:max-content}
+      .tagline{white-space:nowrap;max-width:none}
     }
     /* Center the remaining footer social/contact navigation. */
     .dr-unified-footer .dr-footer-nav{justify-content:center}
@@ -205,25 +206,33 @@
   </style>
 
 <script>
-/* Fit the existing mobile header tagline to the space beside the DR monogram. */
+/* Fit the mobile tagline within the header, clear of the contact button. */
 (() => {
   const fit = () => {
-    const el = document.querySelector('.header .tagline');
-    if (!el) return;
-    el.style.fontSize = '';
+    const tagline = document.querySelector('.header .tagline');
+    if (!tagline) return;
+    tagline.style.fontSize = '';
+    tagline.style.width = '';
     if (window.innerWidth > 760) return;
-    const brand = el.closest('.brand');
-    const mark = brand?.querySelector('.brand-mark');
-    const gap = parseFloat(getComputedStyle(brand).columnGap) || 13;
-    const available = Math.max(1, window.innerWidth - 44 - (mark?.getBoundingClientRect().width || 54) - gap);
-    const natural = el.scrollWidth;
-    const base = parseFloat(getComputedStyle(el).fontSize);
-    if (natural > available) el.style.fontSize = `${Math.max(1, base * available / natural * .995)}px`;
+    const left = tagline.getBoundingClientRect().left;
+    const available = Math.max(1, Math.min(tagline.clientWidth, window.innerWidth - 92 - left));
+    tagline.style.width = available + 'px';
+    const natural = parseFloat(getComputedStyle(tagline).fontSize);
+    if (!natural || tagline.scrollWidth <= available) return;
+    let low = 1, high = natural;
+    for (let i = 0; i < 16; i++) {
+      const mid = (low + high) / 2;
+      tagline.style.fontSize = mid + 'px';
+      if (tagline.scrollWidth > available) high = mid;
+      else low = mid;
+    }
+    tagline.style.fontSize = Math.max(1, low - 0.15) + 'px';
   };
   document.addEventListener('DOMContentLoaded', () => {
     fit();
     window.addEventListener('resize', fit, {passive:true});
-    document.fonts?.ready.then(fit);
+    window.addEventListener('load', fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   });
 })();
 </script>
