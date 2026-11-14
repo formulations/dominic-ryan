@@ -615,32 +615,41 @@ button {
 <style>
 /* Targeted mobile header tagline fit and footer navigation balance. */
 @media (max-width:760px) {
-  .dr-brand > div { min-width:0; }
-  .dr-brand-tagline { white-space:nowrap; max-width:none; width:max-content; }
+  .dr-brand { min-width:0; flex:1 1 auto; }
+  .dr-brand > div { min-width:0; flex:1 1 auto; }
+  .dr-brand-tagline { white-space:nowrap; max-width:none; }
 }
 .dr-unified-footer .dr-footer-nav { justify-content:center; }
 .dr-unified-footer .dr-footer-nav-group { justify-content:center; }
 </style>
 <script>
-/* Fit the existing header tagline to its available mobile width without wrapping. */
+/* Fit the mobile tagline within the header, clear of the contact button. */
 (() => {
   const fit = () => {
-    const el = document.querySelector('.dr-site-header .dr-brand-tagline');
-    if (!el) return;
-    el.style.fontSize = '';
+    const tagline = document.querySelector('.dr-site-header .dr-brand-tagline');
+    if (!tagline) return;
+    tagline.style.fontSize = '';
+    tagline.style.width = '';
     if (window.innerWidth > 760) return;
-    const brand = el.closest('.dr-brand');
-    const mark = brand?.querySelector('.dr-brand-mark');
-    const gap = parseFloat(getComputedStyle(brand).columnGap) || 13;
-    const available = Math.max(1, window.innerWidth - 44 - (mark?.getBoundingClientRect().width || 54) - gap);
-    const natural = el.scrollWidth;
-    const base = parseFloat(getComputedStyle(el).fontSize);
-    if (natural > available) el.style.fontSize = `${Math.max(1, base * available / natural * .995)}px`;
+    const left = tagline.getBoundingClientRect().left;
+    const available = Math.max(1, Math.min(tagline.clientWidth, window.innerWidth - 92 - left));
+    tagline.style.width = available + 'px';
+    const natural = parseFloat(getComputedStyle(tagline).fontSize);
+    if (!natural || tagline.scrollWidth <= available) return;
+    let low = 1, high = natural;
+    for (let i = 0; i < 16; i++) {
+      const mid = (low + high) / 2;
+      tagline.style.fontSize = mid + 'px';
+      if (tagline.scrollWidth > available) high = mid;
+      else low = mid;
+    }
+    tagline.style.fontSize = Math.max(1, low - 0.15) + 'px';
   };
   document.addEventListener('DOMContentLoaded', () => {
     fit();
     window.addEventListener('resize', fit, {passive:true});
-    document.fonts?.ready.then(fit);
+    window.addEventListener('load', fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   });
 })();
 </script>
