@@ -2112,7 +2112,44 @@ transition:
 @media(hover:none){.sound-toggle:hover{background:rgba(112,94,79,.78);}}
 
 
+  /* Personal Message: fit the original tagline to the available mobile width. */
+  @media (max-width:760px) {
+    .brand { min-width:0; flex:1 1 auto; }
+    .brand > div { min-width:0; flex:1 1 auto; }
+    .tagline { white-space:nowrap; max-width:none; }
+  }
+  /* With page links removed, keep the social row centered in the footer. */
+  .dr-unified-footer .dr-footer-nav { justify-content:center; }
+
   </style>
+<script>
+/* Keep the original mobile header tagline on one line without changing desktop sizing. */
+(() => {
+  const fit = () => {
+    const tagline = document.querySelector('.header .tagline');
+    if (!tagline) return;
+    tagline.style.fontSize = '';
+    if (window.innerWidth > 760) return;
+    const available = tagline.clientWidth;
+    if (!available) return;
+    const natural = parseFloat(getComputedStyle(tagline).fontSize);
+    if (!natural || tagline.scrollWidth <= available) return;
+    let low = 1, high = natural;
+    for (let i = 0; i < 16; i++) {
+      const mid = (low + high) / 2;
+      tagline.style.fontSize = mid + 'px';
+      if (tagline.scrollWidth > available) high = mid;
+      else low = mid;
+    }
+    tagline.style.fontSize = Math.max(1, low - 0.15) + 'px';
+  };
+  document.addEventListener('DOMContentLoaded', () => {
+    fit();
+    window.addEventListener('resize', fit, {passive:true});
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  });
+})();
+</script>
 <!-- SHARED NAVIGATION & TRANSITIONS -->
 
 <link rel="stylesheet" href="/dominic-ryan-navigation.css?v=5000">
@@ -2449,34 +2486,12 @@ class="final-typewriter-ornament"
   </p>
 
 
-  <!-- FOOTER NAVIGATION -->
+  <!-- FOOTER SOCIAL AND CONTACT NAVIGATION -->
 
   <nav
     class="dr-footer-nav"
     aria-label="Footer navigation"
   >
-
-    <!-- PAGE DESTINATIONS -->
-
-    <div class="dr-footer-nav-group dr-footer-nav-pages">
-
-      <span
-        class="dr-footer-current"
-        aria-current="page"
-      >
-        A PERSONAL MESSAGE
-      </span>
-
-      <a href="/maison/">
-        THE MAISON
-      </a>
-
-      <a href="/formulations/">
-        EXPLORE THE COLLECTION
-      </a>
-
-    </div>
-
 
     <!-- SOCIAL AND CONTACT DESTINATIONS -->
 
