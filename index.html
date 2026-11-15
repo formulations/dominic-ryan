@@ -2192,6 +2192,75 @@ transition:
 /* Identical stable font metrics across the three headers: no webfont swap. */
 .header .tagline { font-family:"Avenir Next","Gill Sans","Helvetica Neue",Arial,sans-serif; font-synthesis:none; }
 </style>
+<style id="dr-unified-header-geometry">
+
+/* UNIFIED HEADER GEOMETRY — shared across all three pages */
+.header, .dr-site-header {
+  width:100%; display:flex; justify-content:space-between;
+  align-items:flex-start; gap:40px; padding:34px 42px 0;
+}
+.header .brand, .dr-site-header .dr-brand {
+  display:flex; align-items:flex-start; gap:20px; min-width:0; flex:1 1 auto;
+}
+.header .brand > div, .dr-site-header .dr-brand > div {min-width:0;}
+.header .brand-mark, .dr-site-header .dr-brand-mark {
+  display:block; width:72px; flex:0 0 72px;
+}
+.header .brand-mark img, .dr-site-header .dr-brand-mark img {
+  display:block; width:100%; height:auto;
+}
+.header .name, .dr-site-header .dr-brand-name {
+  display:block; margin:3px 0 0;
+  font:400 clamp(18px,1.7vw,27px)/1.15 "DR Didot",Didot,Georgia,serif;
+  letter-spacing:.24em; color:#4e443d; text-decoration:none;
+}
+.header .tagline, .dr-site-header .dr-brand-tagline {
+  max-width:680px; margin-top:9px;
+  font-family:"Avenir Next","Gill Sans","Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(11px,.85vw,14px); line-height:1.45;
+  color:#756a62; white-space:nowrap;
+}
+.header .dr-contact-header, .dr-site-header .dr-contact-header {
+  display:flex; align-items:center; gap:18px; flex:0 0 auto;
+  margin-left:auto; padding-top:0; white-space:nowrap;
+}
+.header .dr-contact-header .location, .dr-site-header .dr-contact-header .location {
+  display:block; padding-top:0; margin:0; font:400 10px/1.4 "DR Avenir Next","Avenir Next",Arial,sans-serif;
+  letter-spacing:.08em; color:#746a63;
+}
+.collection-navigation, .maison-primary-nav {
+  position:relative; top:auto; left:auto; transform:none;
+  display:flex; justify-content:center; align-items:center; gap:32px;
+  width:max-content; max-width:calc(100% - 24px);
+  margin:50px auto 0; padding:0 20px; z-index:70;
+  background:transparent;
+}
+.collection-navigation a, .maison-primary-nav a {
+  position:relative; padding-bottom:9px;
+  font:500 10px/1.4 "DR Avenir Next","Avenir Next",Arial,sans-serif;
+  letter-spacing:.16em; white-space:nowrap;
+}
+@media (min-width:761px) and (max-width:1050px) {
+  .header, .dr-site-header {padding:27px 30px 0;}
+  .header .brand-mark, .dr-site-header .dr-brand-mark {width:61px;flex-basis:61px;}
+}
+@media (max-width:760px) {
+  .header, .dr-site-header {padding:25px 22px 0;gap:12px;}
+  .header .brand, .dr-site-header .dr-brand {gap:13px;}
+  .header .brand-mark, .dr-site-header .dr-brand-mark {width:54px;flex-basis:54px;}
+  .header .dr-contact-header, .dr-site-header .dr-contact-header {padding-top:0;gap:0;}
+  .header .dr-contact-header .location, .dr-site-header .dr-contact-header .location {display:none;}
+  .collection-navigation, .maison-primary-nav {
+    margin:45px auto 0;gap:clamp(10px,4vw,22px);padding:0 12px;
+  }
+  .collection-navigation a, .maison-primary-nav a {
+    font-size:clamp(8px,2.3vw,9px);letter-spacing:.08em;
+  }
+}
+@media (max-width:420px) {
+  .header .name, .dr-site-header .dr-brand-name {font-size:18px;letter-spacing:.17em;}
+}
+</style>
 </head>
 
 <body id="top">
