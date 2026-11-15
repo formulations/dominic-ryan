@@ -239,7 +239,7 @@
   }
 </style>
 <script>
-/* Keep the original mobile header tagline on one line without changing desktop sizing. */
+/* Match Personal Message's one-line fitting, but finish measuring before the tagline is visible. */
 (() => {
   const fit = () => {
     const tagline = document.querySelector('.header .tagline');
@@ -260,9 +260,20 @@
     tagline.style.fontSize = Math.max(1, low - 0.15) + 'px';
   };
   document.addEventListener('DOMContentLoaded', () => {
-    fit();
+    const tagline = document.querySelector('.header .tagline');
+    if (!tagline) return;
+    const reveal = () => {
+      fit();
+      tagline.classList.add('dr-tagline-measured');
+    };
+    // Font loading may change glyph widths. Do not reveal until final measurements exist.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(reveal, reveal);
+    } else {
+      reveal();
+    }
+    // Resize changes are still measured, without replaying the initial reveal.
     window.addEventListener('resize', fit, {passive:true});
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   });
 })();
 </script>
@@ -312,6 +323,10 @@
     /* Shared scroll-progress indicator — desktop and mobile. */
     .dr-scroll-progress{position:fixed;top:0;right:0;width:4px;height:100%;background:#51463e;transform:scaleY(0);transform-origin:top center;will-change:transform;backface-visibility:hidden;z-index:10000;pointer-events:none}
   </style>
+<style id="dr-tagline-first-paint-stability">
+/* Prevent mobile/desktop first-paint text-width correction from being visible. */
+.header .tagline:not(.dr-tagline-measured){visibility:hidden!important;}
+</style>
 </head>
 <body id="top">
   <div class="dr-scroll-progress" aria-hidden="true"></div>
