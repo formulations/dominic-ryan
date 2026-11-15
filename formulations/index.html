@@ -196,9 +196,6 @@
 
     /* Collection: keep the existing header tagline on one mobile line. */
     @media(max-width:760px){
-      .brand{min-width:0;flex:1 1 auto}
-      .brand-copy{min-width:0;flex:1 1 auto}
-      .tagline{white-space:nowrap;max-width:none}
     }
     /* Center the remaining footer social/contact navigation. */
     .dr-unified-footer .dr-footer-nav{justify-content:center}
@@ -206,9 +203,7 @@
   </style>
 
 <style>
-
-/* Header tagline: Personal Message typography and sizing, shared across pages. */
-    .header .tagline{
+    .tagline{
       max-width:680px;
 
       margin-top:9px;
@@ -234,6 +229,14 @@
     }
 
 
+/* Exact Personal Message final tagline font selection */
+.tagline{font-family:"DR Avenir Next","Avenir Next","Gill Sans","Helvetica Neue",Arial,sans-serif;}
+  /* Personal Message: fit the original tagline to the available mobile width. */
+  @media (max-width:760px) {
+    .brand { min-width:0; flex:1 1 auto; }
+    .brand > div { min-width:0; flex:1 1 auto; }
+    .tagline { white-space:nowrap; max-width:none; }
+  }
 </style>
 <script>
 /* Keep the original mobile header tagline on one line without changing desktop sizing. */
