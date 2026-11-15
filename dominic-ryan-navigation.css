@@ -917,8 +917,10 @@
 }
 
 
-/* Navigation labels remain a stationary, independent snapshot.
-   Only the separately named underline interpolates its position. */
+/* Keep the navigation in one fixed position. Show only the incoming
+   navigation snapshot: the outgoing labels must never remain visible
+   underneath or slide in as part of the root transition.
+   The separately named underline retains its own traveling animation. */
 .collection-navigation,
 .maison-primary-nav {
   view-transition-name: dr-stationary-navigation;
@@ -931,6 +933,14 @@
 ::view-transition-old(dr-stationary-navigation),
 ::view-transition-new(dr-stationary-navigation) {
   animation: none;
+}
+
+::view-transition-old(dr-stationary-navigation) {
+  opacity: 0;
+}
+
+::view-transition-new(dr-stationary-navigation) {
+  opacity: 1;
 }
 
 
