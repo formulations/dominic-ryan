@@ -57,7 +57,8 @@
     sans-serif;
 
   font-size: 10px;
-  font-weight: 500;
+  /* Keep the same glyph widths across pages; opacity identifies inactive links. */
+  font-weight: 600;
   line-height: 1.4;
 
   letter-spacing: .16em;
@@ -916,6 +917,23 @@
 }
 
 
+/* Navigation labels remain a stationary, independent snapshot.
+   Only the separately named underline interpolates its position. */
+.collection-navigation,
+.maison-primary-nav {
+  view-transition-name: dr-stationary-navigation;
+}
+
+::view-transition-group(dr-stationary-navigation) {
+  animation: none;
+}
+
+::view-transition-old(dr-stationary-navigation),
+::view-transition-new(dr-stationary-navigation) {
+  animation: none;
+}
+
+
 /* =========================================================
    NATIVE VIEW TRANSITIONS — UNDERLINE
    ========================================================= */
@@ -1015,9 +1033,8 @@ html.dr-native-underline .dr-traveling-underline {
    JAVASCRIPT FALLBACK — EXIT
    ========================================================= */
 
-/* Fallback: animate the navigation and subsequent page content,
-   never body or its preceding header. Works with all three page DOMs. */
-html.dr-fallback-leaving .collection-navigation,
+/* Fallback: animate only content after navigation; leave the header,
+   navigation labels and traveling underline stationary. */
 html.dr-fallback-leaving .collection-navigation ~ :not(script):not(style) {
   animation:
     var(--dr-page-duration)
@@ -1030,7 +1047,6 @@ html.dr-fallback-leaving .collection-navigation ~ :not(script):not(style) {
    JAVASCRIPT FALLBACK — ENTRY
    ========================================================= */
 
-html.dr-fallback-entering .collection-navigation,
 html.dr-fallback-entering .collection-navigation ~ :not(script):not(style) {
   animation:
     var(--dr-page-duration)
