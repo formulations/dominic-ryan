@@ -317,7 +317,9 @@
   <style>
     /* Shared scroll-progress indicator — desktop and mobile. */
     .dr-scroll-progress{position:fixed;top:0;right:0;width:4px;height:100%;background:#51463e;transform:scaleY(0);transform-origin:top center;will-change:transform;backface-visibility:hidden;z-index:10000;pointer-events:none}
-  </style>
+  
+@media (min-width: 769px) { .dr-scroll-progress { width: 6px; background: #a28d77; } }
+</style>
 <link rel="stylesheet" href="/shared-header.css">
 </head>
 <body id="top">
@@ -492,7 +494,7 @@
     const dt = last ? Math.min(48, now - last) : 16.67;
     last = now;
     // Near-instant exponential tracking; no spring, bounce, or accumulated velocity.
-    const alpha = 1 - Math.exp(-dt / 9);
+    const alpha = 1 - Math.exp(-dt / (window.innerWidth >= 769 ? 38 : 9));
     displayed += (target - displayed) * alpha;
     if (Math.abs(target - displayed) < 0.000005) displayed = target;
     paint(displayed);
