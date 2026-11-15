@@ -2218,7 +2218,7 @@ transition:
     const viewport = document.documentElement.clientWidth || innerWidth;
     // Keep the full line clear of the floating contact control on mobile.
     // On desktop retain the original header sizing unless space is genuinely tight.
-    const reserved = viewport <= 760 ? 92 : 42;
+    const reserved = viewport <= 760 ? 78 : 42;
     const available = Math.max(1, Math.floor(viewport - left - reserved));
     const naturalSize = parseFloat(getComputedStyle(tagline).fontSize);
     if (!naturalSize) return;
