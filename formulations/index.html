@@ -473,7 +473,6 @@
   if (!bar) return;
   const root = document.documentElement;
   let displayed = 0, target = 0, raf = 0, last = 0, initialized = false;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   function sample() {
     // Layout viewport coordinates keep Safari toolbar animations from shifting the tip.
@@ -502,7 +501,7 @@
   }
   function update() {
     sample();
-    if (!initialized || reduced.matches) {
+    if (!initialized) {
       initialized = true;
       displayed = target;
       last = 0;
@@ -517,7 +516,6 @@
   window.addEventListener('load', update);
   window.addEventListener('orientationchange', update);
   if ('ResizeObserver' in window) new ResizeObserver(update).observe(document.body);
-  reduced.addEventListener?.('change', update);
   update();
 })();
 </script>
