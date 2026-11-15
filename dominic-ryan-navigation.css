@@ -882,67 +882,41 @@
 
 
 /* =========================================================
-   NATIVE VIEW TRANSITIONS — PAGE
+   NATIVE VIEW TRANSITIONS — ISOLATED PAGE CONTENT
+
+   The root snapshot contains the header and navigation, but NOT
+   main (which has its own named snapshot). Switch root snapshots
+   immediately; never translate or crossfade the navigation words.
    ========================================================= */
 
 ::view-transition-old(root) {
-  animation:
-    var(--dr-page-duration)
-    var(--dr-page-easing)
-    both dr-page-out;
-}
-
-::view-transition-new(root) {
-  animation:
-    var(--dr-page-duration)
-    var(--dr-page-easing)
-    both dr-page-in;
-}
-
-
-/* Keep the approved header outside the moving root snapshot.
-   Each document supplies the same named header, so the page glide
-   applies only to the navigation and the content below it. */
-.header {
-  view-transition-name: dr-stationary-header;
-}
-
-::view-transition-group(dr-stationary-header) {
   animation: none;
-}
-
-::view-transition-old(dr-stationary-header),
-::view-transition-new(dr-stationary-header) {
-  animation: none;
-}
-
-
-/* Keep the navigation in one fixed position. Show only the incoming
-   navigation snapshot: the outgoing labels must never remain visible
-   underneath or slide in as part of the root transition.
-   The separately named underline retains its own traveling animation. */
-.collection-navigation,
-.maison-primary-nav {
-  view-transition-name: dr-stationary-navigation;
-}
-
-::view-transition-group(dr-stationary-navigation) {
-  animation: none;
-}
-
-::view-transition-old(dr-stationary-navigation),
-::view-transition-new(dr-stationary-navigation) {
-  animation: none;
-}
-
-::view-transition-old(dr-stationary-navigation) {
   opacity: 0;
 }
 
-::view-transition-new(dr-stationary-navigation) {
+::view-transition-new(root) {
+  animation: none;
   opacity: 1;
 }
 
+/* All three documents use main directly below the primary navigation,
+   regardless of whether their parent is .site-shell or body. */
+.collection-navigation + main,
+.maison-primary-nav + main {
+  view-transition-name: dr-page-content;
+}
+
+::view-transition-group(dr-page-content) {
+  animation: none;
+}
+
+::view-transition-old(dr-page-content) {
+  animation: var(--dr-page-duration) var(--dr-page-easing) both dr-page-out;
+}
+
+::view-transition-new(dr-page-content) {
+  animation: var(--dr-page-duration) var(--dr-page-easing) both dr-page-in;
+}
 
 /* =========================================================
    NATIVE VIEW TRANSITIONS — UNDERLINE
@@ -1043,27 +1017,17 @@ html.dr-native-underline .dr-traveling-underline {
    JAVASCRIPT FALLBACK — EXIT
    ========================================================= */
 
-/* Fallback: animate only content after navigation; leave the header,
-   navigation labels and traveling underline stationary. */
-html.dr-fallback-leaving .collection-navigation ~ :not(script):not(style) {
-  animation:
-    var(--dr-page-duration)
-    var(--dr-page-easing)
-    both dr-fallback-out;
+/* Match native behavior: only the main page content moves.
+   The header, navigation labels, and underline never move. */
+html.dr-fallback-leaving .collection-navigation + main,
+html.dr-fallback-leaving .maison-primary-nav + main {
+  animation: var(--dr-page-duration) var(--dr-page-easing) both dr-fallback-out;
 }
 
-
-/* =========================================================
-   JAVASCRIPT FALLBACK — ENTRY
-   ========================================================= */
-
-html.dr-fallback-entering .collection-navigation ~ :not(script):not(style) {
-  animation:
-    var(--dr-page-duration)
-    var(--dr-page-easing)
-    both dr-fallback-in;
+html.dr-fallback-entering .collection-navigation + main,
+html.dr-fallback-entering .maison-primary-nav + main {
+  animation: var(--dr-page-duration) var(--dr-page-easing) both dr-fallback-in;
 }
-
 
 /* =========================================================
    FALLBACK EXIT KEYFRAMES

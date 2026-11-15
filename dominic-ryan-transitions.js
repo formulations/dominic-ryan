@@ -773,6 +773,10 @@
 
       nativeTransitionActive = true;
 
+      /* A native page reveal must never inherit an interrupted fallback
+         animation from a restored page or cached navigation state. */
+      root.classList.remove(EXIT_CLASS, ENTRY_CLASS);
+
       /*
          Incoming snapshot preparation.
       */
