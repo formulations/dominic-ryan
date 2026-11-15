@@ -1,6 +1,4 @@
-/* Extracted verbatim from Collection canonical unified header geometry.
-   Remove existing UNIFIED HEADER GEOMETRY blocks and conflicting older header rules
-   from each page before relying on this as the sole source of truth. */
+/* Shared header, canonical Collection geometry. All three pages load this stylesheet. */
 
 
 /* UNIFIED HEADER GEOMETRY — shared across all three pages */
@@ -68,4 +66,16 @@
 }
 @media (max-width:420px) {
   .header .name, .dr-site-header .dr-brand-name {font-size:18px;letter-spacing:.17em;}
+}
+
+/* Prevent fallback font substitution differences between the three pages. */
+.header .tagline { font-synthesis:none; }
+/* Normalize the location both before and after the existing contact add-on runs. */
+.header > .location, .header .dr-contact-header > .location {
+  display:block; margin:0; padding:0;
+  font:400 10px/1.4 "DR Avenir Next","Avenir Next",Arial,sans-serif;
+  letter-spacing:.08em; color:#746a63; white-space:nowrap;
+}
+@media(max-width:760px){
+  .header > .location, .header .dr-contact-header > .location {display:none;}
 }

@@ -1,6 +1,4 @@
-/* Extracted from the existing common tagline fitting implementation.
-   Load once after the header markup (without defer) to preserve first-paint fitting.
-   Remove the original inline tagline fitting script from each page. */
+/* Shared tagline sizing. Load immediately after the header, before navigation. */
 
 /* Shared, synchronous, first-paint fitting: no visibility gate or delayed reveal. */
 (() => {
@@ -31,13 +29,21 @@
     }
     tagline.style.fontSize = Math.max(1, low - .25) + 'px';
   };
-  // This parser-blocking inline script follows the complete header, so the
-  // browser has not painted the header before the first measurement.
+  // Parser-blocking script follows the header for first-paint sizing.
   fit();
   let scheduled = false;
+  document.fonts?.ready.then(() => fit());
+  window.addEventListener('load', fit);
   window.addEventListener('resize', () => {
     if (scheduled) return;
     scheduled = true;
     requestAnimationFrame(() => { scheduled = false; fit(); });
   }, {passive:true});
+  // The existing contact add-on can wrap the location after this script runs.
+  const observer = new MutationObserver(() => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => { scheduled = false; fit(); });
+  });
+  observer.observe(document.querySelector('.header'), {childList:true,subtree:false});
 })();
