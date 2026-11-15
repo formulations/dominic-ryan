@@ -393,6 +393,23 @@
   .header .name, .dr-site-header .dr-brand-name {font-size:18px;letter-spacing:.17em;}
 }
 </style>
+<style id="dr-header-final-location-normalization">
+/* Normalize the original location element before and after contact add-on initialization. */
+.header > .location,
+.header .dr-contact-header > .location {
+  display:block;
+  margin:0;
+  padding:0;
+  font:400 10px/1.4 "DR Avenir Next","Avenir Next",Arial,sans-serif;
+  letter-spacing:.08em;
+  color:#746a63;
+  white-space:nowrap;
+}
+@media (max-width:760px) {
+  .header > .location,
+  .header .dr-contact-header > .location {display:none;}
+}
+</style>
 </head>
 <body id="top">
   <div class="dr-scroll-progress" aria-hidden="true"></div>
