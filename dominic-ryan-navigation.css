@@ -979,39 +979,42 @@ html.dr-native-underline .dr-traveling-underline {
    NATIVE EXIT
    ========================================================= */
 
-@keyframes dr-page-out {
+/* Keep the outgoing and incoming content snapshots from being
+   visible simultaneously. The exit finishes before the entry
+   becomes visible; the underlying page background remains stable. */
+::view-transition-old(dr-page-content) {
+  z-index: 1;
+}
 
-  from {
+::view-transition-new(dr-page-content) {
+  z-index: 2;
+}
+
+@keyframes dr-page-out {
+  0% {
     opacity: 1;
     transform: translateX(0);
   }
-
-  to {
-    opacity: .88;
+  48% {
+    opacity: 0;
     transform: translateX(var(--dr-swipe-out));
   }
-
+  100% {
+    opacity: 0;
+    transform: translateX(var(--dr-swipe-out));
+  }
 }
 
-
-/* =========================================================
-   NATIVE ENTRY
-   ========================================================= */
-
 @keyframes dr-page-in {
-
-  from {
-    opacity: .88;
+  0%, 52% {
+    opacity: 0;
     transform: translateX(var(--dr-swipe-in));
   }
-
-  to {
+  100% {
     opacity: 1;
     transform: translateX(0);
   }
-
 }
-
 
 /* =========================================================
    JAVASCRIPT FALLBACK — EXIT
