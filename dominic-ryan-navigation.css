@@ -899,6 +899,23 @@
 }
 
 
+/* Keep the approved header outside the moving root snapshot.
+   Each document supplies the same named header, so the page glide
+   applies only to the navigation and the content below it. */
+.header {
+  view-transition-name: dr-stationary-header;
+}
+
+::view-transition-group(dr-stationary-header) {
+  animation: none;
+}
+
+::view-transition-old(dr-stationary-header),
+::view-transition-new(dr-stationary-header) {
+  animation: none;
+}
+
+
 /* =========================================================
    NATIVE VIEW TRANSITIONS — UNDERLINE
    ========================================================= */
@@ -998,7 +1015,10 @@ html.dr-native-underline .dr-traveling-underline {
    JAVASCRIPT FALLBACK — EXIT
    ========================================================= */
 
-html.dr-fallback-leaving body {
+/* Fallback: animate the navigation and subsequent page content,
+   never body or its preceding header. Works with all three page DOMs. */
+html.dr-fallback-leaving .collection-navigation,
+html.dr-fallback-leaving .collection-navigation ~ :not(script):not(style) {
   animation:
     var(--dr-page-duration)
     var(--dr-page-easing)
@@ -1010,7 +1030,8 @@ html.dr-fallback-leaving body {
    JAVASCRIPT FALLBACK — ENTRY
    ========================================================= */
 
-html.dr-fallback-entering body {
+html.dr-fallback-entering .collection-navigation,
+html.dr-fallback-entering .collection-navigation ~ :not(script):not(style) {
   animation:
     var(--dr-page-duration)
     var(--dr-page-easing)
