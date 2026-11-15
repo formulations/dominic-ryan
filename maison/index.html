@@ -155,6 +155,8 @@ body{font-family:"DR Avenir Next","Avenir Next",Arial,sans-serif}
 
 
 .maison-story-heading h3 em{font-weight:400;font-style:italic;color:#9d8873}
+
+@media (min-width: 769px) { .progress { width: 6px; background: #a28d77; } }
 </style><style>
 /* MAISON DR — DISCREET SOUND CONTROL */
 .maison-sound{position:fixed;bottom:25px;right:clamp(18px,4vw,65px);z-index:65;border:1px solid #a18d7866;background:#f8f3ebeb;color:#51463e;padding:12px 15px;font:9px "Avenir Next",Arial,sans-serif;letter-spacing:.2em;cursor:pointer;backdrop-filter:blur(12px);transition:background .25s,border-color .25s}
@@ -1107,7 +1109,7 @@ if(curtain){
     const dt = last ? Math.min(48, now - last) : 16.67;
     last = now;
     // Near-instant exponential tracking; no spring, bounce, or accumulated velocity.
-    const alpha = 1 - Math.exp(-dt / 9);
+    const alpha = 1 - Math.exp(-dt / (window.innerWidth >= 769 ? 38 : 9));
     displayed += (target - displayed) * alpha;
     if (Math.abs(target - displayed) < 0.000005) displayed = target;
     paint(displayed);
