@@ -1,27 +1,37 @@
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  
+
 <script>
 /* Automatically remove UTM parameters from the address bar */
 (() => {
-  const url = new URL(window.location.href);
-  let changed = false;
+  function cleanUTMParameters() {
+    const url = new URL(window.location.href);
+    let changed = false;
 
-  for (const key of [...url.searchParams.keys()]) {
-    if (key.toLowerCase().startsWith("utm_")) {
-      url.searchParams.delete(key);
-      changed = true;
+    for (const key of [...url.searchParams.keys()]) {
+      if (key.toLowerCase().startsWith("utm_")) {
+        url.searchParams.delete(key);
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      history.replaceState(
+        history.state,
+        "",
+        url.pathname + url.search + url.hash
+      );
     }
   }
 
-  if (changed) {
-    history.replaceState(
-      history.state,
-      "",
-      url.pathname + url.search + url.hash
-    );
-  }
+  // Clean immediately when the page opens.
+  cleanUTMParameters();
+
+  // Clean again when the page is shown or restored.
+  window.addEventListener("pageshow", cleanUTMParameters);
 })();
 </script>
 
