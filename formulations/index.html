@@ -275,8 +275,13 @@
 
 <script src="/dominic-ryan-swipe.js?v=5000" defer></script>
 
+  <style>
+    /* Shared scroll-progress indicator — desktop and mobile. */
+    .dr-scroll-progress{position:fixed;top:0;right:0;width:4px;height:0;background:#51463e;z-index:10000;pointer-events:none}
+  </style>
 </head>
 <body id="top">
+  <div class="dr-scroll-progress" aria-hidden="true"></div>
   <div class="background-dr" aria-hidden="true"><img src="/dr-reveals-removebg-preview.png" alt=""></div>
   <div class="site-shell">
     <header class="header">
@@ -418,5 +423,30 @@
   </script>
 
 
+  <script>
+    /* Track progress across the full document, including embedded content. */
+    (() => {
+      const bar = document.querySelector('.dr-scroll-progress');
+      if (!bar) return;
+      let pending = false;
+      const update = () => {
+        pending = false;
+        const root = document.documentElement;
+        const max = Math.max(0, root.scrollHeight - root.clientHeight);
+        const progress = max ? Math.min(1, Math.max(0, window.scrollY / max)) : 1;
+        bar.style.height = (progress * 100) + '%';
+      };
+      const request = () => {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(update);
+      };
+      addEventListener('scroll', request, {passive:true});
+      addEventListener('resize', request, {passive:true});
+      addEventListener('load', request);
+      if (typeof ResizeObserver !== 'undefined') new ResizeObserver(request).observe(document.documentElement);
+      update();
+    })();
+  </script>
 </body>
 </html>
