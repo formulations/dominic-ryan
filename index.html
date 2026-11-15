@@ -2261,6 +2261,66 @@ transition:
   .header .name, .dr-site-header .dr-brand-name {font-size:18px;letter-spacing:.17em;}
 }
 </style>
+
+<style id="dr-collection-header-reference-fix">
+/* Collection is the reference. Override older page-specific header offsets. */
+@media (min-width: 761px) {
+  .header, .dr-site-header {
+    padding: 34px 42px 0 !important;
+    gap: 40px !important;
+    align-items: flex-start !important;
+  }
+  .header .brand, .dr-site-header .dr-brand {
+    gap: 20px !important; align-items: flex-start !important;
+  }
+  .header .brand-mark, .dr-site-header .dr-brand-mark {
+    width:72px !important; height:auto !important; flex:0 0 72px !important;
+  }
+  .header .dr-contact-header, .dr-site-header .dr-contact-header {
+    position:absolute !important; top:31px !important; right:42px !important;
+    margin:0 !important; padding:0 !important;
+    display:flex !important; align-items:center !important; gap:18px !important;
+    transform:none !important;
+  }
+  .header .dr-contact-header .location,
+  .dr-site-header .dr-contact-header .location {
+    display:block !important; margin:0 !important; padding:0 !important;
+  }
+  .collection-navigation, .maison-primary-nav {
+    position:relative !important; top:auto !important; left:auto !important;
+    right:auto !important; transform:none !important;
+    margin:50px auto 0 !important; padding:0 20px !important;
+    gap:32px !important; width:max-content !important;
+    justify-content:center !important; align-items:center !important;
+  }
+}
+@media (min-width:761px) and (max-width:1050px) {
+  .header, .dr-site-header {padding:27px 30px 0 !important;}
+  .header .brand-mark, .dr-site-header .dr-brand-mark {
+    width:61px !important;flex-basis:61px !important;
+  }
+  .header .dr-contact-header, .dr-site-header .dr-contact-header {
+    top:27px !important;right:30px !important;
+  }
+}
+@media (max-width:760px) {
+  .header, .dr-site-header {padding:25px 22px 0 !important;gap:12px !important;}
+  .header .brand, .dr-site-header .dr-brand {gap:13px !important;}
+  .header .brand-mark, .dr-site-header .dr-brand-mark {
+    width:54px !important;flex:0 0 54px !important;
+  }
+  .header .dr-contact-header, .dr-site-header .dr-contact-header {
+    padding:0 !important;margin-left:auto !important;align-items:center !important;
+  }
+  .header .dr-contact-header .location,
+  .dr-site-header .dr-contact-header .location {display:none !important;}
+  .collection-navigation, .maison-primary-nav {
+    position:relative !important;top:auto !important;left:auto !important;
+    transform:none !important;margin:45px auto 0 !important;
+    padding:0 12px !important;gap:clamp(10px,4vw,22px) !important;
+  }
+}
+</style>
 </head>
 
 <body id="top">
