@@ -902,31 +902,20 @@
     prepareNavigation(destination);
 
     /*
-       Native-capable browsers navigate immediately.
-
-       The browser coordinates the cross-document
-       transition through pageswap / pagereveal.
-
-       No additional JS page animation runs.
-    */
-
-    if (supportsViewTransitionAPI()) {
-
-      window.location.assign(destination);
-      return;
-
-    }
-
-    /*
-       Fallback for browsers without the
-       relevant native View Transition API.
+       Use the coordinated fallback for in-site navigation.
+       Feature detection for document.startViewTransition does not
+       guarantee a cross-document transition, which otherwise causes
+       the underline to jump straight to its destination.
     */
 
     store(STORAGE.fallback, "1");
 
     animateFallbackUnderline(destination);
 
-    await animateExit();
+    await Promise.all([
+      animateExit(),
+      new Promise(resolve => window.setTimeout(resolve, LINE_DURATION))
+    ]);
 
     window.location.assign(destination);
 

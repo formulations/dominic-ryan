@@ -859,8 +859,10 @@
 
 /* NATIVE CROSS-DOCUMENT TRANSITION OPT-IN */
 
+/* In-site links use the coordinated JS fallback so the underline
+   completes its travel before the next document replaces this one. */
 @view-transition {
-  navigation: auto;
+  navigation: none;
 }
 
 
