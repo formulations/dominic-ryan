@@ -2,6 +2,30 @@
 <html lang="en">
 <head>
   
+<script>
+/* Automatically remove UTM parameters from the address bar */
+(() => {
+  const url = new URL(window.location.href);
+  let changed = false;
+
+  for (const key of [...url.searchParams.keys()]) {
+    if (key.toLowerCase().startsWith("utm_")) {
+      url.searchParams.delete(key);
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    history.replaceState(
+      history.state,
+      "",
+      url.pathname + url.search + url.hash
+    );
+  }
+})();
+</script>
+
+  
   <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
