@@ -2156,9 +2156,29 @@ transition:
 
 <script src="/dominic-ryan-transitions.js?v=5000" defer></script>
 <script src="/dominic-ryan-swipe.js?v=5000" defer></script>
+  <!-- DOMINIC RYAN — SCROLL PROGRESS (DESKTOP + MOBILE) -->
+  <style>
+    .dr-scroll-progress{position:fixed;top:0;right:0;width:4px;height:0;background:#51463e;z-index:10001;pointer-events:none;}
+  </style>
+  <script>
+    (() => {
+      const updateScrollProgress = () => {
+        const root = document.documentElement;
+        const available = Math.max(0, root.scrollHeight - root.clientHeight);
+        const percent = available ? Math.min(1, Math.max(0, window.scrollY / available)) : 0;
+        const bar = document.querySelector('.dr-scroll-progress');
+        if (bar) bar.style.height = (percent * 100) + '%';
+      };
+      document.addEventListener('DOMContentLoaded', updateScrollProgress);
+      window.addEventListener('scroll', updateScrollProgress, {passive:true});
+      window.addEventListener('resize', updateScrollProgress, {passive:true});
+      window.addEventListener('load', updateScrollProgress);
+    })();
+  </script>
 </head>
 
 <body id="top">
+  <div class="dr-scroll-progress" aria-hidden="true"></div>
 
 
   <!-- BACKGROUND DR -->
