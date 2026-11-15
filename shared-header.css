@@ -79,3 +79,30 @@
 @media(max-width:760px){
   .header > .location, .header .dr-contact-header > .location {display:none;}
 }
+
+/* Keep the content viewport the same width on pages with different scroll
+   heights. Without a reserved gutter, a page with a scrollbar can shift the
+   header/navigation horizontally relative to a page without one. */
+html { scrollbar-gutter: stable; }
+@supports not (scrollbar-gutter: stable) {
+  html { overflow-y: scroll; }
+}
+
+/* Header geometry is viewport-aligned regardless of the surrounding page's
+   content structure. Higher specificity protects it from legacy page rules. */
+html body .header {
+  box-sizing: border-box;
+  position: relative;
+  inset-inline: auto;
+  margin-inline: 0;
+  max-width: none;
+  transform: none;
+}
+html body .collection-navigation {
+  box-sizing: border-box;
+  left: auto;
+  right: auto;
+  transform: none;
+  margin-left: auto;
+  margin-right: auto;
+}
