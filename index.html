@@ -3162,74 +3162,59 @@ function handleFinalScroll() {
   }
 </script>
 <script>
-/* Compositor-rendered, top-anchored liquid scroll progress. */
+/* Single-controller, top-anchored scroll progress: fast, non-oscillating compositor animation. */
 (() => {
   'use strict';
   const bar = document.querySelector('.dr-scroll-progress, .progress');
   if (!bar) return;
   const root = document.documentElement;
-  const viewport = window.visualViewport;
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let current = 0;
-  let target = 0;
-  let velocity = 0;
-  let frame = 0;
-  let previousTime = 0;
-  let initialized = false;
+  let displayed = 0, target = 0, raf = 0, last = 0, initialized = false;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  const paint = () => { bar.style.transform = `translateZ(0) scaleY(${current})`; };
-
-  function measure() {
-    const visible = viewport ? viewport.height : root.clientHeight;
-    const page = Math.max(root.scrollHeight, document.body.scrollHeight, visible);
-    const maxScroll = Math.max(0, page - visible);
-    const position = Math.min(maxScroll, Math.max(0, window.scrollY + (viewport ? viewport.offsetTop : 0)));
-    // The growing line ends at the estimated bottom of the browser's scroll thumb.
-    target = maxScroll ? Math.min(1, (position + visible) / page) : 0;
-    if (!initialized || reducedMotion.matches) {
+  function sample() {
+    // Layout viewport coordinates keep Safari toolbar animations from shifting the tip.
+    const visible = root.clientHeight;
+    const total = Math.max(root.scrollHeight, document.body.scrollHeight, visible);
+    const maximum = Math.max(0, total - visible);
+    const position = Math.max(0, Math.min(maximum, root.scrollTop || window.scrollY));
+    // Endpoint follows the calculated bottom of the browser's scrollbar thumb.
+    target = maximum > 0 ? (position + visible) / total : 0;
+  }
+  function paint(value) {
+    bar.style.transform = 'translate3d(0,0,0) scaleY(' + value + ')';
+  }
+  function tick(now) {
+    raf = 0;
+    sample();
+    const dt = last ? Math.min(48, now - last) : 16.67;
+    last = now;
+    // Near-instant exponential tracking; no spring, bounce, or accumulated velocity.
+    const alpha = 1 - Math.exp(-dt / 9);
+    displayed += (target - displayed) * alpha;
+    if (Math.abs(target - displayed) < 0.000005) displayed = target;
+    paint(displayed);
+    if (displayed !== target) raf = requestAnimationFrame(tick);
+    else last = 0;
+  }
+  function update() {
+    sample();
+    if (!initialized || reduced.matches) {
       initialized = true;
-      current = target;
-      velocity = 0;
-      paint();
+      displayed = target;
+      last = 0;
+      paint(displayed);
       return;
     }
-    if (!frame) {
-      previousTime = 0;
-      frame = requestAnimationFrame(animate);
-    }
+    if (!raf) raf = requestAnimationFrame(tick);
   }
-
-  function animate(time) {
-    frame = 0;
-    // Time-corrected, critically damped spring: no stepped tip, no CSS transition restarts.
-    const dt = previousTime ? Math.min((time - previousTime) / 1000, 0.034) : 1 / 60;
-    previousTime = time;
-    const omega = 25;
-    const displacement = current - target;
-    const decay = Math.exp(-omega * dt);
-    const offset = (velocity + omega * displacement) * dt;
-    current = target + (displacement + offset) * decay;
-    velocity = (velocity - omega * offset) * decay;
-    if (Math.abs(target - current) < 0.000015 && Math.abs(velocity) < 0.0005) {
-      current = target;
-      velocity = 0;
-      previousTime = 0;
-    }
-    paint();
-    if (current !== target) frame = requestAnimationFrame(animate);
-  }
-
-  window.addEventListener('scroll', measure, {passive:true});
-  window.addEventListener('resize', measure, {passive:true});
-  window.addEventListener('pageshow', measure);
-  window.addEventListener('load', measure);
-  if (viewport) {
-    viewport.addEventListener('resize', measure, {passive:true});
-    viewport.addEventListener('scroll', measure, {passive:true});
-  }
-  if ('ResizeObserver' in window) new ResizeObserver(measure).observe(root);
-  reducedMotion.addEventListener?.('change', measure);
-  measure();
+  window.addEventListener('scroll', update, {passive:true});
+  window.addEventListener('resize', update, {passive:true});
+  window.addEventListener('pageshow', update);
+  window.addEventListener('load', update);
+  window.addEventListener('orientationchange', update);
+  if ('ResizeObserver' in window) new ResizeObserver(update).observe(document.body);
+  reduced.addEventListener?.('change', update);
+  update();
 })();
 </script>
 </body>
