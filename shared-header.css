@@ -83,10 +83,20 @@
 /* Keep the content viewport the same width on pages with different scroll
    heights. Without a reserved gutter, a page with a scrollbar can shift the
    header/navigation horizontally relative to a page without one. */
-html { scrollbar-gutter: stable; }
-@supports not (scrollbar-gutter: stable) {
-  html { overflow-y: scroll; }
+/* Keep native scrolling, but do not paint a native scrollbar or reserve
+   its gutter behind the fixed bronze progress indicator. */
+html {
+  scrollbar-gutter: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+body { scrollbar-width: none; }
 
 /* Header geometry is viewport-aligned regardless of the surrounding page's
    content structure. Higher specificity protects it from legacy page rules. */
