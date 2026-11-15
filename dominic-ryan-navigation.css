@@ -911,10 +911,15 @@
 }
 
 ::view-transition-old(dr-page-content) {
-  animation: var(--dr-page-duration) var(--dr-page-easing) both dr-page-out;
+  /* The new document is already visible under the transition overlay.
+     Never retain an old-page content snapshot above it. */
+  animation: none;
+  opacity: 0;
+  visibility: hidden;
 }
 
 ::view-transition-new(dr-page-content) {
+  /* Only the incoming content glides into place. */
   animation: var(--dr-page-duration) var(--dr-page-easing) both dr-page-in;
 }
 
@@ -1006,7 +1011,7 @@ html.dr-native-underline .dr-traveling-underline {
 }
 
 @keyframes dr-page-in {
-  0%, 52% {
+  0% {
     opacity: 0;
     transform: translateX(var(--dr-swipe-in));
   }
@@ -1044,7 +1049,7 @@ html.dr-fallback-entering .maison-primary-nav + main {
   }
 
   to {
-    opacity: .88;
+    opacity: 0;
     transform: translateX(var(--dr-swipe-out));
   }
 
