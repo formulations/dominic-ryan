@@ -1,6 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
+<script>
+/* Automatically remove UTM parameters from the address bar */
+(() => {
+  const url = new URL(window.location.href);
+  let changed = false;
+
+  for (const key of [...url.searchParams.keys()]) {
+    if (key.toLowerCase().startsWith("utm_")) {
+      url.searchParams.delete(key);
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    history.replaceState(
+      history.state,
+      "",
+      url.pathname + url.search + url.hash
+    );
+  }
+})();
+</script>
+
 <link rel="stylesheet" href="/dominic-ryan-navigation.css?v=5000">
 
 <script src="/dominic-ryan-transitions.js?v=5000" defer></script>
