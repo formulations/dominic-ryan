@@ -277,7 +277,7 @@
 
   <style>
     /* Shared scroll-progress indicator — desktop and mobile. */
-    .dr-scroll-progress{position:fixed;top:0;right:0;width:4px;height:100%;background:#51463e;transform:scaleY(0);transform-origin:top center;will-change:transform;z-index:10000;pointer-events:none}
+    .dr-scroll-progress{position:fixed;top:0;right:0;width:4px;height:100%;background:#51463e;transform:scaleY(0);transform-origin:top center;will-change:transform;backface-visibility:hidden;z-index:10000;pointer-events:none}
   </style>
 </head>
 <body id="top">
@@ -425,37 +425,63 @@
 
 
 <script>
-/* Top-anchored progress: endpoint tracks the estimated bottom of the native thumb. */
+/* Compositor-rendered, top-anchored liquid scroll progress. */
 (() => {
   'use strict';
   const bar = document.querySelector('.dr-scroll-progress, .progress');
   if (!bar) return;
   const root = document.documentElement;
   const viewport = window.visualViewport;
-  let current = 0, target = 0, raf = 0, initialized = false;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let current = 0;
+  let target = 0;
+  let velocity = 0;
+  let frame = 0;
+  let previousTime = 0;
+  let initialized = false;
+
+  const paint = () => { bar.style.transform = `translateZ(0) scaleY(${current})`; };
+
   function measure() {
     const visible = viewport ? viewport.height : root.clientHeight;
     const page = Math.max(root.scrollHeight, document.body.scrollHeight, visible);
     const maxScroll = Math.max(0, page - visible);
     const position = Math.min(maxScroll, Math.max(0, window.scrollY + (viewport ? viewport.offsetTop : 0)));
-    // The native scrollbar thumb's bottom is approximately (scrollTop + visible) / page.
+    // The growing line ends at the estimated bottom of the browser's scroll thumb.
     target = maxScroll ? Math.min(1, (position + visible) / page) : 0;
     if (!initialized || reducedMotion.matches) {
-      current = target;
       initialized = true;
-      bar.style.transform = 'scaleY(' + current + ')';
+      current = target;
+      velocity = 0;
+      paint();
+      return;
     }
-    if (!raf && !reducedMotion.matches) raf = requestAnimationFrame(animate);
+    if (!frame) {
+      previousTime = 0;
+      frame = requestAnimationFrame(animate);
+    }
   }
-  function animate() {
-    raf = 0;
-    const delta = target - current;
-    // Responsive easing smooths subpixel jitter without the old pronounced lag.
-    current = Math.abs(delta) < 0.0001 ? target : current + delta * 0.55;
-    bar.style.transform = 'scaleY(' + current + ')';
-    if (current !== target) raf = requestAnimationFrame(animate);
+
+  function animate(time) {
+    frame = 0;
+    // Time-corrected, critically damped spring: no stepped tip, no CSS transition restarts.
+    const dt = previousTime ? Math.min((time - previousTime) / 1000, 0.034) : 1 / 60;
+    previousTime = time;
+    const omega = 25;
+    const displacement = current - target;
+    const decay = Math.exp(-omega * dt);
+    const offset = (velocity + omega * displacement) * dt;
+    current = target + (displacement + offset) * decay;
+    velocity = (velocity - omega * offset) * decay;
+    if (Math.abs(target - current) < 0.000015 && Math.abs(velocity) < 0.0005) {
+      current = target;
+      velocity = 0;
+      previousTime = 0;
+    }
+    paint();
+    if (current !== target) frame = requestAnimationFrame(animate);
   }
+
   window.addEventListener('scroll', measure, {passive:true});
   window.addEventListener('resize', measure, {passive:true});
   window.addEventListener('pageshow', measure);
@@ -465,6 +491,7 @@
     viewport.addEventListener('scroll', measure, {passive:true});
   }
   if ('ResizeObserver' in window) new ResizeObserver(measure).observe(root);
+  reducedMotion.addEventListener?.('change', measure);
   measure();
 })();
 </script>
