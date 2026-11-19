@@ -876,7 +876,7 @@ button {
   18%{opacity:1}
   100%{opacity:1;transform:scale(1);filter:blur(0) drop-shadow(1px 3px 2px #5c47361a)}
 }
-@media(max-width:760px){#identity .identity-portrait{aspect-ratio:3 / 4;min-height:0}#identity .identity-monogram{width:clamp(95px,33vw,170px);max-width:55%;max-height:55%}}
+@media(max-width:760px){#identity .identity-portrait{aspect-ratio:1 / 1.12;min-height:0}#identity .identity-monogram{width:clamp(110px,36vw,175px);max-width:55%;max-height:55%}}
 </style>
 <style>
 /* Signature / 02 — height-aware desktop composition; all other sections untouched. */
@@ -893,6 +893,15 @@ button {
   #identity .identity-copy p{line-height:1.58;margin-bottom:11px}
   #identity .fine-rule{margin:16px 0}
 }
+</style>
+<style>
+/* Maison motion: keep authored animation and transition behavior enabled. */
+html{scroll-behavior:smooth!important}
+.entry-action .entry-arrow{animation:drEntryArrowFloat 2.5s ease-in-out infinite!important;animation-play-state:running!important}
+.maison-continue span{animation-play-state:running!important}
+#identity .identity-portrait.sculptural-entered .identity-monogram{animation:maisonSculpturalEntrance 2.45s cubic-bezier(.2,.65,.22,1) both!important;animation-play-state:running!important}
+.maison-curtain-panel{transition:transform 1.2s cubic-bezier(.22,.7,.2,1)!important}
+.maison-curtain-inscription{transition:opacity .65s ease .75s!important}
 </style>
 </head><body><div class="progress"></div><header class="header">
       <div class="brand">
@@ -1037,10 +1046,12 @@ function checkFilm(){
  const stage=document.querySelector('.film-stage');if(!stage)return;
  const rect=stage.getBoundingClientRect();
  const visible=Math.max(0,Math.min(rect.bottom,innerHeight)-Math.max(rect.top,0));
- const fraction=visible/Math.max(1,Math.min(rect.height,innerHeight));
+ const fraction=visible/Math.max(1,rect.height);
+ const mobile=innerWidth<=760;
+ const firstViewReady=visible>0 && rect.top<=innerHeight*(mobile?.43:.36) && rect.bottom>=innerHeight*(mobile?.57:.64) && fraction>=(mobile?.38:.42);
  filmVisible=visible>0;
  if(!filmStarted){
-   if(fraction>=(innerWidth<=760?.35:.50)){
+   if(firstViewReady){
      filmStarted=true;video.currentTime=0;playFilm();
    }
  }else if(!filmVisible||document.hidden){video.pause()}
@@ -1401,23 +1412,46 @@ if(curtain){
 })();
 </script>
 <script>
-/* Signature only: load the one-shot GIF when the frame comes into view. */
+/* Signature only — mobile-safe, position-aware Sculptural reveal. */
 (()=>{
   const portrait=document.querySelector('#identity .identity-portrait');
   const monogram=portrait?.querySelector('img[data-sculptural-src]');
   if(!portrait||!monogram)return;
-  let started=false;
+  let started=false,queued=false;
   const begin=()=>{
     if(started)return;
     started=true;
+    // Set the image source before starting its entrance; the GIF itself remains animated.
     monogram.src=monogram.dataset.sculpturalSrc;
     portrait.classList.add('sculptural-entered');
+    window.removeEventListener('scroll',schedule);
+    window.removeEventListener('resize',schedule);
+    window.removeEventListener('pageshow',schedule);
   };
-  if(!('IntersectionObserver' in window)){begin();return;}
-  const observer=new IntersectionObserver(entries=>{
-    if(entries.some(entry=>entry.isIntersecting)){observer.disconnect();begin();}
-  },{threshold:0.35});
-  observer.observe(portrait);
+  function check(){
+    queued=false;
+    if(started)return;
+    const r=portrait.getBoundingClientRect();
+    const vh=window.innerHeight||document.documentElement.clientHeight;
+    if(!vh||r.height<=0)return;
+    const visible=Math.max(0,Math.min(r.bottom,vh)-Math.max(r.top,0));
+    const fraction=visible/Math.min(r.height,vh);
+    // Wait until the frame occupies the central viewing area, not merely its edge.
+    // A mobile frame can be taller than the usable viewport, so don't demand 48%
+    // visibility AND a narrow center window at the same observer threshold.
+    const midpoint=(Math.max(r.top,0)+Math.min(r.bottom,vh))/2;
+    const mobile=window.matchMedia('(max-width:760px)').matches;
+    if(fraction>=(mobile?.38:.48) && midpoint>=vh*.27 && midpoint<=vh*.73)begin();
+  }
+  function schedule(){if(!queued&&!started){queued=true;requestAnimationFrame(check)}}
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule,{passive:true});
+  window.addEventListener('pageshow',schedule);
+  if('IntersectionObserver' in window){
+    const observer=new IntersectionObserver(schedule,{threshold:[0,.1,.25,.4,.5,.75,1]});
+    observer.observe(portrait);
+  }
+  schedule();
 })();
 </script>
 </body>
