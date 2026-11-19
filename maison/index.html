@@ -111,6 +111,25 @@ if ("scrollRestoration" in history) {
 @font-face{font-family:"DR Avenir Next";src:url("../AvenirNext-Regular.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:"DR Avenir Next";src:url("../AvenirNext-Medium.woff2") format("woff2");font-style:normal;font-weight:500;font-display:swap}
 @font-face{font-family:"DR Didot";src:url("../Didot.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
+  /* Maison pronunciation font — standard Latin */
+@font-face {
+  font-family: "Maison IPA";
+  src: url("./noto-serif-display-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF;
+}
+
+/* Maison pronunciation font — extended Latin and IPA */
+@font-face {
+  font-family: "Maison IPA";
+  src: url("./noto-serif-display-latin-ext-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
 body{font-family:"DR Avenir Next","Avenir Next",Arial,sans-serif}
 .mast .mark,.interior-title,.plan-intro h2,.film-heading h2,.identity-copy h2,.closing h2{font-family:"DR Didot",Didot,Georgia,serif}
 .mast{height:68px;z-index:60;align-items:center;background:linear-gradient(180deg,rgba(242,237,230,.94),rgba(242,237,230,0));}
@@ -718,10 +737,11 @@ button {
   background:radial-gradient(ellipse at center,rgba(255,252,245,.86),rgba(255,249,238,.48) 40%,transparent 76%)}
 .maison-definition-lexicon{display:flex;align-items:center;gap:15px;min-height:32px;color:#8f7b69}
 .maison-definition-pronunciation {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Maison IPA", Georgia, serif;
   font-size: 18px;
   font-weight: 400;
-  letter-spacing: 0.02em;
+  font-style: normal;
+  letter-spacing: 0;
   line-height: 1.25;
 }
 .maison-definition-part{font:italic 400 18px/1.25 'DR Didot',Didot,Georgia,serif}
