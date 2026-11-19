@@ -1048,7 +1048,7 @@ function checkFilm(){
  const visible=Math.max(0,Math.min(rect.bottom,innerHeight)-Math.max(rect.top,0));
  const fraction=visible/Math.max(1,rect.height);
  const mobile=innerWidth<=760;
- const firstViewReady=visible>0 && rect.top<=innerHeight*(mobile?.43:.36) && rect.bottom>=innerHeight*(mobile?.57:.64) && fraction>=(mobile?.38:.42);
+ const firstViewReady=visible>0 && rect.top<=innerHeight*(mobile?.60:.53) && rect.bottom>=innerHeight*(mobile?.40:.47) && fraction>=(mobile?.30:.34);
  filmVisible=visible>0;
  if(!filmStarted){
    if(firstViewReady){
