@@ -836,22 +836,22 @@ button {
 }
 </style>
 <style>
-/* Maison definition only — paired architectural ascent. */
+/* Maison definition only — scroll-linked architectural ascent. */
 .maison-definition .maison-definition-pilaster{
-  transform:translateY(calc(-50% + 115px));
-  transition:transform 1.65s cubic-bezier(.22,1,.36,1);
+  transform:translateY(calc(-50% + (1 - var(--maison-pillar-progress, 0)) * 240px));
   will-change:transform;
 }
-.maison-definition.maison-pillars-built .maison-definition-pilaster{
-  transform:translateY(-50%);
-}
-.maison-definition .maison-definition-pilaster.right{transition-delay:.14s}
 @media(max-width:700px){
-  .maison-definition .maison-definition-pilaster{transform:translateY(115px)}
-  .maison-definition.maison-pillars-built .maison-definition-pilaster{transform:translateY(0)}
+  .maison-definition .maison-definition-pilaster{
+    transform:translateY(calc((1 - var(--maison-pillar-progress, 0)) * 200px));
+  }
 }
 </style>
 <style>
+/* Center the Aubremont narrative vertically beside the heading and framed chandelier on desktop. */
+@media (min-width:761px){
+  .maison-story-prose{align-self:center;}
+}
 /* Aubremont editorial photograph — balanced crop, existing section rhythm retained. */
 .maison-chandelier-frame{position:relative;isolation:isolate;width:min(83%,410px);margin:clamp(28px,3vw,38px) auto 0;aspect-ratio:4/5;}
 .maison-chandelier-panel{position:absolute;inset:0;border:1px solid rgba(255,255,255,.78);background:rgba(255,255,255,.14);pointer-events:none;}
@@ -1334,17 +1334,30 @@ if(curtain){
 })();
 </script>
 <script>
-/* Reveal only the definition's two complete pilasters as the section enters view. */
+/* Build the definition pilasters progressively as the section scrolls into view. */
 (()=>{
   const section=document.querySelector('.maison-definition');
   if(!section)return;
-  const observer=new IntersectionObserver(entries=>{
-    if(entries.some(entry=>entry.isIntersecting)){
-      section.classList.add('maison-pillars-built');
-      observer.disconnect();
-    }
-  },{threshold:0,rootMargin:'0px 0px -15% 0px'});
-  observer.observe(section);
+  let queued=false;
+  function update(){
+    queued=false;
+    const rect=section.getBoundingClientRect();
+    const viewport=window.innerHeight || document.documentElement.clientHeight;
+    // Preserve the exact original final transform and cap height.
+    // Delay the visible ascent until the section is clearly entering view.
+    // Continue through the section; the original resting transform is unchanged.
+    const start=viewport*.72;
+    const finish=-Math.min(rect.height*.22,viewport*.22);
+    const progress=Math.max(0,Math.min(1,(start-rect.top)/(start-finish)));
+    section.style.setProperty('--maison-pillar-progress',progress.toFixed(4));
+  }
+  function schedule(){
+    if(!queued){queued=true;requestAnimationFrame(update)}
+  }
+  addEventListener('scroll',schedule,{passive:true});
+  addEventListener('resize',schedule,{passive:true});
+  addEventListener('pageshow',schedule);
+  update();
 })();
 </script>
 </body>
