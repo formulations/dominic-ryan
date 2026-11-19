@@ -297,17 +297,11 @@ body{background:var(--bg)}
 /* MAISON FAREWELL — paired panels using a single continuous silk weave.
    Each half samples the same full-width, nonrepeating fabric pattern. */
 .maison-curtain-farewell {
-  --silk-weave: linear-gradient(90deg,
-    #dcc6ad 0%, #e9d6be 4%, #f5e7d4 9%, #e7cfb5 14%,
-    #dec3a8 19%, #f6e7d2 27%, #ebd5bd 31%, #d9bea4 37%,
-    #f6e9d9 44%, #ead4bc 49%, #ecd7be 51%, #f5e5d0 58%,
-    #d8bda2 65%, #efddc9 72%, #f7ebdb 79%, #e3cab0 85%,
-    #f6e9d7 93%, #ddc4aa 100%);
   height:clamp(145px,19vw,210px);
   position:relative;
   overflow:hidden;
   isolation:isolate;
-  background:#f4e7d7;
+  background:#e8d5bd;
 }
 .maison-curtain-glow {
   position:absolute; inset:0;
@@ -318,23 +312,31 @@ body{background:var(--bg)}
   top:0; bottom:0;
   width:50%;
   z-index:2;
+  /* Same organic silk as the approved preview; both panels sample one full-width image. */
   background-image:
-    radial-gradient(ellipse 70% 95% at 50% 8%,rgba(255,251,242,.25),transparent 82%),
-    var(--silk-weave);
-  background-size:200% 100%,200% 100%;
+    radial-gradient(ellipse 8% 120% at 13% 44%,#fff8ea9c,transparent 85%),radial-gradient(ellipse 6% 110% at 38% 58%,#fff7e691,transparent 85%),radial-gradient(ellipse 9% 120% at 76% 45%,#fffaef9c,transparent 88%),
+    linear-gradient(90deg,#d8bea3 0%,#ead6c0 3%,#fbf0de 8%,#fff8eb 11%,#e9d0b4 16%,#d3b99f 19%,#ebd7c0 23%,#fcf0df 29%,#f2e1c9 33%,#d9bea2 37%,#e9d4ba 41%,#fff7e9 47%,#f7e8d4 50%,#d8bfa7 55%,#e0c9b1 59%,#f7ead6 65%,#fff9e9 69%,#e2c9ac 74%,#d4b99d 77%,#e7d3bc 82%,#fff5e4 88%,#f4e2ca 92%,#ddc2a6 96%,#e9d5bd 100%);
+  background-size:200% 100%;
   background-repeat:no-repeat;
   box-shadow:inset 0 13px 26px rgba(255,250,239,.16),inset 0 -10px 18px rgba(112,82,52,.035);
   transition:transform 1.2s cubic-bezier(.22,.7,.2,1);
   will-change:transform;
 }
+.maison-curtain-panel::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,249,237,.05),transparent 20%,rgba(131,94,61,.055));
+  pointer-events:none;
+}
 .maison-curtain-panel.left {
   left:0;
-  background-position:left top,left top;
+  background-position:left top;
   transform:translateX(-101%);
 }
 .maison-curtain-panel.right {
   right:0;
-  background-position:right top,right top;
+  background-position:right top;
   transform:translateX(101%);
 }
 .maison-curtain-farewell.is-closed .maison-curtain-panel.left,
@@ -365,17 +367,17 @@ body{background:var(--bg)}
   transform:translate(-50%,-50%);
   width:max-content;
   max-width:calc(100% - 36px);
-  padding:12px clamp(18px,2.5vw,36px);
-  background:rgba(253,247,237,.16);
+  padding:18px clamp(20px,4vw,43px);
+  background:radial-gradient(ellipse at center,rgba(255,248,237,.56),rgba(255,248,237,.05) 80%);
   border:0;
-  border-top:1px solid rgba(121,92,69,.32);
-  border-bottom:1px solid rgba(121,92,69,.32);
+  border-top:1px solid rgba(99,79,57,.22);
+  border-bottom:1px solid rgba(99,79,57,.22);
   box-shadow:none;
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
   pointer-events:none;
   text-align:center;
-  color:#51463e;
+  color:#55483e;
   opacity:0;
   transition:opacity .65s ease .75s;
 }
@@ -385,9 +387,9 @@ body{background:var(--bg)}
   font-family:"DR Didot",Didot,Georgia,serif;
   font-style:normal;
   font-weight:400;
-  font-size:clamp(23px,2.5vw,32px);
+  font-size:clamp(20px,2.6vw,31px);
   line-height:1.25;
-  letter-spacing:.024em;
+  letter-spacing:.035em;
   color:#51463e;
   white-space:nowrap;
 }
@@ -397,8 +399,8 @@ body{background:var(--bg)}
   border-top:1px solid rgba(146,113,81,.28);
 }
 @media(max-width:760px) {
-  .maison-curtain-inscription{max-width:calc(100% - 22px);padding:10px 12px}
-  .maison-curtain-inscription b{font-size:clamp(18px,4.7vw,25px);letter-spacing:.005em}
+  .maison-curtain-inscription{max-width:calc(100% - 22px);padding:15px 12px}
+  .maison-curtain-inscription b{font-size:clamp(17px,4.7vw,22px);letter-spacing:.005em}
 }
 
 .identity-copy strong{font-weight:700;color:#51463e}
@@ -556,7 +558,6 @@ button {
 .film-overlay button,
 .maison-film-story-kicker,
 .maison-film-story-credit,
-.maison-curtain-inscription b,
 .end-mark span,
 .end-mark small,
 .reset,
