@@ -89,6 +89,9 @@
 
       window.drPlayHomeIntro = navigationType === "navigate" && !internalArrival;
       window.drReturningVisitor = returningVisitor;
+      if (!returningVisitor && window.matchMedia("(max-width: 760px)").matches) {
+        document.documentElement.classList.add("dr-envelope-pending");
+      }
       // Hide the active navigation underline while the intro is playing.
 if (window.drPlayHomeIntro) {
   document.documentElement.classList.add("dr-home-intro-pending");
@@ -100,6 +103,26 @@ if (window.drPlayHomeIntro) {
       } catch (_) {}
     })();
   </script>
+  <style>
+    /* First-visit mobile correspondence: preserve the header visually,
+       but reserve all interaction for the wax seal until handoff. */
+    @media (max-width:760px) {
+      html.dr-envelope-pending .collection-navigation,
+      html.dr-envelope-pending .utility-nav,
+      html.dr-envelope-pending .dr-unified-footer,
+      html.dr-envelope-pending .sound-toggle,
+      html.dr-envelope-pending .dr-back-to-top,
+      html.dr-envelope-pending #dr-back-to-top {
+        visibility:hidden !important;
+        pointer-events:none !important;
+      }
+      html.dr-envelope-pending .header a,
+      html.dr-envelope-pending .header button,
+      html.dr-envelope-pending .header [role="button"] {
+        pointer-events:none !important;
+      }
+    }
+  </style>
   <!-- =========================================================
      DOMINIC RYAN — INTRODUCTION NAVIGATION UNDERLINE CONTROL
      Hide active underline until branded introduction completes.
@@ -3149,6 +3172,10 @@ function handleFinalScroll() {
   } else {
     const envelope = document.createElement("script");
     envelope.src = "/dr-envelope-mobile.js?v=200";
+    envelope.onerror = () => {
+      document.documentElement.classList.remove("dr-envelope-pending");
+      document.querySelector(".paper")?.classList.add("mobile-paper-visible", "dr-letter-revealed");
+    };
     document.body.appendChild(envelope);
   }
 </script>

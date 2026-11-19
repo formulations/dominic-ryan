@@ -71,6 +71,8 @@
     !hero ||
     !originalPaper
   ) {
+    document.documentElement.classList.remove("dr-envelope-pending");
+    document.querySelector(".paper")?.classList.add("mobile-paper-visible", "dr-letter-revealed");
     return;
   }
 
@@ -1358,6 +1360,7 @@
 
     experience.remove();
 
+    document.documentElement.classList.remove("dr-envelope-pending");
     unlockScrolling();
 
     window.removeEventListener(

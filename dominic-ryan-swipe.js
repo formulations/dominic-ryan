@@ -157,6 +157,11 @@
      06 — CONTACT MODAL PROTECTION
      ========================================================= */
 
+  function envelopeIsActive() {
+    return document.documentElement.classList.contains("dr-envelope-pending") ||
+      document.body.classList.contains("dr-envelope-active");
+  }
+
   function contactIsOpen() {
 
     const overlay = document.getElementById(
@@ -187,7 +192,7 @@
 
   function navigate(next) {
 
-    if (navigating) {
+    if (navigating || envelopeIsActive()) {
       return;
     }
 
@@ -258,6 +263,7 @@
 
       if (
         navigating ||
+        envelopeIsActive() ||
         event.touches.length !== 1 ||
         contactIsOpen()
       ) {
@@ -289,6 +295,7 @@
       if (
         !tracking ||
         navigating ||
+        envelopeIsActive() ||
         contactIsOpen() ||
         !event.changedTouches.length
       ) {
