@@ -717,7 +717,13 @@ button {
 .maison-definition h2#maison-definition-title::before{content:'';z-index:-1;position:absolute;inset:-30% -22%;pointer-events:none;
   background:radial-gradient(ellipse at center,rgba(255,252,245,.86),rgba(255,249,238,.48) 40%,transparent 76%)}
 .maison-definition-lexicon{display:flex;align-items:center;gap:15px;min-height:32px;color:#8f7b69}
-.maison-definition-pronunciation{font:400 20px/1.25 'DR Didot',Didot,Georgia,serif}
+.maison-definition-pronunciation {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+}
 .maison-definition-part{font:italic 400 18px/1.25 'DR Didot',Didot,Georgia,serif}
 .maison-definition-separator{align-self:center;width:1px;height:23px;background:#b7a18c}
 .maison-definition-meaning{margin:0 0 16px;font:400 clamp(29px,3vw,42px)/1.2 'DR Didot',Didot,Georgia,serif}
