@@ -858,12 +858,17 @@ button {
 .maison-chandelier-panel-one{transform:translate(-13px,-12px)}
 .maison-chandelier-panel-two{transform:translate(13px,13px)}
 .maison-chandelier-mat{position:relative;z-index:1;width:100%;height:100%;padding:12px;background:#faf8f4;box-shadow:0 19px 38px rgba(70,54,39,.13);}
-.maison-chandelier-mat img{display:block;width:100%;height:100%;object-fit:cover;object-position:34% 35%;}
+.maison-chandelier-mat{overflow:hidden;}
+/* Keep the 4:5 gallery frame; give the portrait more room without stretching it. */
+.maison-chandelier-mat::before{content:"";position:absolute;inset:12px;background:url("/maison/chandelier.jpg") 34% 45%/cover no-repeat;filter:blur(17px);transform:scale(1.12);opacity:.46;pointer-events:none;}
+.maison-chandelier-mat img{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:cover;object-position:34% 45%;transform:scale(.85);transform-origin:center;box-shadow:0 0 18px rgba(55,41,30,.08);}
 @media(max-width:760px){
   .maison-chandelier-frame{width:min(83%,370px);margin:30px auto 8px;aspect-ratio:3/4;}
   .maison-chandelier-panel-one{transform:translate(-8px,-8px)}
   .maison-chandelier-panel-two{transform:translate(8px,8px)}
   .maison-chandelier-mat{padding:9px;box-shadow:0 14px 29px rgba(70,54,39,.12)}
+  .maison-chandelier-mat::before{inset:9px;}
+  .maison-chandelier-mat img{transform:scale(.88);}
 }
 </style>
 </head><body><div class="progress"></div><header class="header">
