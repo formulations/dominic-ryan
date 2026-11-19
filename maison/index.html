@@ -1355,7 +1355,12 @@ if(curtain){
     button.tabIndex=visible?0:-1;
   }
 
-  button.addEventListener('click',()=>film.scrollIntoView({behavior:'smooth',block:'start'}));
+ button.addEventListener('click', () => {
+  document.querySelector('.maison-definition')?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+});
   window.addEventListener('scroll',update,{passive:true});
   window.addEventListener('resize',update);
   window.visualViewport?.addEventListener('resize',update);
