@@ -159,7 +159,8 @@
 
   function envelopeIsActive() {
     return document.documentElement.classList.contains("dr-envelope-pending") ||
-      document.body.classList.contains("dr-envelope-active");
+      document.body.classList.contains("dr-envelope-active") ||
+      !!document.getElementById("dr-envelope-experience");
   }
 
   function contactIsOpen() {

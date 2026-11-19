@@ -2203,7 +2203,39 @@ transition:
 <link rel="stylesheet" href="/dominic-ryan-navigation.css?v=5102">
 
 <script src="/dominic-ryan-transitions.js?v=5102" defer></script>
-<script src="/dominic-ryan-swipe.js?v=5000" defer></script>
+<script src="/dominic-ryan-swipe.js?v=5001" defer></script>
+  <!-- Mobile correspondence: navigation is unavailable until the seal sequence completes. -->
+  <style>
+  @media (max-width:760px) {
+    html.dr-envelope-pending .collection-navigation,
+    body.dr-envelope-active .collection-navigation,
+    html:has(#dr-envelope-experience) .collection-navigation,
+    html.dr-envelope-pending .utility-nav,
+    body.dr-envelope-active .utility-nav,
+    html:has(#dr-envelope-experience) .utility-nav,
+    html.dr-envelope-pending .dr-unified-footer,
+    body.dr-envelope-active .dr-unified-footer,
+    html:has(#dr-envelope-experience) .dr-unified-footer,
+    html.dr-envelope-pending .sound-toggle,
+    body.dr-envelope-active .sound-toggle,
+    html:has(#dr-envelope-experience) .sound-toggle,
+    html.dr-envelope-pending .dr-back-to-top,
+    body.dr-envelope-active .dr-back-to-top,
+    html:has(#dr-envelope-experience) .dr-back-to-top {
+      display:none !important;
+      visibility:hidden !important;
+      pointer-events:none !important;
+    }
+    html.dr-envelope-pending .header a,
+    body.dr-envelope-active .header a,
+    html:has(#dr-envelope-experience) .header a,
+    html.dr-envelope-pending .header button,
+    body.dr-envelope-active .header button,
+    html:has(#dr-envelope-experience) .header button {
+      pointer-events:none !important;
+    }
+  }
+  </style>
   <!-- DOMINIC RYAN — SCROLL PROGRESS (DESKTOP + MOBILE) -->
   <style>
     .dr-scroll-progress{position:fixed;top:0;right:0;width:4px;height:100%;background:#a28d77;transform:scaleY(0);transform-origin:top center;will-change:transform;z-index:10001;pointer-events:none;}
@@ -3171,7 +3203,7 @@ function handleFinalScroll() {
     document.querySelector(".paper")?.classList.add("mobile-paper-visible", "dr-letter-revealed");
   } else {
     const envelope = document.createElement("script");
-    envelope.src = "/dr-envelope-mobile.js?v=200";
+    envelope.src = "/dr-envelope-mobile.js?v=201";
     envelope.onerror = () => {
       document.documentElement.classList.remove("dr-envelope-pending");
       document.querySelector(".paper")?.classList.add("mobile-paper-visible", "dr-letter-revealed");

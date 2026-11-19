@@ -76,6 +76,19 @@
     return;
   }
 
+  /* During the correspondence, prevent clicks and keyboard navigation
+     outside the envelope. Header branding stays visible but inactive. */
+  function guardEnvelopeInteraction(event) {
+    if (!document.body.classList.contains("dr-envelope-active")) return;
+    const target = event.target;
+    if (target instanceof Element && target.closest("#dr-envelope-experience")) return;
+    if (event.type === "keydown" && !["Enter", " "].includes(event.key)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+  document.addEventListener("click", guardEnvelopeInteraction, true);
+  document.addEventListener("keydown", guardEnvelopeInteraction, true);
+
   /* =========================================================
      CONFIGURATION
      ========================================================= */
@@ -1360,6 +1373,8 @@
 
     experience.remove();
 
+    document.removeEventListener("click", guardEnvelopeInteraction, true);
+    document.removeEventListener("keydown", guardEnvelopeInteraction, true);
     document.documentElement.classList.remove("dr-envelope-pending");
     unlockScrolling();
 
