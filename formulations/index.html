@@ -521,5 +521,80 @@
   update();
 })();
 </script>
+
+<!-- DOMINIC RYAN — COLLECTION MEDIA SESSION ARTWORK -->
+<script>
+(() => {
+  'use strict';
+  if (!('mediaSession' in navigator) || typeof MediaMetadata !== 'function') return;
+
+  const artwork = [{
+    src: 'https://dominic-ryan.com/dr-opengraph2.png',
+    sizes: '1254x1254',
+    type: 'image/png'
+  }];
+  const observed = new WeakSet();
+  const bound = new WeakSet();
+  let pending = false;
+
+  function applyArtwork() {
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: document.title,
+        artist: 'Dominic Ryan',
+        album: 'Formulations',
+        artwork
+      });
+    } catch (_) { /* Leave native playback untouched. */ }
+  }
+
+  function bindMedia(media) {
+    if (bound.has(media)) return;
+    bound.add(media);
+    media.addEventListener('play', applyArtwork);
+    media.addEventListener('playing', applyArtwork);
+    media.addEventListener('volumechange', () => {
+      if (!media.paused && !media.muted) applyArtwork();
+    });
+    if (!media.paused && !media.ended) applyArtwork();
+  }
+
+  function scheduleScan() {
+    if (pending) return;
+    pending = true;
+    queueMicrotask(() => {
+      pending = false;
+      scan(document);
+    });
+  }
+
+  function scan(root) {
+    if (!observed.has(root)) {
+      observed.add(root);
+      new MutationObserver(scheduleScan).observe(root, {
+        childList: true, subtree: true
+      });
+    }
+    root.querySelectorAll('video, audio').forEach(bindMedia);
+    root.querySelectorAll('*').forEach(el => {
+      if (el.shadowRoot) scan(el.shadowRoot);
+    });
+  }
+
+  // Catch shadow roots created asynchronously by lazy-loaded widgets.
+  // A lightweight periodic discovery pass also covers late attachShadow calls.
+  scan(document);
+  let discovery = setInterval(scheduleScan, 1000);
+  window.addEventListener('pagehide', () => clearInterval(discovery));
+  window.addEventListener('pageshow', () => {
+    clearInterval(discovery);
+    scheduleScan();
+    discovery = setInterval(scheduleScan, 1000);
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) scheduleScan();
+  });
+})();
+</script>
 </body>
 </html>
