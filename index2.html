@@ -2244,17 +2244,14 @@ transition:
 </style>
 
 <link rel="stylesheet" href="/shared-header.css">
-<style id="dr-letter-mechanics">
-.dr-fold-indicators,.dr-fold-edge{display:none}
+<style id="dr-scroll-paper">
+.dr-paper-engine{display:none}
 @media(min-width:761px){
-.paper.dr-fold-ready .paper-content{position:relative;clip-path:inset(0 0 var(--dr-hidden,0px) 0);}
-.paper.dr-fold-ready{background:transparent;box-shadow:none;animation:none;opacity:1;isolation:isolate}
-.paper.dr-fold-ready::before{content:"";position:absolute;inset:0 0 auto;height:var(--dr-open,100%);background:var(--paper);box-shadow:0 24px 55px rgba(70,57,47,.09),0 3px 12px rgba(70,57,47,.045);z-index:-1}
-.dr-fold-edge{display:block;position:absolute;left:0;right:0;top:var(--dr-open,100%);height:var(--dr-edge,0px);pointer-events:none;transform-origin:top;overflow:hidden;filter:drop-shadow(0 5px 5px rgba(70,57,47,.08));opacity:var(--dr-edge-opacity,1)}
-.dr-fold-edge svg{display:block;width:100%;height:100%}
-.dr-fold-indicators{display:flex;position:absolute;left:50%;top:calc(var(--dr-open,100%) + var(--dr-edge,0px) + 9px);transform:translateX(-50%);gap:7px;flex-direction:row;z-index:5}
-.dr-fold-indicators button{width:22px;height:4px;border:0;padding:0;border-radius:8px;background:#d5cbc1;cursor:pointer;transition:background .4s}
-.dr-fold-indicators button[aria-current=true]{background:#796656}
+.paper.dr-engine-active{background:transparent;box-shadow:none;animation:none;opacity:1;isolation:isolate}
+.paper.dr-engine-active .paper-content{animation:none;opacity:1;clip-path:inset(0 0 var(--concealed,0px) 0)}
+.paper.dr-engine-active .final-typewriter-text,.paper.dr-engine-active .final-typewriter-ornament,.paper.dr-engine-active .signature{opacity:1;filter:none;transform:none;transition:none}
+.dr-engine-active .dr-paper-engine{display:block;position:absolute;inset:0;pointer-events:none;z-index:-1;overflow:visible}
+.dr-paper-engine svg{width:100%;height:100%;overflow:visible;display:block}
 }
 </style>
 </head>
@@ -3278,14 +3275,37 @@ function handleFinalScroll() {
   update();
 })();
 </script>
-<script id="dr-letter-mechanics-script">
-(()=>{const paper=document.querySelector('.paper'),content=paper?.querySelector('.paper-content');if(!content)return;const mq=matchMedia('(min-width:761px)');let stops=[],current=0,target=0,raf=0,stage=0;
-const edge=document.createElement('div');edge.className='dr-fold-edge';edge.setAttribute('aria-hidden','true');edge.innerHTML=`<svg viewBox="0 0 600 32" preserveAspectRatio="none"><defs><linearGradient id="dr-fold-light" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fbf8f2"/><stop offset=".48" stop-color="#f4eee6"/><stop offset=".86" stop-color="#e0d6ca"/><stop offset="1" stop-color="#d6c9ba"/></linearGradient></defs><path d="M0 0H600V17C420 20 190 30 0 24Z" fill="url(#dr-fold-light)"/><path d="M0 24C190 30 420 20 600 17L600 18.5C420 21.5 190 31.5 0 25.5Z" fill="#cfc2b4" opacity=".65"/><path d="M0 24C190 30 420 20 600 17" fill="none" stroke="#fffdf8" stroke-width=".65"/></svg>`;
-const nav=document.createElement('div');nav.className='dr-fold-indicators';nav.setAttribute('aria-label','Letter sections');const buttons=[0,1,2].map(i=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Read section '+(i+1));b.onclick=()=>{const y=paper.getBoundingClientRect().top+scrollY;window.scrollTo({top:Math.max(0,y+stops[i]-innerHeight*.88-65),behavior:'smooth'})};nav.append(b);return b});paper.append(edge,nav);
-function measure(){if(!mq.matches){paper.classList.remove('dr-fold-ready');return}const ps=[...content.querySelectorAll(':scope > p')];if(ps.length<8)return;const r=paper.getBoundingClientRect();stops=[ps[2].getBoundingClientRect().bottom-r.top+10,ps[5].getBoundingClientRect().bottom-r.top+10,paper.offsetHeight];if(!current)current=stops[0];paper.classList.add('dr-fold-ready');update()}
-function update(){if(!mq.matches||!stops.length)return;const r=paper.getBoundingClientRect();const reach=innerHeight*.88-r.top;target=stops[0];for(let i=0;i<2;i++){const a=stops[i],b=stops[i+1];const t=Math.max(0,Math.min(1,(reach-a+65)/Math.max(100,b-a)));target=Math.max(target,a+(b-a)*t)}if(!raf)raf=requestAnimationFrame(draw)}
-function draw(){raf=0;if(!mq.matches)return;current+=(target-current)*.085;if(Math.abs(target-current)<.4)current=target;const full=stops[2],top=content.offsetTop;paper.style.setProperty('--dr-open',current+'px');paper.style.setProperty('--dr-hidden',Math.max(0,content.offsetHeight+top-current)+'px');const remaining=Math.max(0,full-current);paper.style.setProperty('--dr-edge',Math.min(25,remaining*.16)+'px');paper.style.setProperty('--dr-edge-opacity',Math.min(1,remaining/35));stage=current>=stops[1]+12?2:current>=stops[0]+12?1:0;buttons.forEach((b,i)=>b.setAttribute('aria-current',String(i===stage)));if(current!==target)raf=requestAnimationFrame(draw)}
-addEventListener('scroll',update,{passive:true});addEventListener('resize',measure);mq.addEventListener('change',measure);new ResizeObserver(measure).observe(content);document.fonts?.ready.then(measure);measure();})();
+<script id="dr-scroll-paper-controller">
+(()=>{
+const paper=document.querySelector('.paper'),content=paper?.querySelector('.paper-content');if(!content)return;
+const mq=matchMedia('(min-width:761px)');
+const layer=document.createElement('div');layer.className='dr-paper-engine';layer.setAttribute('aria-hidden','true');
+layer.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><defs>
+<linearGradient id="dr-fold-front" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fbf8f2"/><stop offset=".68" stop-color="#f1ebe2"/><stop offset="1" stop-color="#d9cfc1"/></linearGradient>
+<linearGradient id="dr-fold-back" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d5c9ba"/><stop offset=".35" stop-color="#eee7dc"/><stop offset="1" stop-color="#fbf8f2"/></linearGradient>
+<filter id="dr-fold-shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#46392f" flood-opacity=".12"/></filter></defs>
+<g filter="url(#dr-fold-shadow)"><path data-flat fill="#fbf8f2"/><path data-back fill="url(#dr-fold-back)"/><path data-front fill="url(#dr-fold-front)"/><path data-crease fill="none" stroke="#b4a38f" stroke-width=".65"/></g></svg>`;
+paper.prepend(layer);const svg=layer.firstElementChild,flat=svg.querySelector('[data-flat]'),back=svg.querySelector('[data-back]'),front=svg.querySelector('[data-front]'),crease=svg.querySelector('[data-crease]');
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));let raf=0;
+function paint(){raf=0;paper.classList.toggle('dr-engine-active',mq.matches);if(!mq.matches){content.style.removeProperty('--concealed');return;}
+const r=paper.getBoundingClientRect(),c=content.getBoundingClientRect(),w=r.width,h=r.height,v=innerHeight;
+if(!w||!h)return;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+// Reveal complete lines only, with a reading buffer ahead of the viewport.
+const line=parseFloat(getComputedStyle(content.querySelector('p')).lineHeight)||20;
+const raw=clamp(v*.87-r.top,Math.min(h,Math.max(250,v*.45)),h);
+const y=Math.min(h,Math.max(raw,Math.ceil((raw-(c.top-r.top))/line)*line+(c.top-r.top)));
+const remaining=h-y;const depth=Math.min(remaining*.42,w*.20,105);const phase=clamp(remaining/150);const skew=Math.sin(y/h*Math.PI*2)*depth*.19;
+// Two opposing planar leaves form a concertina beneath the readable sheet.
+const ridge=y+depth*.70,tip=y+depth*1.48;
+flat.setAttribute('d',`M0 0 H${w} V${y} H0 Z`);
+back.setAttribute('d',`M0 ${ridge} L${w} ${ridge+skew} L${w} ${tip-skew*.4} L0 ${tip} Z`);
+front.setAttribute('d',`M0 ${y} H${w} L${w} ${ridge+skew} L0 ${ridge} Z`);
+crease.setAttribute('d',`M0 ${ridge} L${w} ${ridge+skew}`);crease.setAttribute('opacity',phase*.55);
+content.style.setProperty('--concealed',Math.max(0,c.bottom-r.top-y)+'px');
+}
+function update(){if(!raf)raf=requestAnimationFrame(paint)}
+addEventListener('scroll',update,{passive:true});addEventListener('resize',update);addEventListener('load',update);mq.addEventListener('change',update);document.fonts?.ready.then(update);if(window.ResizeObserver)new ResizeObserver(update).observe(paper);paint();
+})();
 </script>
 </body>
 
