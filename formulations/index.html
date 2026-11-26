@@ -540,9 +540,9 @@
   function applyArtwork() {
     try {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: document.title,
-        artist: 'Dominic Ryan',
-        album: 'Formulations',
+        title: 'Dominic Ryan | Formulations',
+        artist: document.querySelector('meta[property="og:description"]')?.content || 'Dominic Ryan',
+        album: document.querySelector('meta[property="og:description"]')?.content || 'Dominic Ryan',
         artwork
       });
     } catch (_) { /* Leave native playback untouched. */ }
