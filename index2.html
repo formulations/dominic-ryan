@@ -3,7 +3,6 @@
 <html lang="en">
 
 <head>
-<base href="https://dominic-ryan.com/">
 
 <script>
 /* Automatically remove UTM parameters from the address bar */
@@ -2245,10 +2244,20 @@ transition:
 </style>
 
 <link rel="stylesheet" href="/shared-header.css">
-<style id="portrait-unfold">
-@media(min-width:769px){.hero-composition{align-items:start}.photo-stage{position:sticky;top:clamp(110px,18vh,180px)}.paper{padding:0!important;aspect-ratio:auto!important;background:transparent!important;box-shadow:none!important;animation:none!important;opacity:1!important}.paper-content{animation:none!important;opacity:1!important}.unfold-stack{perspective:2600px;perspective-origin:50% 20%}.unfold-hinge{position:relative;min-width:0}.unfold-leaf{position:relative;display:flow-root;min-height:0;aspect-ratio:3/4;padding:58px;background:var(--paper);transform-origin:top center;backface-visibility:hidden;box-shadow:0 12px 28px #46392f0c;will-change:transform}.unfold-hinge:not(:first-child) .unfold-leaf{transform:rotateX(-58deg)}.unfold-hinge:not(:first-child) .unfold-leaf:before{content:'';position:absolute;inset:0 0 auto;height:12px;background:linear-gradient(#79665518,transparent);pointer-events:none}.unfold-shadow{position:absolute;inset:0;background:linear-gradient(#7e6a5620,transparent 65%);opacity:0;pointer-events:none}.unfold-meter{position:fixed;right:24px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:9px;opacity:0;transition:opacity .3s;pointer-events:none;color:#887664;font:10px Avenir Next,Arial,sans-serif;z-index:30}.unfold-meter.active{opacity:1}.unfold-track{width:1px;height:110px;background:#a28d7740}.unfold-fill{height:100%;width:1px;background:#a28d77;transform-origin:top;transform:scaleY(0)}.dr-scroll-progress{display:none!important}}
-@media(min-width:1051px) and (max-width:1399px){.unfold-leaf{padding:49px 50px 45px}}@media(min-width:769px) and (max-width:1050px){.unfold-leaf{padding:36px 38px}}@media(max-width:768px){.unfold-shadow,.unfold-meter{display:none}.unfold-hinge{display:contents}.unfold-leaf{display:contents}}
-</style></head>
+<style id="dr-letter-mechanics">
+.dr-fold-indicators,.dr-fold-edge{display:none}
+@media(min-width:761px){
+.paper.dr-fold-ready .paper-content{position:relative;clip-path:inset(0 0 var(--dr-hidden,0px) 0);}
+.paper.dr-fold-ready{background:transparent;box-shadow:none;animation:none;opacity:1;isolation:isolate}
+.paper.dr-fold-ready::before{content:"";position:absolute;inset:0 0 auto;height:var(--dr-open,100%);background:var(--paper);box-shadow:0 24px 55px rgba(70,57,47,.09),0 3px 12px rgba(70,57,47,.045);z-index:-1}
+.dr-fold-edge{display:block;position:absolute;left:0;right:0;top:var(--dr-open,100%);height:var(--dr-edge,0px);pointer-events:none;transform-origin:top;overflow:hidden;filter:drop-shadow(0 5px 5px rgba(70,57,47,.08));opacity:var(--dr-edge-opacity,1)}
+.dr-fold-edge svg{display:block;width:100%;height:100%}
+.dr-fold-indicators{display:flex;position:absolute;left:50%;top:calc(var(--dr-open,100%) + var(--dr-edge,0px) + 9px);transform:translateX(-50%);gap:7px;flex-direction:row;z-index:5}
+.dr-fold-indicators button{width:22px;height:4px;border:0;padding:0;border-radius:8px;background:#d5cbc1;cursor:pointer;transition:background .4s}
+.dr-fold-indicators button[aria-current=true]{background:#796656}
+}
+</style>
+</head>
 
 <body id="top">
   <div class="dr-scroll-progress" aria-hidden="true"></div>
@@ -2332,38 +2341,81 @@ transition:
           <article class="paper">
 
 
-            <div class="paper-content"><div class="unfold-stack"><section class="unfold-hinge"><div class="unfold-leaf"><div class="message-label">
+            <div class="paper-content">
+
+
+              <div class="message-label">
                 A Personal Message
-              </div><h1>
+              </div>
+
+
+              <h1>
                 I’m 𝐃𝐨𝐦𝐢𝐧𝐢𝐜 𝐑𝐲𝐚𝐧.
-              </h1><p>
+              </h1>
+
+
+              <p>
               I've often wondered how much a name can really tell you about a person. Perhaps it's the things we notice, the places we return to, and the moments we carry with us that reveal a little more.
-              </p><p>
+              </p>
+
+
+              <p>
          I've always found it curious how two people can look at the same thing and see entirely different worlds. A room, a photograph, an unfamiliar destination. What one person passes without a second thought might stay with another for years. I've come to believe that much of who we are is shaped by these quiet encounters, long after the moments themselves have passed.
-               </p><p>
+               </p>
+              <p>
                I call Austin, Texas home, though I like to think the places I've been have made a home within me, too. I've long been drawn to the character of things: the proportions of a room, the patina of old brass, the pages of a book that have outlived the hands that once turned them. There is something beautiful about knowing that everything has a story, even if we'll never know it entirely.
-              </p><span class="unfold-shadow" aria-hidden="true"></span></div></section><section class="unfold-hinge"><div class="unfold-leaf"><p>
+              </p>
+
+
+              <p>
                 For nearly a decade, that curiosity has followed me through my craft in refined interiors, creative strategy, and advertising. Today, I lead teams and develop strategy in paid social, exploring the relationship between culture, media, and human behavior. I've been privileged enough to see campaigns under my strategic leadership receive recognition from Cannes Lions®, The New York Times®, the Effie Awards®, and the Festival of Media. Yet what continues to fascinate me is how something created with intention can take on a life beyond its creator.
-              </p><p>
+              </p>
+
+
+              <p>
               Outside of work, I collect archival books, vintage timepieces, fine crystal, carved alabaster, porcelain, and brass, alongside other pieces from esteemed ateliers. Some I've searched for, others I've discovered by chance. I've never believed that the value of something rests entirely in its monetary worth, but rather in what it makes us remember and feel.
       
-              </p><p>
+              </p>
+    <p>
                And somewhere along that path, 𝑭𝒐𝒓𝒎𝒖𝒍𝒂𝒕𝒊𝒐𝒏𝒔 came to be.
-  </p><p>Here I invite you to step into a private collection of art, design, travel, photography, and objects with a past. A place where my interests and experiences can exist together, not as a complete portrait of my life, but as glimpses of a world I continue to build and discover.</p><span class="unfold-shadow" aria-hidden="true"></span></div></section><section class="unfold-hinge"><div class="unfold-leaf"><p> But there's one thing I'd like you to keep between us: Much like myself, the moments I visit are treated with considerable discretion. Some things are photographed. Some are remembered. Some are shared only within my closest circle. I trust you'll treat it with the same utmost care.   </p><p class="final-typewriter">
-<span class="final-typewriter-text">𝘼𝙛𝙩𝙚𝙧 𝙖𝙡𝙡, 𝙬𝙚 𝙨𝙥𝙚𝙣𝙙 𝙨𝙤 𝙢𝙪𝙘𝙝 𝙤𝙛 𝙡𝙞𝙛𝙚 𝙡𝙚𝙖𝙧𝙣𝙞𝙣𝙜 𝙝𝙤𝙬 𝙩𝙤 𝙨𝙚𝙚 𝙖𝙣𝙙 𝙞𝙣𝙩𝙚𝙧𝙥𝙧𝙚𝙩 𝙩𝙝𝙚 𝙬𝙤𝙧𝙡𝙙 𝙩𝙝𝙧𝙤𝙪𝙜𝙝 𝙤𝙩𝙝𝙚𝙧𝙨⸺ 𝙥𝙚𝙧𝙝𝙖𝙥𝙨 𝙩𝙝𝙚 𝙜𝙧𝙚𝙖𝙩𝙚𝙧 𝙬𝙞𝙨𝙙𝙤𝙢 𝙡𝙞𝙚𝙨 𝙞𝙣 𝙠𝙣𝙤𝙬𝙞𝙣𝙜 𝙬𝙝𝙚𝙣 𝙩𝙤 𝙨𝙞𝙢𝙥𝙡𝙮 𝙚𝙭𝙥𝙚𝙧𝙞𝙚𝙣𝙘𝙚 𝙞𝙩 𝙛𝙤𝙧 𝙤𝙪𝙧𝙨𝙚𝙡𝙫𝙚𝙨. </span><span class="final-typewriter-ornament" style="
+  </p>
+<p>Here I invite you to step into a private collection of art, design, travel, photography, and objects with a past. A place where my interests and experiences can exist together, not as a complete portrait of my life, but as glimpses of a world I continue to build and discover.</p>
+                <p> But there's one thing I'd like you to keep between us: Much like myself, the moments I visit are treated with considerable discretion. Some things are photographed. Some are remembered. Some are shared only within my closest circle. I trust you'll treat it with the same utmost care.   </p>
+
+
+       <p class="final-typewriter">
+  <span class="final-typewriter-text">𝘼𝙛𝙩𝙚𝙧 𝙖𝙡𝙡, 𝙬𝙚 𝙨𝙥𝙚𝙣𝙙 𝙨𝙤 𝙢𝙪𝙘𝙝 𝙤𝙛 𝙡𝙞𝙛𝙚 𝙡𝙚𝙖𝙧𝙣𝙞𝙣𝙜 𝙝𝙤𝙬 𝙩𝙤 𝙨𝙚𝙚 𝙖𝙣𝙙 𝙞𝙣𝙩𝙚𝙧𝙥𝙧𝙚𝙩 𝙩𝙝𝙚 𝙬𝙤𝙧𝙡𝙙 𝙩𝙝𝙧𝙤𝙪𝙜𝙝 𝙤𝙩𝙝𝙚𝙧𝙨⸺ 𝙥𝙚𝙧𝙝𝙖𝙥𝙨 𝙩𝙝𝙚 𝙜𝙧𝙚𝙖𝙩𝙚𝙧 𝙬𝙞𝙨𝙙𝙤𝙢 𝙡𝙞𝙚𝙨 𝙞𝙣 𝙠𝙣𝙤𝙬𝙞𝙣𝙜 𝙬𝙝𝙚𝙣 𝙩𝙤 𝙨𝙞𝙢𝙥𝙡𝙮 𝙚𝙭𝙥𝙚𝙧𝙞𝙚𝙣𝙘𝙚 𝙞𝙩 𝙛𝙤𝙧 𝙤𝙪𝙧𝙨𝙚𝙡𝙫𝙚𝙨. </span><span
+class="final-typewriter-ornament"
+    style="
       display:inline-block;
       font-size:1.1em;
       line-height:1;
       transform:scaleY(.82);
       transform-origin:center;
       vertical-align:-0.08em;
-    "> ❧</span>
-</p><p class="closing">
-                Yours to discover,
-              </p><img alt="Dominic Ryan signature" class="signature" src="Signature-DR-removebg-preview.png"/><p class="signature-name">
-                Dominic Ryan
-              </p><span class="unfold-shadow" aria-hidden="true"></span></div></section></div></div>
+    "
+  > ❧</span>
+</p>
 
+
+              <p class="closing">
+                Yours to discover,
+              </p>
+
+
+              <img
+                class="signature"
+                src="Signature-DR-removebg-preview.png"
+                alt="Dominic Ryan signature"
+              >
+
+
+              <p class="signature-name">
+                Dominic Ryan
+              </p>
+
+
+            </div>
 
 
           </article>
@@ -3138,7 +3190,7 @@ function handleFinalScroll() {
 <script src="dominic-ryan-contact-addon.js" defer></script>
 
 <!-- BRANDED INTRODUCTION -->
-<script>document.documentElement.classList.remove("dr-intro-pending");document.body.classList.remove("dr-intro-pending");</script>
+<script src="/dominic-ryan-intro.js?v=13"></script>
 
 <script>
 (() => {
@@ -3226,7 +3278,15 @@ function handleFinalScroll() {
   update();
 })();
 </script>
-<div class="unfold-meter" role="progressbar" aria-label="Letter reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="unfold-percent">0%</span><div class="unfold-track"><div class="unfold-fill"></div></div></div><script>
-(()=>{const stack=document.querySelector('.unfold-stack'),meter=document.querySelector('.unfold-meter'),leaves=[...stack.querySelectorAll('.unfold-leaf')],mq=matchMedia('(min-width:769px)');let frame=0;const clamp=x=>Math.max(0,Math.min(1,x));function draw(){frame=0;if(!mq.matches){leaves.forEach(l=>l.style.transform='');meter.classList.remove('active');return}const vh=innerHeight,r=stack.getBoundingClientRect();leaves.forEach((l,i)=>{const top=l.parentElement.getBoundingClientRect().top,t=i?clamp((vh*1.13-top)/(vh*.65)):1,e=t*t*(3-2*t);l.style.transform=`rotateX(${-58*(1-e)}deg)`;l.querySelector('.unfold-shadow').style.opacity=1-e});const f=clamp((vh*.72-r.top)/Math.max(1,r.height-vh*.08));meter.classList.toggle('active',r.top<vh*.9&&r.bottom>vh*.2);meter.querySelector('.unfold-percent').textContent=Math.round(f*100)+'%';meter.querySelector('.unfold-fill').style.transform=`scaleY(${f})`;meter.setAttribute('aria-valuenow',Math.round(f*100))}function tick(){if(!frame)frame=requestAnimationFrame(draw)}addEventListener('scroll',tick,{passive:true});addEventListener('resize',tick);addEventListener('load',tick);tick()})();</script></body>
+<script id="dr-letter-mechanics-script">
+(()=>{const paper=document.querySelector('.paper'),content=paper?.querySelector('.paper-content');if(!content)return;const mq=matchMedia('(min-width:761px)');let stops=[],current=0,target=0,raf=0,stage=0;
+const edge=document.createElement('div');edge.className='dr-fold-edge';edge.setAttribute('aria-hidden','true');edge.innerHTML=`<svg viewBox="0 0 600 32" preserveAspectRatio="none"><defs><linearGradient id="dr-fold-light" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fbf8f2"/><stop offset=".48" stop-color="#f4eee6"/><stop offset=".86" stop-color="#e0d6ca"/><stop offset="1" stop-color="#d6c9ba"/></linearGradient></defs><path d="M0 0H600V17C420 20 190 30 0 24Z" fill="url(#dr-fold-light)"/><path d="M0 24C190 30 420 20 600 17L600 18.5C420 21.5 190 31.5 0 25.5Z" fill="#cfc2b4" opacity=".65"/><path d="M0 24C190 30 420 20 600 17" fill="none" stroke="#fffdf8" stroke-width=".65"/></svg>`;
+const nav=document.createElement('div');nav.className='dr-fold-indicators';nav.setAttribute('aria-label','Letter sections');const buttons=[0,1,2].map(i=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Read section '+(i+1));b.onclick=()=>{const y=paper.getBoundingClientRect().top+scrollY;window.scrollTo({top:Math.max(0,y+stops[i]-innerHeight*.88-65),behavior:'smooth'})};nav.append(b);return b});paper.append(edge,nav);
+function measure(){if(!mq.matches){paper.classList.remove('dr-fold-ready');return}const ps=[...content.querySelectorAll(':scope > p')];if(ps.length<8)return;const r=paper.getBoundingClientRect();stops=[ps[2].getBoundingClientRect().bottom-r.top+10,ps[5].getBoundingClientRect().bottom-r.top+10,paper.offsetHeight];if(!current)current=stops[0];paper.classList.add('dr-fold-ready');update()}
+function update(){if(!mq.matches||!stops.length)return;const r=paper.getBoundingClientRect();const reach=innerHeight*.88-r.top;target=stops[0];for(let i=0;i<2;i++){const a=stops[i],b=stops[i+1];const t=Math.max(0,Math.min(1,(reach-a+65)/Math.max(100,b-a)));target=Math.max(target,a+(b-a)*t)}if(!raf)raf=requestAnimationFrame(draw)}
+function draw(){raf=0;if(!mq.matches)return;current+=(target-current)*.085;if(Math.abs(target-current)<.4)current=target;const full=stops[2],top=content.offsetTop;paper.style.setProperty('--dr-open',current+'px');paper.style.setProperty('--dr-hidden',Math.max(0,content.offsetHeight+top-current)+'px');const remaining=Math.max(0,full-current);paper.style.setProperty('--dr-edge',Math.min(25,remaining*.16)+'px');paper.style.setProperty('--dr-edge-opacity',Math.min(1,remaining/35));stage=current>=stops[1]+12?2:current>=stops[0]+12?1:0;buttons.forEach((b,i)=>b.setAttribute('aria-current',String(i===stage)));if(current!==target)raf=requestAnimationFrame(draw)}
+addEventListener('scroll',update,{passive:true});addEventListener('resize',measure);mq.addEventListener('change',measure);new ResizeObserver(measure).observe(content);document.fonts?.ready.then(measure);measure();})();
+</script>
+</body>
 
 </html>
